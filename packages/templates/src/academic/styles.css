@@ -12,10 +12,7 @@
 }
 
 .academic__page {
-  width: 210mm;
-  min-height: 297mm;
-  margin: 0 auto;
-  padding: 20mm 22mm 18mm;
+  padding: 0 22mm;
 }
 
 /* ── Header ──────────────────────────────────────────── */

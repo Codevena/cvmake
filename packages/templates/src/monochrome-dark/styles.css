@@ -14,31 +14,30 @@ body,
   font-size: 10pt;
   line-height: 1.55;
   color: var(--text);
-  background: var(--bg);
+  /* Sidebar gradient fills every printed page — 200pt left = sidebar color */
+  background: linear-gradient(to right, var(--surface) 200pt, var(--bg) 200pt);
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
 }
 
 /* ── Page grid ─────────────────────────────────────────────────── */
 .monochrome-dark__page {
   display: grid;
   grid-template-columns: 200pt 1fr;
-  min-height: 297mm;
-  width: 210mm;
-  margin: 0 auto;
-  background: var(--bg);
 }
 
 /* ── Sidebar ────────────────────────────────────────────────────── */
 .monochrome-dark__sidebar {
-  background: var(--surface);
-  padding: 24mm 12mm 18mm;
+  padding: 0 12mm;
   color: var(--text);
   print-color-adjust: exact;
   -webkit-print-color-adjust: exact;
+  /* background handled by root gradient */
 }
 
 /* ── Main content ───────────────────────────────────────────────── */
 .monochrome-dark__main {
-  padding: 24mm 14mm 18mm;
+  padding: 0 14mm;
 }
 
 /* ── Photo ──────────────────────────────────────────────────────── */

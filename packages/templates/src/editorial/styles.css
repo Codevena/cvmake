@@ -13,9 +13,6 @@
 
 /* ─── Page shell ─────────────────────────────────────── */
 .editorial__page {
-  width: 210mm;
-  min-height: 297mm;
-  margin: 0 auto;
   background: var(--bg);
 }
 

@@ -8,25 +8,23 @@
   font-size: 10pt;
   line-height: 1.5;
   color: var(--text);
-  background: var(--bg);
+  /* Sidebar gradient fills every printed page — 200pt left = sidebar color */
+  background: linear-gradient(to right, var(--surface) 200pt, var(--bg) 200pt);
 }
 
 /* ── Page grid: 200pt sidebar + fluid main ──────────────────── */
 .tech-dev__page {
   display: grid;
   grid-template-columns: 200pt 1fr;
-  min-height: 297mm;
-  width: 210mm;
-  margin: 0 auto;
 }
 
 /* ── Sidebar ────────────────────────────────────────────────── */
 .tech-dev__sidebar {
-  background: var(--surface);
-  padding: 20mm 10mm 18mm;
+  padding: 0 10mm;
   font-family: 'JetBrains Mono', 'Courier New', monospace;
   font-size: 9pt;
   color: var(--text);
+  /* background handled by root gradient */
 }
 
 /* Photo: square, pixelated/retro look, NO border-radius */
@@ -128,7 +126,7 @@
 
 /* ── Main column ────────────────────────────────────────────── */
 .tech-dev__main {
-  padding: 20mm 14mm 18mm;
+  padding: 0 14mm;
 }
 
 /* Terminal prompt line */

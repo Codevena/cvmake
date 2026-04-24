@@ -8,30 +8,27 @@
   font-size: 10pt;
   line-height: 1.5;
   color: var(--text);
-  background: var(--bg);
+  /* Sidebar gradient: left 60% = main bg, right 40% = surface (sidebar) */
+  background: linear-gradient(to right, var(--bg) calc(100% - 238pt), var(--surface) calc(100% - 238pt));
 }
 
 .creative-accent__page {
   display: grid;
   /* 60 % main content / 40 % accent column — A4 = 595pt */
   grid-template-columns: 1fr 238pt;
-  min-height: 297mm;
-  width: 210mm;
-  margin: 0 auto;
-  background: var(--bg);
 }
 
 /* ── Main content column (left 60 %) ──────────────────────────── */
 .creative-accent__main {
-  padding: 24mm 14mm 18mm 18mm;
+  padding: 0 14mm 0 18mm;
   overflow: hidden;
 }
 
 /* ── Accent sidebar column (right 40 %) ──────────────────────── */
 .creative-accent__sidebar {
-  background: var(--surface);
-  padding: 0 12mm 18mm;
+  padding: 0 12mm;
   position: relative;
+  /* background handled by root gradient */
 }
 
 /* ── Photo — full-bleed square, overlaps into main ────────────── */
