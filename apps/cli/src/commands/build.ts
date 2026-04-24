@@ -1,4 +1,4 @@
-import { writeFile } from 'node:fs/promises';
+import { writeFile, readdir, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import pc from 'picocolors';
 import {
@@ -42,4 +42,14 @@ export async function runBuild(args: BuildArgs): Promise<void> {
   await writeFile(outPath, pdf);
   await shutdownPdfBrowser();
   console.warn(pc.green(`✓ wrote ${outPath} (${pdf.byteLength} bytes)`));
+}
+
+export async function runBuildAll(dir: string, outDir: string): Promise<void> {
+  const files = (await readdir(dir)).filter((f) => f.endsWith('.yaml') || f.endsWith('.yml'));
+  await mkdir(outDir, { recursive: true });
+  for (const f of files) {
+    const yaml = path.join(dir, f);
+    const output = path.join(outDir, f.replace(/\.(yaml|yml)$/, '.pdf'));
+    await runBuild({ yaml, output });
+  }
 }

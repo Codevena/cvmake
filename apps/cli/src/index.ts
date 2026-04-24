@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { runBuild } from './commands/build.js';
+import { runBuild, runBuildAll } from './commands/build.js';
 import { runValidate } from './commands/validate.js';
 import { runListTemplates } from './commands/list-templates.js';
 
@@ -27,6 +27,15 @@ program
   .command('list-templates')
   .description('listet alle Templates mit Paletten')
   .action(() => process.exit(runListTemplates()));
+
+program
+  .command('build-all')
+  .description('baut alle data/cvs/*.yaml')
+  .option('-d, --dir <path>', 'Verzeichnis', 'data/cvs')
+  .option('-o, --output <path>', 'Output-Ordner', 'out')
+  .action(async (opts) => {
+    await runBuildAll(opts.dir, opts.output);
+  });
 
 program.parseAsync(process.argv).catch((err: Error) => {
   console.error(err.message);
