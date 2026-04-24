@@ -44,3 +44,6 @@ public/photos/*
 # Generated CV PDFs
 *.pdf
 !docs/**/*.pdf
+
+# Visual regression test actual screenshots (ephemeral, baselines are committed)
+**/__visual__/**/.actual/
