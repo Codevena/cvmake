@@ -1,0 +1,268 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;1,9..144,400;1,9..144,700&family=Source+Sans+Pro:wght@400;600&display=swap');
+@import '../shared/reset.css';
+@import '../shared/print.css';
+
+/* ─── Root container ─────────────────────────────────── */
+.editorial {
+  font-family: 'Source Sans Pro', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 10pt;
+  line-height: 1.38;
+  color: var(--text);
+  background: var(--bg);
+}
+
+/* ─── Page shell ─────────────────────────────────────── */
+.editorial__page {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  background: var(--bg);
+}
+
+/* ─── Hero strip ─────────────────────────────────────── */
+.editorial__hero {
+  width: 100%;
+  height: 48pt;
+  overflow: hidden;
+  position: relative;
+}
+
+.editorial__hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+/* Accent bar shown when there is no hero photo */
+.editorial__hero-bar {
+  width: 100%;
+  height: 4pt;
+  background: var(--accent);
+}
+
+/* ─── Masthead / header ───────────────────────────────── */
+.editorial__masthead {
+  padding: 12pt 20pt 8pt;
+  border-bottom: 2pt solid var(--accent);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16pt;
+}
+
+.editorial__name {
+  font-family: 'Fraunces', 'Georgia', serif;
+  font-weight: 700;
+  font-size: 28pt;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  text-wrap: balance;
+  flex: 1;
+}
+
+.editorial__byline-block {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.editorial__title {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 10pt;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  margin-bottom: 4pt;
+}
+
+.editorial__contacts {
+  font-size: 8.5pt;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.editorial__contact-item + .editorial__contact-item::before {
+  content: ' · ';
+}
+
+/* ─── Body grid — two-column newspaper ───────────────── */
+.editorial__body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 20pt;
+  padding: 0 20pt 20pt;
+}
+
+/* ─── Summary — 2-col with drop cap ─────────────────── */
+.editorial__summary-wrap {
+  grid-column: 1 / -1;
+  padding: 12pt 0 8pt;
+  border-bottom: 1pt solid var(--surface);
+  margin-bottom: 12pt;
+}
+
+.editorial__section-heading {
+  font-family: 'Fraunces', 'Georgia', serif;
+  font-style: italic;
+  font-size: 14pt;
+  color: var(--accent);
+  margin-bottom: 4pt;
+  padding-bottom: 4pt;
+  border-bottom: 2pt solid var(--accent);
+  line-height: 1.2;
+}
+
+.editorial__summary-text {
+  column-count: 2;
+  column-gap: 12pt;
+  font-size: 10pt;
+  line-height: 1.38;
+  orphans: 3;
+  widows: 3;
+  margin-top: 8pt;
+}
+
+/* Drop-cap: first letter 3 lines tall, Fraunces, accent */
+.editorial__summary-text::first-letter {
+  font-family: 'Fraunces', 'Georgia', serif;
+  font-weight: 700;
+  font-size: 3.38em; /* approx 3 lines at 1.38lh */
+  line-height: 0.78;
+  float: left;
+  margin-right: 4pt;
+  margin-top: 4pt;
+  color: var(--accent);
+}
+
+/* ─── Individual section column ──────────────────────── */
+.editorial__section {
+  margin-top: 12pt;
+  break-inside: avoid;
+}
+
+.editorial__section--full {
+  grid-column: 1 / -1;
+}
+
+/* ─── Experience / Education entries ─────────────────── */
+.editorial__entry {
+  margin-bottom: 8pt;
+  break-inside: avoid;
+}
+
+.editorial__entry-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8pt;
+  margin-bottom: 2pt;
+}
+
+/* "Byline" — role / company line above the date */
+.editorial__entry-byline {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 9pt;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  flex: 1;
+}
+
+.editorial__entry-date {
+  font-size: 8.5pt;
+  font-variant: small-caps;
+  color: var(--text-muted);
+  white-space: nowrap;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.editorial__entry-title {
+  font-family: 'Fraunces', 'Georgia', serif;
+  font-weight: 700;
+  font-size: 11pt;
+  line-height: 1.2;
+  color: var(--text);
+}
+
+.editorial__entry-location {
+  font-size: 8.5pt;
+  color: var(--text-muted);
+  margin-top: 2pt;
+}
+
+.editorial__bullets {
+  padding-left: 12pt;
+  list-style: disc;
+  margin-top: 4pt;
+}
+
+.editorial__bullets li {
+  margin-bottom: 2pt;
+  font-size: 10pt;
+  line-height: 1.38;
+}
+
+/* ─── Skills ─────────────────────────────────────────── */
+.editorial__skills-group {
+  margin-bottom: 4pt;
+}
+
+.editorial__skills-group-label {
+  font-size: 8.5pt;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  margin-bottom: 2pt;
+}
+
+.editorial__skills-items {
+  font-size: 9.5pt;
+  color: var(--text);
+  line-height: 1.38;
+}
+
+/* ─── Languages ──────────────────────────────────────── */
+.editorial__lang-list {
+  font-size: 9.5pt;
+  line-height: 1.38;
+}
+
+.editorial__lang-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2pt;
+}
+
+.editorial__lang-level {
+  color: var(--text-muted);
+  font-size: 8.5pt;
+}
+
+/* ─── Custom sections ────────────────────────────────── */
+.editorial__custom-entry {
+  margin-bottom: 8pt;
+  break-inside: avoid;
+}
+
+.editorial__custom-title {
+  font-weight: 600;
+  font-size: 10pt;
+}
+
+.editorial__custom-subtitle {
+  font-size: 9pt;
+  color: var(--text-muted);
+  margin-top: 2pt;
+}
+
+.editorial__custom-desc {
+  font-size: 9.5pt;
+  margin-top: 4pt;
+  line-height: 1.38;
+}
