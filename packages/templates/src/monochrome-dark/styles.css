@@ -9,13 +9,18 @@ body,
   -webkit-print-color-adjust: exact;
 }
 
+/* Sidebar gradient on html/body so it repeats on every printed page */
+html, body {
+  background: linear-gradient(to right, var(--surface) 200pt, var(--bg) 200pt);
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
 .monochrome-dark {
   font-family: 'Inter', 'Helvetica Neue', 'Arial', sans-serif;
   font-size: 10pt;
   line-height: 1.55;
   color: var(--text);
-  /* Sidebar gradient fills every printed page — 200pt left = sidebar color */
-  background: linear-gradient(to right, var(--surface) 200pt, var(--bg) 200pt);
   print-color-adjust: exact;
   -webkit-print-color-adjust: exact;
 }

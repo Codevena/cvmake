@@ -2,14 +2,17 @@
 @import '../shared/reset.css';
 @import '../shared/print.css';
 
+/* Sidebar gradient on html/body so it repeats on every printed page */
+html, body {
+  background: linear-gradient(to right, var(--surface) 200pt, var(--bg) 200pt);
+}
+
 /* ── Root ──────────────────────────────────────────────────── */
 .tech-dev {
   font-family: 'Inter', system-ui, sans-serif;
   font-size: 10pt;
   line-height: 1.5;
   color: var(--text);
-  /* Sidebar gradient fills every printed page — 200pt left = sidebar color */
-  background: linear-gradient(to right, var(--surface) 200pt, var(--bg) 200pt);
 }
 
 /* ── Page grid: 200pt sidebar + fluid main ──────────────────── */
