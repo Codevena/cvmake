@@ -1,6 +1,15 @@
 {
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": { "outDir": "dist", "rootDir": "src", "module": "NodeNext", "moduleResolution": "NodeNext" },
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext"
+  },
   "include": ["src/**/*"],
-  "references": [{ "path": "../../packages/schema" }, { "path": "../../packages/core" }, { "path": "../../packages/templates" }]
+  "references": [
+    { "path": "../../packages/schema" },
+    { "path": "../../packages/core" },
+    { "path": "../../packages/templates" }
+  ]
 }

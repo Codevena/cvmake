@@ -1,7 +1,15 @@
 {
   "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
   "files": {
-    "ignore": ["dist", ".next", ".turbo", "coverage", "playwright-report", "**/__visual__/**"]
+    "ignore": [
+      "dist",
+      ".next",
+      ".turbo",
+      "coverage",
+      "playwright-report",
+      "**/__visual__/**",
+      "**/next-env.d.ts"
+    ]
   },
   "formatter": {
     "enabled": true,
