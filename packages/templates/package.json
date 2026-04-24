@@ -1,0 +1,30 @@
+{
+  "name": "@cvmake/templates",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": { ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" } },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit",
+    "test:unit": "vitest run",
+    "test:visual": "vitest run --config vitest.visual.config.ts",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "@cvmake/core": "workspace:*",
+    "@cvmake/schema": "workspace:*",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.12",
+    "@types/react-dom": "18.3.1",
+    "pixelmatch": "6.0.0",
+    "pngjs": "7.0.0",
+    "typescript": "5.6.3",
+    "vitest": "2.1.5"
+  }
+}
