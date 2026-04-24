@@ -6,21 +6,20 @@
   font-size: 10.5pt;
   line-height: 1.45;
   color: var(--text);
+  /* Sidebar gradient fills every printed page — 220pt left = sidebar color */
+  background: linear-gradient(to right, var(--surface) 220pt, var(--bg) 220pt);
 }
 .classic-serif__page {
   display: grid;
   grid-template-columns: 220pt 1fr;
-  min-height: 297mm;
-  width: 210mm;
-  margin: 0 auto;
 }
 .classic-serif__sidebar {
-  background: var(--surface);
-  padding: 22mm 12mm 18mm;
+  padding: 0 12mm;
   color: var(--text);
+  /* background handled by root gradient */
 }
 .classic-serif__main {
-  padding: 22mm 14mm 18mm;
+  padding: 0 14mm;
 }
 .classic-serif__photo {
   width: 140pt;
