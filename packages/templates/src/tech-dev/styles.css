@@ -1,0 +1,308 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+@import '../shared/reset.css';
+@import '../shared/print.css';
+
+/* ── Root ──────────────────────────────────────────────────── */
+.tech-dev {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 10pt;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+}
+
+/* ── Page grid: 200pt sidebar + fluid main ──────────────────── */
+.tech-dev__page {
+  display: grid;
+  grid-template-columns: 200pt 1fr;
+  min-height: 297mm;
+  width: 210mm;
+  margin: 0 auto;
+}
+
+/* ── Sidebar ────────────────────────────────────────────────── */
+.tech-dev__sidebar {
+  background: var(--surface);
+  padding: 20mm 10mm 18mm;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 9pt;
+  color: var(--text);
+}
+
+/* Photo: square, pixelated/retro look, NO border-radius */
+.tech-dev__photo {
+  width: 110pt;
+  height: 110pt;
+  border-radius: 0;
+  object-fit: cover;
+  display: block;
+  margin: 0 auto 16pt;
+  border: 2pt solid var(--accent);
+}
+
+/* Initials fallback: square, accent bg */
+.tech-dev__initials {
+  width: 110pt;
+  height: 110pt;
+  border-radius: 0;
+  background: var(--accent);
+  color: var(--text-on-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32pt;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
+  margin: 0 auto 16pt;
+  border: 2pt solid var(--accent);
+}
+
+/* Sidebar section title: // section-name, accent, monospace 10pt */
+.tech-dev__sidebar-section {
+  margin-top: 14pt;
+}
+
+.tech-dev__sidebar-section h2 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10pt;
+  font-weight: 500;
+  color: var(--accent);
+  margin-bottom: 6pt;
+  letter-spacing: 0;
+}
+
+/* Contact list in sidebar */
+.tech-dev__contact-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 8pt;
+  line-height: 1.7;
+  word-break: break-all;
+}
+
+.tech-dev__contact-key {
+  color: var(--text-muted);
+}
+
+.tech-dev__contact-val {
+  color: var(--text);
+}
+
+/* Skills array syntax: [item, item, item] per category */
+.tech-dev__skills-group {
+  margin-bottom: 6pt;
+}
+
+.tech-dev__skills-group-name {
+  color: var(--text-muted);
+  font-size: 8pt;
+  display: block;
+  margin-bottom: 1pt;
+}
+
+.tech-dev__skills-array {
+  color: var(--accent);
+  font-size: 8pt;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+/* Language: DE // native */
+.tech-dev__lang-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 8.5pt;
+  line-height: 1.8;
+}
+
+.tech-dev__lang-sep {
+  color: var(--text-muted);
+  margin: 0 3pt;
+}
+
+.tech-dev__lang-level {
+  color: var(--text-muted);
+}
+
+/* ── Main column ────────────────────────────────────────────── */
+.tech-dev__main {
+  padding: 20mm 14mm 18mm;
+}
+
+/* Terminal prompt line */
+.tech-dev__terminal-prompt {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9pt;
+  color: var(--text-muted);
+  margin-bottom: 6pt;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Name: Inter 600, 22pt */
+.tech-dev__name {
+  font-family: 'Inter', sans-serif;
+  font-size: 22pt;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--text);
+  margin-bottom: 4pt;
+}
+
+/* Title below name */
+.tech-dev__title {
+  font-size: 12pt;
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-bottom: 0;
+}
+
+/* ── Section headings in main: // section-name ──────────────── */
+.tech-dev__section {
+  margin-top: 16pt;
+}
+
+.tech-dev__section-heading {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10pt;
+  font-weight: 500;
+  color: var(--accent);
+  margin-bottom: 8pt;
+  letter-spacing: 0;
+}
+
+/* Summary */
+.tech-dev__summary {
+  font-size: 10pt;
+  color: var(--text);
+  line-height: 1.55;
+}
+
+/* ── Experience entries ──────────────────────────────────────── */
+.tech-dev__entry {
+  margin-bottom: 12pt;
+  break-inside: avoid;
+}
+
+.tech-dev__entry-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8pt;
+}
+
+/* Company hashtag + role title row */
+.tech-dev__entry-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 5pt;
+  flex-wrap: wrap;
+}
+
+/* #company in accent monospace 8pt */
+.tech-dev__entry-company-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8pt;
+  color: var(--accent);
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+/* Role title in Inter 600 */
+.tech-dev__entry-role {
+  font-weight: 600;
+  font-size: 10.5pt;
+  color: var(--text);
+}
+
+/* Date range: right-aligned, monospace */
+.tech-dev__entry-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8pt;
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.tech-dev__entry-location {
+  font-size: 9pt;
+  color: var(--text-muted);
+  margin-top: 1pt;
+}
+
+.tech-dev__bullets {
+  list-style: none;
+  padding: 0;
+  margin: 4pt 0 0;
+}
+
+.tech-dev__bullets li {
+  font-size: 9.5pt;
+  color: var(--text);
+  padding-left: 10pt;
+  position: relative;
+  margin-bottom: 2pt;
+  line-height: 1.45;
+}
+
+.tech-dev__bullets li::before {
+  content: '›';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Tags after bullets: [Next.js, TypeScript] in monospace accent */
+.tech-dev__entry-tags {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8pt;
+  color: var(--accent);
+  margin-top: 4pt;
+  line-height: 1.4;
+}
+
+/* ── Education entries ──────────────────────────────────────── */
+.tech-dev__edu-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8pt;
+}
+
+.tech-dev__edu-degree {
+  font-weight: 600;
+  font-size: 10.5pt;
+}
+
+.tech-dev__edu-institution {
+  font-size: 9pt;
+  color: var(--text-muted);
+  margin-top: 1pt;
+}
+
+/* ── Custom sections ────────────────────────────────────────── */
+.tech-dev__custom-entry {
+  margin-bottom: 10pt;
+  break-inside: avoid;
+}
+
+.tech-dev__custom-title {
+  font-weight: 600;
+  font-size: 10.5pt;
+}
+
+.tech-dev__custom-subtitle {
+  font-size: 9pt;
+  color: var(--text-muted);
+  margin-top: 1pt;
+}
+
+.tech-dev__custom-desc {
+  font-size: 9.5pt;
+  margin-top: 3pt;
+  line-height: 1.45;
+}
