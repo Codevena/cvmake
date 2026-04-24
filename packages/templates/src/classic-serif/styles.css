@@ -1,0 +1,72 @@
+@import '../shared/reset.css';
+@import '../shared/print.css';
+
+.classic-serif {
+  font-family: 'EB Garamond', 'Garamond', 'Times New Roman', serif;
+  font-size: 10.5pt;
+  line-height: 1.45;
+  color: var(--text);
+}
+.classic-serif__page {
+  display: grid;
+  grid-template-columns: 220pt 1fr;
+  min-height: 297mm;
+  width: 210mm;
+  margin: 0 auto;
+}
+.classic-serif__sidebar {
+  background: var(--surface);
+  padding: 22mm 12mm 18mm;
+  color: var(--text);
+}
+.classic-serif__main {
+  padding: 22mm 14mm 18mm;
+}
+.classic-serif__photo {
+  width: 140pt;
+  height: 140pt;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 14pt;
+  border: 4pt solid var(--bg);
+  box-shadow: 0 0 0 1pt var(--accent);
+}
+.classic-serif__initials {
+  width: 140pt; height: 140pt; border-radius: 50%;
+  background: var(--accent); color: var(--text-on-accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 48pt; margin: 0 auto 14pt;
+}
+.classic-serif__name {
+  font-family: 'Playfair Display', 'Garamond', serif;
+  font-weight: 600;
+  font-size: 22pt;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+.classic-serif__title { color: var(--text-muted); font-style: italic; margin-top: 4pt; }
+.classic-serif__section { margin-top: 14pt; }
+.classic-serif__section h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 12pt;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 6pt;
+  border-bottom: 0.5pt solid var(--accent);
+  padding-bottom: 2pt;
+}
+.classic-serif__exp { margin-bottom: 10pt; break-inside: avoid; }
+.classic-serif__exp-head {
+  display: flex; justify-content: space-between; gap: 8pt; align-items: baseline;
+}
+.classic-serif__exp-title { font-weight: 600; }
+.classic-serif__exp-meta { color: var(--text-muted); font-size: 9.5pt; }
+.classic-serif__bullets { padding-left: 14pt; list-style: disc; margin-top: 3pt; }
+.classic-serif__bullets li { margin-bottom: 2pt; }
+.classic-serif__contacts { font-size: 9.5pt; line-height: 1.6; }
+.classic-serif__contacts dt { color: var(--text-muted); }
+.classic-serif__skills-group { margin-bottom: 6pt; }
+.classic-serif__skills-group h3 {
+  font-size: 10pt; font-weight: 600; margin-bottom: 2pt; color: var(--accent);
+}
