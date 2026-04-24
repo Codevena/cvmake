@@ -1,0 +1,4 @@
+@page { size: A4; margin: 0; }
+@media print {
+  body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+}
