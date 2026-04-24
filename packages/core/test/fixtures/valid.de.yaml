@@ -1,0 +1,11 @@
+meta:
+  locale: de
+personal:
+  firstName: Alex
+  lastName: Schmidt
+  contacts:
+    email: hello@codevena.dev
+experience: []
+education: []
+rendering:
+  template: classic-serif

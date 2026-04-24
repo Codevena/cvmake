@@ -1,0 +1,9 @@
+meta:
+  locale: de
+personal:
+  firstName: Alex
+  contacts: {}
+experience: []
+education: []
+rendering:
+  template: classic-serif
