@@ -20,7 +20,7 @@ export function MonochromeDarkTemplate({ data, palette: _palette, locale, labels
           {data.personal.photo ? (
             <img
               className="monochrome-dark__photo"
-              src={`/${data.personal.photo}`}
+              src={data.personal.photo}
               alt={`${data.personal.firstName} ${data.personal.lastName}`}
             />
           ) : (

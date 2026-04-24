@@ -18,7 +18,7 @@ export function ClassicSerifTemplate({ data, palette, locale, labels }: Template
           {data.personal.photo ? (
             <img
               className="classic-serif__photo"
-              src={`/${data.personal.photo}`}
+              src={data.personal.photo}
               alt={`${data.personal.firstName} ${data.personal.lastName}`}
             />
           ) : (

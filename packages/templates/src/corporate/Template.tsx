@@ -62,7 +62,7 @@ export function CorporateTemplate({
           {p.photo && (
             <img
               className="corporate__photo"
-              src={`/${p.photo}`}
+              src={p.photo}
               alt={`${p.firstName} ${p.lastName}`}
             />
           )}

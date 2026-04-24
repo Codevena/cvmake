@@ -4,5 +4,6 @@ export * from './i18n.js';
 export * from './loader.js';
 export * from './pdf.js';
 export * from './photo.js';
+export * from './photo-embed.js';
 export * from './renderer.js';
 export * from './renderer-types.js';

@@ -184,7 +184,7 @@ export function CreativeAccentTemplate({ data, palette: _palette, locale, labels
           {data.personal.photo ? (
             <img
               className="creative-accent__photo"
-              src={`/${data.personal.photo}`}
+              src={data.personal.photo}
               alt={`${data.personal.firstName} ${data.personal.lastName}`}
             />
           ) : (
