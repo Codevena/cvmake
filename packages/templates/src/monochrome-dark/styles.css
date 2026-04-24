@@ -1,0 +1,250 @@
+@import '../shared/reset.css';
+@import '../shared/print.css';
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+/* Dark theme: ensure background colors print correctly */
+body,
+.monochrome-dark {
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+.monochrome-dark {
+  font-family: 'Inter', 'Helvetica Neue', 'Arial', sans-serif;
+  font-size: 10pt;
+  line-height: 1.55;
+  color: var(--text);
+  background: var(--bg);
+}
+
+/* ── Page grid ─────────────────────────────────────────────────── */
+.monochrome-dark__page {
+  display: grid;
+  grid-template-columns: 200pt 1fr;
+  min-height: 297mm;
+  width: 210mm;
+  margin: 0 auto;
+  background: var(--bg);
+}
+
+/* ── Sidebar ────────────────────────────────────────────────────── */
+.monochrome-dark__sidebar {
+  background: var(--surface);
+  padding: 24mm 12mm 18mm;
+  color: var(--text);
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+/* ── Main content ───────────────────────────────────────────────── */
+.monochrome-dark__main {
+  padding: 24mm 14mm 18mm;
+}
+
+/* ── Photo ──────────────────────────────────────────────────────── */
+.monochrome-dark__photo {
+  width: 110pt;
+  height: 110pt;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  margin: 0 auto 16pt;
+  /* Duotone effect: desaturate and slightly punch contrast */
+  filter: grayscale(1) contrast(1.08);
+}
+
+.monochrome-dark__initials {
+  width: 110pt;
+  height: 110pt;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--text-on-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36pt;
+  font-weight: 600;
+  margin: 0 auto 16pt;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+/* ── Name & title ───────────────────────────────────────────────── */
+.monochrome-dark__name {
+  font-weight: 600;
+  font-size: 20pt;
+  line-height: 1.15;
+  text-wrap: balance;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+/* Accent underline below the name */
+.monochrome-dark__name-underline {
+  display: block;
+  height: 2pt;
+  background: var(--accent);
+  margin-top: 6pt;
+  margin-bottom: 4pt;
+  width: 100%;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+.monochrome-dark__job-title {
+  font-size: 10pt;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-top: 4pt;
+}
+
+/* ── Section headings ───────────────────────────────────────────── */
+.monochrome-dark__section {
+  margin-top: 16pt;
+}
+
+.monochrome-dark__section h2 {
+  font-size: 9pt;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  margin-bottom: 7pt;
+  padding-bottom: 0;
+  /* Subtle separator line */
+  border-bottom: 0.5pt solid var(--surface);
+  padding-bottom: 3pt;
+}
+
+/* Sidebar section headings use accent color for visual hierarchy */
+.monochrome-dark__sidebar .monochrome-dark__section h2 {
+  color: var(--accent);
+  border-bottom-color: var(--bg);
+}
+
+/* ── Contact list ───────────────────────────────────────────────── */
+.monochrome-dark__contacts {
+  font-size: 9pt;
+  line-height: 1.65;
+}
+
+.monochrome-dark__contacts dt {
+  color: var(--text-muted);
+  font-size: 8pt;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 5pt;
+}
+
+.monochrome-dark__contacts dd {
+  color: var(--text);
+  word-break: break-all;
+}
+
+/* ── Skills ─────────────────────────────────────────────────────── */
+.monochrome-dark__skills-group {
+  margin-bottom: 7pt;
+}
+
+.monochrome-dark__skills-group h3 {
+  font-size: 9pt;
+  font-weight: 500;
+  color: var(--accent);
+  margin-bottom: 2pt;
+}
+
+.monochrome-dark__skills-tags {
+  font-size: 9pt;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* ── Language list ──────────────────────────────────────────────── */
+.monochrome-dark__lang-item {
+  font-size: 9pt;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 3pt;
+}
+
+.monochrome-dark__lang-level {
+  color: var(--text-muted);
+  font-size: 8.5pt;
+}
+
+/* ── Experience / Education entries ─────────────────────────────── */
+.monochrome-dark__entry {
+  margin-bottom: 11pt;
+  break-inside: avoid;
+}
+
+.monochrome-dark__entry-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8pt;
+}
+
+.monochrome-dark__entry-title {
+  font-weight: 600;
+  font-size: 10pt;
+  color: var(--text);
+}
+
+.monochrome-dark__entry-meta {
+  font-size: 8.5pt;
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.monochrome-dark__entry-org {
+  font-size: 9.5pt;
+  color: var(--text-muted);
+  margin-top: 1pt;
+}
+
+/* Arrow marker replacing standard bullets */
+.monochrome-dark__bullets {
+  margin-top: 4pt;
+  padding-left: 0;
+  list-style: none;
+}
+
+.monochrome-dark__bullets li {
+  display: flex;
+  gap: 5pt;
+  margin-bottom: 2.5pt;
+  font-size: 9.5pt;
+  line-height: 1.5;
+}
+
+.monochrome-dark__bullet-marker {
+  color: var(--accent);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+/* ── Custom sections ────────────────────────────────────────────── */
+.monochrome-dark__custom-entry {
+  margin-bottom: 9pt;
+  break-inside: avoid;
+}
+
+.monochrome-dark__custom-title {
+  font-weight: 600;
+  font-size: 10pt;
+}
+
+.monochrome-dark__custom-subtitle {
+  font-size: 9pt;
+  color: var(--text-muted);
+  margin-top: 1pt;
+}
+
+.monochrome-dark__custom-desc {
+  font-size: 9.5pt;
+  margin-top: 3pt;
+  line-height: 1.5;
+}
