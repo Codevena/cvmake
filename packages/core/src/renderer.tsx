@@ -1,0 +1,35 @@
+import { renderToStaticMarkup } from 'react-dom/server';
+import { getLabels } from './i18n.js';
+import type { RenderInput, RenderOutput } from './renderer-types.js';
+
+export function renderCV({ data, template, paletteId }: RenderInput): RenderOutput {
+  const palette =
+    template.palettes.find((p) => p.id === paletteId) ?? template.palettes[0];
+  if (!palette) throw new Error(`template ${template.meta.id} has no palettes`);
+  const accent = data.rendering.accentOverride ?? palette.accent;
+  const effectivePalette = { ...palette, accent };
+  const labels = getLabels(data.meta.locale);
+
+  const html = renderToStaticMarkup(
+    <template.Component
+      data={data}
+      palette={effectivePalette}
+      locale={data.meta.locale}
+      labels={labels}
+    />,
+  );
+
+  const css = cssVariables(effectivePalette);
+  return { html, css, locale: data.meta.locale };
+}
+
+function cssVariables(p: {
+  accent: string;
+  background: string;
+  surface: string;
+  text: string;
+  textMuted: string;
+  textOnAccent: string;
+}) {
+  return `:root{--accent:${p.accent};--bg:${p.background};--surface:${p.surface};--text:${p.text};--text-muted:${p.textMuted};--text-on-accent:${p.textOnAccent};}`;
+}

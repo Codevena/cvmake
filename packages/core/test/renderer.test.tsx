@@ -1,0 +1,47 @@
+/** @vitest-environment node */
+import { describe, expect, it } from 'vitest';
+import type { TemplateDefinition } from '@cvmake/schema';
+import { minimalFixture } from '@cvmake/schema/test/fixtures.js';
+import { renderCV } from '../src/renderer.js';
+
+const fakeTemplate: TemplateDefinition = {
+  meta: {
+    id: 'fake',
+    name: 'Fake',
+    description: 'x',
+    supportsPhoto: false,
+    photoFallback: 'none',
+    supportedLocales: ['de', 'en'],
+    defaultSectionOrder: ['summary'],
+    supportsPagination: true,
+  },
+  palettes: [
+    {
+      id: 'fake-default',
+      name: 'Fake Default',
+      accent: '#112233',
+      background: '#ffffff',
+      surface: '#f1f1f1',
+      text: '#000000',
+      textMuted: '#666666',
+      textOnAccent: '#ffffff',
+    },
+  ],
+  Component: ({ data, labels }) => (
+    <main>
+      <h1>
+        {data.personal.firstName} {data.personal.lastName}
+      </h1>
+      <p data-testid="label">{labels.experience}</p>
+    </main>
+  ),
+};
+
+describe('renderCV', () => {
+  it('rendert HTML mit Locale-Label', () => {
+    const out = renderCV({ data: minimalFixture, template: fakeTemplate });
+    expect(out.html).toContain('<h1>Markus Wiesecke</h1>');
+    expect(out.html).toContain('Berufserfahrung');
+    expect(out.locale).toBe('de');
+  });
+});
