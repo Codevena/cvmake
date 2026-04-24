@@ -2,6 +2,7 @@ import { writeFile, readdir, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import pc from 'picocolors';
 import {
+  embedPhoto,
   generatePDF,
   loadCV,
   renderCV,
@@ -19,7 +20,9 @@ export interface BuildArgs {
 
 export async function runBuild(args: BuildArgs): Promise<void> {
   bootstrapTemplates();
-  const data = await loadCV(args.yaml);
+  const rawData = await loadCV(args.yaml);
+  const baseDir = path.dirname(path.resolve(args.yaml));
+  const data = await embedPhoto(rawData, baseDir);
   const templateId = args.template ?? data.rendering.template;
   const template = getTemplate(templateId);
   if (!template) {

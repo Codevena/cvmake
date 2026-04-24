@@ -28,7 +28,7 @@ export function TechDevTemplate({ data, palette: _palette, locale, labels }: Tem
           {p.photo ? (
             <img
               className="tech-dev__photo"
-              src={`/${p.photo}`}
+              src={p.photo}
               alt={`${p.firstName} ${p.lastName}`}
             />
           ) : (

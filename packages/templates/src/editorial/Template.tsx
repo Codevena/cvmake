@@ -31,7 +31,7 @@ export function EditorialTemplate({ data, palette, locale, labels }: TemplatePro
           {hasPhoto ? (
             <img
               className="editorial__hero-img"
-              src={`/${data.personal.photo}`}
+              src={data.personal.photo}
               alt={`${data.personal.firstName} ${data.personal.lastName}`}
             />
           ) : (

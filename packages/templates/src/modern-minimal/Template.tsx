@@ -73,7 +73,7 @@ export function ModernMinimalTemplate({
           {p.photo ? (
             <img
               className="modern-minimal__photo"
-              src={`/${p.photo}`}
+              src={p.photo}
               alt={`${p.firstName} ${p.lastName}`}
             />
           ) : (
