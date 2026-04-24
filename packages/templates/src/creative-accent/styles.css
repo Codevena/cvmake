@@ -1,0 +1,249 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;1,9..144,400;1,9..144,700&family=Inter:wght@400;500;600&display=swap');
+@import '../shared/reset.css';
+@import '../shared/print.css';
+
+/* ── Root layout ──────────────────────────────────────────────── */
+.creative-accent {
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 10pt;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+}
+
+.creative-accent__page {
+  display: grid;
+  /* 60 % main content / 40 % accent column — A4 = 595pt */
+  grid-template-columns: 1fr 238pt;
+  min-height: 297mm;
+  width: 210mm;
+  margin: 0 auto;
+  background: var(--bg);
+}
+
+/* ── Main content column (left 60 %) ──────────────────────────── */
+.creative-accent__main {
+  padding: 24mm 14mm 18mm 18mm;
+  overflow: hidden;
+}
+
+/* ── Accent sidebar column (right 40 %) ──────────────────────── */
+.creative-accent__sidebar {
+  background: var(--surface);
+  padding: 0 12mm 18mm;
+  position: relative;
+}
+
+/* ── Photo — full-bleed square, overlaps into main ────────────── */
+.creative-accent__photo {
+  width: 160pt;
+  height: 160pt;
+  object-fit: cover;
+  display: block;
+  /* Pull left to overlap slightly into main column */
+  margin-left: -12pt;
+  border: 3pt solid var(--bg);
+  box-shadow: 0 2pt 12pt rgba(0, 0, 0, 0.15);
+}
+
+/* ── Initials fallback (same dimensions as photo) ─────────────── */
+.creative-accent__initials {
+  width: 160pt;
+  height: 160pt;
+  background: var(--accent);
+  color: var(--text-on-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 700;
+  font-size: 52pt;
+  margin-left: -12pt;
+  letter-spacing: -0.02em;
+}
+
+/* ── Sidebar contacts + meta ──────────────────────────────────── */
+.creative-accent__sidebar-content {
+  padding-top: 16pt;
+}
+
+.creative-accent__sidebar-section {
+  margin-top: 16pt;
+}
+
+.creative-accent__sidebar-heading {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 11pt;
+  font-style: italic;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 4pt;
+  padding-bottom: 2pt;
+  border-bottom: 1pt solid var(--accent);
+}
+
+.creative-accent__contacts {
+  font-size: 8.5pt;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
+.creative-accent__contacts dt {
+  font-weight: 600;
+  color: var(--text);
+  margin-top: 4pt;
+}
+
+.creative-accent__contacts dd {
+  margin-left: 0;
+  word-break: break-word;
+}
+
+/* ── Sidebar language list ────────────────────────────────────── */
+.creative-accent__sidebar-section ul {
+  font-size: 8.5pt;
+  line-height: 1.7;
+}
+
+.creative-accent__sidebar-section li {
+  color: var(--text-muted);
+}
+
+.creative-accent__sidebar-section li strong {
+  color: var(--text);
+}
+
+/* ── Header: name + title (inside main column) ────────────────── */
+.creative-accent__header {
+  margin-bottom: 16pt;
+}
+
+.creative-accent__name {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 700;
+  font-size: 32pt;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  text-wrap: balance;
+}
+
+.creative-accent__job-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 11pt;
+  font-weight: 500;
+  color: var(--accent);
+  margin-top: 4pt;
+}
+
+/* ── Generic section wrapper ──────────────────────────────────── */
+.creative-accent__section {
+  margin-top: 14pt;
+}
+
+/* ── Section headings: Fraunces italic, accent color, underline ── */
+.creative-accent__section-heading {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 13pt;
+  font-style: italic;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 6pt;
+  padding-bottom: 2pt;
+  border-bottom: 1pt solid var(--accent);
+}
+
+/* ── Drop-cap on summary paragraph ───────────────────────────── */
+.creative-accent__summary-text::first-letter {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 3.2em;
+  font-weight: 700;
+  color: var(--accent);
+  float: left;
+  line-height: 0.78;
+  margin-right: 3pt;
+  margin-top: 2pt;
+}
+
+/* ── Experience / Education entries ──────────────────────────── */
+.creative-accent__entry {
+  margin-bottom: 10pt;
+  break-inside: avoid;
+}
+
+.creative-accent__entry-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8pt;
+}
+
+.creative-accent__entry-title {
+  font-weight: 600;
+  font-size: 10pt;
+  color: var(--text);
+}
+
+.creative-accent__entry-date {
+  font-size: 8.5pt;
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.creative-accent__entry-subtitle {
+  font-size: 9pt;
+  color: var(--text-muted);
+  margin-top: 1pt;
+}
+
+.creative-accent__bullets {
+  padding-left: 12pt;
+  list-style: disc;
+  margin-top: 3pt;
+}
+
+.creative-accent__bullets li {
+  margin-bottom: 2pt;
+  font-size: 9.5pt;
+}
+
+/* ── Skill tags — rounded pills ───────────────────────────────── */
+.creative-accent__tag-group {
+  margin-bottom: 8pt;
+}
+
+.creative-accent__tag-group-name {
+  font-size: 8.5pt;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 4pt;
+}
+
+.creative-accent__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4pt;
+}
+
+.creative-accent__pill {
+  border-radius: 999pt;
+  background: var(--surface);
+  color: var(--accent);
+  padding: 2pt 8pt;
+  font-size: 8pt;
+  font-weight: 500;
+  line-height: 1.4;
+  border: 0.5pt solid var(--accent);
+  white-space: nowrap;
+}
+
+/* ── Experience inline tags (from experience.tags) ────────────── */
+.creative-accent__entry-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3pt;
+  margin-top: 4pt;
+}
