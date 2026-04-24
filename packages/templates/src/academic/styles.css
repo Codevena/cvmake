@@ -1,0 +1,178 @@
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400;1,600&display=swap');
+@import '../shared/reset.css';
+@import '../shared/print.css';
+
+/* ── Root layout ─────────────────────────────────────── */
+.academic {
+  font-family: 'Crimson Pro', 'Georgia', 'Times New Roman', serif;
+  font-size: 10pt;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+}
+
+.academic__page {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  padding: 20mm 22mm 18mm;
+}
+
+/* ── Header ──────────────────────────────────────────── */
+.academic__header {
+  margin-bottom: 14pt;
+  border-bottom: 1pt solid var(--accent);
+  padding-bottom: 10pt;
+}
+
+.academic__name {
+  font-size: 20pt;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  color: var(--text);
+}
+
+.academic__title {
+  font-style: italic;
+  color: var(--text-muted);
+  margin-top: 3pt;
+  font-size: 10.5pt;
+}
+
+.academic__contacts {
+  margin-top: 5pt;
+  font-size: 9pt;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.academic__contacts-item + .academic__contacts-item::before {
+  content: ' · ';
+  color: var(--text-muted);
+}
+
+/* ── Section headings ────────────────────────────────── */
+.academic__section {
+  margin-top: 13pt;
+  break-inside: avoid;
+}
+
+.academic__section-title {
+  font-size: 11pt;
+  font-weight: 600;
+  font-variant: small-caps;
+  letter-spacing: 0.05em;
+  color: var(--text);
+  border-bottom: 1pt solid var(--accent);
+  padding-bottom: 1pt;
+  margin-bottom: 6pt;
+}
+
+/* ── Two-column entry row (date left, content right) ─── */
+.academic__entry {
+  display: grid;
+  grid-template-columns: 100pt 1fr;
+  gap: 0 8pt;
+  margin-bottom: 7pt;
+  break-inside: avoid;
+}
+
+.academic__entry-date {
+  font-size: 9pt;
+  color: var(--text-muted);
+  padding-top: 0.5pt;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.academic__entry-body {
+  /* flowing right column */
+}
+
+.academic__entry-role {
+  font-weight: 600;
+}
+
+.academic__entry-org {
+  font-weight: 400;
+}
+
+.academic__entry-location {
+  font-size: 9pt;
+  color: var(--text-muted);
+  margin-top: 1pt;
+}
+
+.academic__entry-bullets {
+  list-style: disc;
+  padding-left: 14pt;
+  margin-top: 2pt;
+}
+
+.academic__entry-bullets li {
+  margin-bottom: 1pt;
+}
+
+/* ── Summary ─────────────────────────────────────────── */
+.academic__summary p {
+  margin: 0;
+}
+
+/* ── Skills ──────────────────────────────────────────── */
+.academic__skills-group {
+  display: grid;
+  grid-template-columns: 100pt 1fr;
+  gap: 0 8pt;
+  margin-bottom: 3pt;
+}
+
+.academic__skills-label {
+  font-size: 9pt;
+  color: var(--text-muted);
+}
+
+.academic__skills-items {
+  font-size: 10pt;
+}
+
+/* ── Languages ───────────────────────────────────────── */
+.academic__languages {
+  font-size: 10pt;
+}
+
+/* ── Custom sections (publications, etc.) ────────────── */
+.academic__custom-entry {
+  margin-bottom: 6pt;
+  break-inside: avoid;
+  padding-left: 10pt;
+}
+
+.academic__custom-title {
+  font-weight: 600;
+}
+
+.academic__custom-subtitle {
+  font-size: 9.5pt;
+  color: var(--text-muted);
+  margin-top: 1pt;
+}
+
+.academic__custom-link {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.academic__custom-desc {
+  margin-top: 2pt;
+}
+
+.academic__custom-bullets {
+  list-style: disc;
+  padding-left: 14pt;
+  margin-top: 2pt;
+}
+
+.academic__custom-bullets li {
+  margin-bottom: 1pt;
+}
