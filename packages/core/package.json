@@ -1,0 +1,38 @@
+{
+  "name": "@cvmake/core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+    "./loader": { "types": "./dist/loader.d.ts", "default": "./dist/loader.js" },
+    "./renderer": { "types": "./dist/renderer.d.ts", "default": "./dist/renderer.js" },
+    "./pdf": { "types": "./dist/pdf.d.ts", "default": "./dist/pdf.js" },
+    "./photo": { "types": "./dist/photo.d.ts", "default": "./dist/photo.js" },
+    "./i18n": { "types": "./dist/i18n.d.ts", "default": "./dist/i18n.js" }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit",
+    "test:unit": "vitest run",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "@cvmake/schema": "workspace:*",
+    "js-yaml": "4.1.0",
+    "puppeteer": "23.7.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "sharp": "0.33.5"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "4.0.9",
+    "@types/react": "18.3.12",
+    "@types/react-dom": "18.3.1",
+    "typescript": "5.6.3",
+    "vitest": "2.1.5"
+  }
+}
