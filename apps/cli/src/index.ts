@@ -1,6 +1,7 @@
 import { Command } from 'commander';
 import { runBuild } from './commands/build.js';
 import { runValidate } from './commands/validate.js';
+import { runListTemplates } from './commands/list-templates.js';
 
 const program = new Command();
 program.name('cvmake').description('cvMake CLI').version('0.0.0');
@@ -21,6 +22,11 @@ program
   .action(async (yaml) => {
     process.exit(await runValidate(yaml));
   });
+
+program
+  .command('list-templates')
+  .description('listet alle Templates mit Paletten')
+  .action(() => process.exit(runListTemplates()));
 
 program.parseAsync(process.argv).catch((err: Error) => {
   console.error(err.message);
