@@ -1,0 +1,134 @@
+meta:
+  locale: en
+  updatedAt: '2026-04-24'
+
+personal:
+  firstName: Markus
+  lastName: Wiesecke
+  title: 'Fullstack Developer · SaaS Builder · AI Enthusiast'
+  photo: photos/markus.jpg
+  birthDate: '1987-01-13'
+  maritalStatus: Single
+  drivingLicense: Class B
+  contacts:
+    email: markus.wiesecke@gmail.com
+    phone: '+49 175 9025586'
+    website: https://codevena.dev
+    github: codevena
+    linkedin: markus-wiesecke
+    location: 'Wuppertal, DE'
+
+summary: >-
+  Self-taught, solution-oriented developer with a high degree of personal responsibility.
+  I learn new technologies through hands-on projects — not courses. I think in products,
+  build independently, and take ideas from architecture to deployment end-to-end.
+
+experience:
+  - title: 'FlashBuddy — AI-Powered Learning SaaS'
+    company: 'Codevena (Own Project)'
+    location: 'Wuppertal'
+    startDate: '2024-01'
+    bullets:
+      - 'SaaS learning platform with AI flashcard generation, FSRS algorithm (spaced repetition), gamification, and social features'
+      - 'Stack: Next.js 16, TypeScript, PostgreSQL, Prisma, Redis, OpenAI API, Stripe, WebSockets (Soketi), PWA'
+      - 'Freemium model with Stripe integration, blue-green deployment via Coolify on own Hetzner server'
+      - 'Currently: increasing test coverage, implementing K6 load tests and E2E tests'
+    tags: [Next.js, TypeScript, PostgreSQL, Prisma, Redis, OpenAI, Stripe, PWA, Coolify]
+
+  - title: 'Server Infrastructure & DevOps'
+    company: 'Codevena (Own Project)'
+    location: 'Wuppertal'
+    startDate: '2023-01'
+    bullets:
+      - 'Operating a Hetzner dedicated server (Intel i7-8700, 64GB RAM, NVMe RAID 1)'
+      - 'Hardened with Fail2ban, Cloudflare Zero Trust, Tailscale, closed ports'
+      - 'Deployment management via Coolify, backups via BorgBackup to Hetzner Storage Box'
+      - 'Email infrastructure: AWS SES (transactional) + ForwardEmail (inbound) for multiple domains'
+    tags: [Hetzner, Coolify, Docker, Cloudflare, Tailscale, BorgBackup, AWS SES]
+
+  - title: 'Further Projects (Codevena)'
+    company: 'Own Initiative'
+    location: 'Wuppertal'
+    startDate: '2020-05'
+    bullets:
+      - 'Dealbarg: Bilingual deal portal (German/Farsi) built with Next.js and MongoDB'
+      - 'Ludotek: Open-source retro gaming library with IGDB API and AI metadata enrichment'
+      - 'AI Builds: Multi-agent AI orchestration with MCP tools and automated review loops'
+      - 'Experiments with embeddings (pgvector), semantic search, TTS, and OpenRouter API'
+    tags: [Next.js, MongoDB, pgvector, OpenAI, OpenRouter, MCP]
+
+  - title: 'Customer Service Representative'
+    company: 'Sitel Deutschland GmbH'
+    location: 'Hannover'
+    startDate: '2017-08'
+    endDate: '2019-04'
+    bullets:
+      - 'Inbound customer support via phone for existing clients'
+      - 'Data capture and maintenance of customer records in CRM system'
+    tags: [CRM, Customer Service]
+
+  - title: 'Previous Employment'
+    company: 'Various Employers'
+    location: 'Celle / Hannover'
+    startDate: '2011-01'
+    endDate: '2016-11'
+    bullets:
+      - 'Deutsche Post Briefservice: Mail sorting by delivery regions, machine operation, shift work'
+      - 'Ricoh Deutschland GmbH: Assembly and packaging of printed products, quality control'
+      - 'Kuhnert Gebäudeservice: Cleaning services in offices and public areas'
+      - 'Lidl (part-time): Shelf stocking, cashier duties, inventory support'
+    tags: []
+
+education:
+  - degree: 'Application Developer (Retraining / Umschulung)'
+    institution: 'BBQ Bildungsträger'
+    location: 'Düsseldorf'
+    startDate: '2024-08'
+    endDate: '2026-07'
+
+  - degree: 'Secondary School Certificate (Realschulabschluss)'
+    institution: 'Realschule Westercelle'
+    location: 'Celle'
+    startDate: '2000-01'
+    endDate: '2003-01'
+
+skills:
+  categorized:
+    Frontend:
+      - Next.js
+      - React
+      - TypeScript
+      - Tailwind CSS
+      - PWA
+    Backend:
+      - Node.js
+      - PostgreSQL
+      - MongoDB
+      - Redis
+      - Prisma
+    DevOps:
+      - Docker
+      - Coolify
+      - Hetzner
+      - Cloudflare
+      - Tailscale
+      - BorgBackup
+      - AWS SES
+      - Git
+      - Linux
+    AI:
+      - OpenAI API
+      - OpenRouter
+      - pgvector
+      - Embeddings
+      - TTS
+      - MCP
+
+languages:
+  - { name: German, level: native }
+  - { name: English, level: B2 }
+  - { name: Farsi, level: basic }
+
+rendering:
+  template: classic-serif
+  palette: classic-grey
