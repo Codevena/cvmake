@@ -1,8 +1,10 @@
 import type { TemplateDefinition } from '@cvmake/schema';
+import { validateTemplate } from './validate.js';
 
 const REGISTRY = new Map<string, TemplateDefinition>();
 
 export function registerTemplate(def: TemplateDefinition): void {
+  validateTemplate(def);
   if (REGISTRY.has(def.meta.id)) {
     throw new Error(`Template ${def.meta.id} already registered`);
   }
