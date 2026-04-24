@@ -38,6 +38,7 @@ pnpm-debug.log*
 
 # Processed photos (generated from data/cvs/photos/)
 public/photos/
+!public/photos/.gitkeep
 
 # Generated CV PDFs
 *.pdf
