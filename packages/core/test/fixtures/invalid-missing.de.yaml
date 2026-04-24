@@ -1,0 +1,9 @@
+meta:
+  locale: de
+personal:
+  firstName: Markus
+  contacts: {}
+experience: []
+education: []
+rendering:
+  template: classic-serif
