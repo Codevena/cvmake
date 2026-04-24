@@ -1,0 +1,178 @@
+@import '../shared/reset.css';
+@import '../shared/print.css';
+
+/* ─── Root ─────────────────────────────────────────────────────────────── */
+.corporate {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10pt;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+}
+
+/* ─── Page canvas ───────────────────────────────────────────────────────── */
+.corporate__page {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  padding: 18mm 20mm 20mm;
+}
+
+/* ─── Header ────────────────────────────────────────────────────────────── */
+.corporate__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14pt;
+  margin-bottom: 20pt;
+}
+
+.corporate__header-text {
+  flex: 1 1 auto;
+}
+
+.corporate__name {
+  font-weight: bold;
+  font-size: 18pt;
+  line-height: 1.15;
+  color: var(--text);
+}
+
+.corporate__title {
+  font-size: 12pt;
+  color: var(--text-muted);
+  margin-top: 4pt;
+}
+
+/* ─── Contact bar ───────────────────────────────────────────────────────── */
+.corporate__contacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 14pt;
+  margin-top: 7pt;
+  font-size: 9pt;
+  color: var(--text-muted);
+}
+
+.corporate__contact-item {
+  white-space: nowrap;
+}
+
+/* ─── Photo ─────────────────────────────────────────────────────────────── */
+.corporate__photo {
+  flex-shrink: 0;
+  width: 100pt;
+  height: 100pt;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* ─── Section ───────────────────────────────────────────────────────────── */
+.corporate__section {
+  margin-top: 18pt;
+}
+
+.corporate__section-heading {
+  font-size: 11pt;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text);
+  padding-bottom: 3pt;
+  border-bottom: 2pt solid var(--text);
+  margin-bottom: 10pt;
+}
+
+/* ─── Summary ───────────────────────────────────────────────────────────── */
+.corporate__summary {
+  font-size: 10pt;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+/* ─── Two-column row (date | content) ───────────────────────────────────── */
+.corporate__row {
+  display: grid;
+  grid-template-columns: 100pt 1fr;
+  gap: 0 10pt;
+  margin-bottom: 12pt;
+  break-inside: avoid;
+}
+
+.corporate__row-date {
+  font-size: 9pt;
+  color: var(--text-muted);
+  padding-top: 1pt;
+}
+
+.corporate__row-body {
+  /* content column */
+}
+
+/* ─── Entry titles ──────────────────────────────────────────────────────── */
+.corporate__entry-primary {
+  font-weight: bold;
+  font-size: 10pt;
+  color: var(--text);
+}
+
+.corporate__entry-company {
+  font-weight: normal;
+  color: var(--text);
+}
+
+.corporate__entry-location {
+  font-size: 9pt;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-top: 1pt;
+}
+
+/* ─── Bullets ───────────────────────────────────────────────────────────── */
+.corporate__bullets {
+  padding-left: 14pt;
+  list-style: disc;
+  margin-top: 4pt;
+}
+
+.corporate__bullets li {
+  margin-bottom: 2pt;
+  line-height: 1.5;
+}
+
+/* ─── Skills ────────────────────────────────────────────────────────────── */
+.corporate__skills-group {
+  margin-bottom: 5pt;
+  font-size: 10pt;
+}
+
+.corporate__skills-label {
+  font-weight: bold;
+  color: var(--text);
+}
+
+.corporate__skills-items {
+  color: var(--text);
+}
+
+.corporate__skills-flat {
+  font-size: 10pt;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+/* ─── Languages ─────────────────────────────────────────────────────────── */
+.corporate__languages {
+  display: flex;
+  flex-direction: column;
+  gap: 3pt;
+}
+
+.corporate__language-item {
+  font-size: 10pt;
+  color: var(--text);
+}
+
+.corporate__language-level {
+  color: var(--text-muted);
+}
