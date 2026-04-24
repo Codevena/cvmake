@@ -1,1 +1,3 @@
-export const TEMPLATES_VERSION = '0.0.0';
+export * from './bootstrap.js';
+export * from './registry.js';
+export { classicSerif } from './classic-serif/index.js';
