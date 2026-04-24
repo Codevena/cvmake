@@ -1,0 +1,22 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["tsconfig.base.json", "biome.json"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
+      "inputs": ["src/**", "tsconfig.json", "package.json"]
+    },
+    "dev": { "cache": false, "persistent": true },
+    "typecheck": {
+      "dependsOn": ["^build"],
+      "outputs": [],
+      "inputs": ["src/**", "tsconfig.json"]
+    },
+    "test:unit": { "dependsOn": ["^build"], "outputs": ["coverage/**"] },
+    "test:integration": { "dependsOn": ["^build"], "outputs": [] },
+    "test:visual": { "dependsOn": ["^build"], "outputs": ["__tests__/__visual__/actual/**"] },
+    "test:e2e": { "dependsOn": ["^build"], "outputs": ["playwright-report/**"] },
+    "clean": { "cache": false }
+  }
+}
