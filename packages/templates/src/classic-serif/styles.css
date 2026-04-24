@@ -1,13 +1,16 @@
 @import '../shared/reset.css';
 @import '../shared/print.css';
 
+/* Sidebar gradient on html/body so it repeats on every printed page */
+html, body {
+  background: linear-gradient(to right, var(--surface) 220pt, var(--bg) 220pt);
+}
+
 .classic-serif {
   font-family: 'EB Garamond', 'Garamond', 'Times New Roman', serif;
   font-size: 10.5pt;
   line-height: 1.45;
   color: var(--text);
-  /* Sidebar gradient fills every printed page — 220pt left = sidebar color */
-  background: linear-gradient(to right, var(--surface) 220pt, var(--bg) 220pt);
 }
 .classic-serif__page {
   display: grid;

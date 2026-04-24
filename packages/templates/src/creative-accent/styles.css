@@ -2,14 +2,17 @@
 @import '../shared/reset.css';
 @import '../shared/print.css';
 
+/* Sidebar gradient on html/body so it repeats on every printed page */
+html, body {
+  background: linear-gradient(to right, var(--bg) calc(100% - 238pt), var(--surface) calc(100% - 238pt));
+}
+
 /* ── Root layout ──────────────────────────────────────────────── */
 .creative-accent {
   font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
   font-size: 10pt;
   line-height: 1.5;
   color: var(--text);
-  /* Sidebar gradient: left 60% = main bg, right 40% = surface (sidebar) */
-  background: linear-gradient(to right, var(--bg) calc(100% - 238pt), var(--surface) calc(100% - 238pt));
 }
 
 .creative-accent__page {
