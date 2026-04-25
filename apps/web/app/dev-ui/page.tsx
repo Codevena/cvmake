@@ -14,6 +14,7 @@ import {
   TemplateCard,
   Textarea,
 } from '@codevena/forq-ui';
+import { notFound } from 'next/navigation';
 import { useState } from 'react';
 
 const PALETTES: ColorPalette[] = [
@@ -40,6 +41,9 @@ const PALETTES: ColorPalette[] = [
 ];
 
 export default function DevUI(): JSX.Element {
+  if (process.env.NODE_ENV === 'production') {
+    notFound();
+  }
   const [name, setName] = useState('');
   const [summary, setSummary] = useState('');
   const [locale, setLocale] = useState('de');

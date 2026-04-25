@@ -58,6 +58,7 @@ export function BulletListEditor(props: BulletListEditorProps): JSX.Element {
               ref={idx === value.length - 1 ? newRowRef : undefined}
               type="text"
               value={bullet}
+              aria-label={`Bullet ${idx + 1}`}
               placeholder={placeholder}
               onChange={(e) => update(idx, e.target.value)}
               className="flex-1 rounded-md border border-border bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent"

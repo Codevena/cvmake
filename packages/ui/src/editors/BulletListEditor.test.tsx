@@ -44,4 +44,10 @@ describe('<BulletListEditor>', () => {
     await user.type(screen.getByDisplayValue('a'), 'b');
     expect(onChange).toHaveBeenCalledWith(['ab']);
   });
+
+  it('exposes each bullet via aria-label', () => {
+    render(<BulletListEditor value={['a', 'b']} onChange={() => {}} />);
+    expect(screen.getByLabelText('Bullet 1')).toHaveValue('a');
+    expect(screen.getByLabelText('Bullet 2')).toHaveValue('b');
+  });
 });
