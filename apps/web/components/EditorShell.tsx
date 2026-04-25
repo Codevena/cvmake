@@ -6,6 +6,7 @@ import { bootstrapTemplates } from '@codevena/forq-templates';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { PreviewFrame } from './PreviewFrame';
+import { PersonalSection } from './sections/PersonalSection';
 
 // Populate the template registry on the client. `bootstrapTemplates()` is
 // idempotent (calls clearRegistry() first), so running it at module load is
@@ -51,7 +52,7 @@ export function EditorShell({ initialData, slug, bootstrap }: Props) {
             className="flex-1 overflow-y-auto p-6"
             onSubmit={(e) => e.preventDefault()}
           >
-            Form
+            <PersonalSection />
           </form>
           <section className="flex-1 overflow-hidden p-4">
             <PreviewFrame
