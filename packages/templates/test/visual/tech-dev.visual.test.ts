@@ -11,6 +11,7 @@ import {
   shutdownPdfBrowser,
 } from '@codevena/forq-core';
 import { techDev } from '../../src/tech-dev/index.js';
+import { loadTemplateCss } from '../../src/css.js';
 import { fullFixture } from '@codevena/forq-schema/test/fixtures.js';
 
 const BASELINE_DIR = path.resolve('__tests__/__visual__/tech-dev');
@@ -22,7 +23,7 @@ afterAll(() => shutdownPdfBrowser());
 async function renderPageOneAsPng(paletteId: string): Promise<Buffer> {
   const template = techDev;
   const rendered = renderCV({ data: fullFixture, template, paletteId });
-  const css = `${rendered.css}\n${(template as unknown as { css: string }).css}`;
+  const css = `${rendered.css}\n${loadTemplateCss('tech-dev')}`;
   const html = wrapHtmlDocument({ title: 'CV', html: rendered.html, css });
   const browser = await puppeteer.launch({
     headless: true,

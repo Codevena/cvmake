@@ -11,6 +11,7 @@ import {
   shutdownPdfBrowser,
 } from '@codevena/forq-core';
 import { bootstrapTemplates, getTemplate } from '../../src/index.js';
+import { loadTemplateCss } from '../../src/css.js';
 import { fullFixture } from '@codevena/forq-schema/test/fixtures.js';
 
 const BASELINE_DIR = path.resolve('__tests__/__visual__/academic');
@@ -24,7 +25,7 @@ async function renderPageOneAsPng(paletteId: string): Promise<Buffer> {
   const template = getTemplate('academic');
   if (!template) throw new Error('academic not registered');
   const rendered = renderCV({ data: fullFixture, template, paletteId });
-  const css = `${rendered.css}\n${(template as unknown as { css: string }).css}`;
+  const css = `${rendered.css}\n${loadTemplateCss('academic')}`;
   const html = wrapHtmlDocument({ title: 'CV', html: rendered.html, css });
   const browser = await puppeteer.launch({
     headless: true,

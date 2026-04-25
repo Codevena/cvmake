@@ -10,6 +10,7 @@ import {
   shutdownPdfBrowser,
 } from '@codevena/forq-core';
 import { bootstrapTemplates, getTemplate } from '@codevena/forq-templates';
+import { loadTemplateCss } from '@codevena/forq-templates/css';
 
 export interface BuildArgs {
   yaml: string;
@@ -34,7 +35,13 @@ export async function runBuild(args: BuildArgs): Promise<void> {
     template,
     ...(paletteId !== undefined ? { paletteId } : {}),
   });
-  const css = `${rendered.css}\n${(template as unknown as { css?: string }).css ?? ''}`;
+  let templateCss = '';
+  try {
+    templateCss = loadTemplateCss(templateId);
+  } catch {
+    // Template ships without dedicated styles.css — fall back to renderer output only.
+  }
+  const css = `${rendered.css}\n${templateCss}`;
   const html = wrapHtmlDocument({
     title: `${data.personal.firstName} ${data.personal.lastName} — CV`,
     html: rendered.html,

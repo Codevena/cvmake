@@ -38,7 +38,13 @@ export function getPreviewBootstrap(): PreviewBootstrap {
   const printCss = readFileSync(path.join(root, 'shared', 'print.css'), 'utf8');
   const templates: PreviewBootstrap['templates'] = {};
   for (const t of listTemplates()) {
-    const css = (t as TemplateDefinition & { css?: string }).css ?? '';
+    const cssPath = path.join(root, t.meta.id, 'styles.css');
+    let css = '';
+    try {
+      css = readFileSync(cssPath, 'utf8');
+    } catch {
+      // Template ships without dedicated styles.css — leave empty.
+    }
     templates[t.meta.id] = { css, meta: t.meta };
   }
   cached = { resetCss, printCss, templates };

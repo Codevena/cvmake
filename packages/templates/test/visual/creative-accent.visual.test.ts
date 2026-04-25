@@ -11,6 +11,7 @@ import {
   shutdownPdfBrowser,
 } from '@codevena/forq-core';
 import { creativeAccent } from '../../src/creative-accent/index.js';
+import { loadTemplateCss } from '../../src/css.js';
 import { fullFixture } from '@codevena/forq-schema/test/fixtures.js';
 
 const BASELINE_DIR = path.resolve('__tests__/__visual__/creative-accent');
@@ -22,7 +23,7 @@ afterAll(() => shutdownPdfBrowser());
 async function renderPageOneAsPng(paletteId: string): Promise<Buffer> {
   const template = creativeAccent;
   const rendered = renderCV({ data: fullFixture, template, paletteId });
-  const css = `${rendered.css}\n${(template as unknown as { css: string }).css}`;
+  const css = `${rendered.css}\n${loadTemplateCss('creative-accent')}`;
   const html = wrapHtmlDocument({ title: 'CV', html: rendered.html, css });
   const browser = await puppeteer.launch({
     headless: true,

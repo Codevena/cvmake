@@ -2,7 +2,7 @@
 import { cssVariables } from '@/lib/css-vars';
 import type { PreviewBootstrap } from '@/lib/preview-bootstrap';
 import { applyHiddenSections } from '@/lib/render-helpers';
-import { getLabels } from '@codevena/forq-core';
+import { getLabels } from '@codevena/forq-core/i18n';
 import type { CVData, ColorPalette } from '@codevena/forq-schema';
 import { getTemplate } from '@codevena/forq-templates';
 import { useEffect, useRef, useState } from 'react';
