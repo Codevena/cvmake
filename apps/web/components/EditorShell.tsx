@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { PreviewFrame } from './PreviewFrame';
 import { PersonalSection } from './sections/PersonalSection';
+import { SummarySection } from './sections/SummarySection';
 
 // Populate the template registry on the client. `bootstrapTemplates()` is
 // idempotent (calls clearRegistry() first), so running it at module load is
@@ -53,6 +54,7 @@ export function EditorShell({ initialData, slug, bootstrap }: Props) {
             onSubmit={(e) => e.preventDefault()}
           >
             <PersonalSection />
+            <SummarySection />
           </form>
           <section className="flex-1 overflow-hidden p-4">
             <PreviewFrame
