@@ -22,7 +22,7 @@ describe('EditorialTemplate', () => {
     expect(html).toContain('Codevena');
   });
 
-  it('zeigt Held-Foto wenn vorhanden, sonst Akzent-Bar', () => {
+  it('zeigt Masthead-Foto wenn vorhanden, sonst Akzent-Bar', () => {
     const htmlWithPhoto = renderToStaticMarkup(
       <editorial.Component
         data={fullFixture}
@@ -31,8 +31,10 @@ describe('EditorialTemplate', () => {
         labels={getLabels('de')}
       />,
     );
-    expect(htmlWithPhoto).toContain('editorial__hero-img');
-    expect(htmlWithPhoto).not.toContain('editorial__hero-bar');
+    expect(htmlWithPhoto).toContain('editorial__masthead--with-photo');
+    expect(htmlWithPhoto).toContain('editorial__masthead-img');
+    expect(htmlWithPhoto).not.toContain('editorial__masthead--no-photo');
+    expect(htmlWithPhoto).not.toContain('editorial__masthead-bar');
 
     const htmlNoPhoto = renderToStaticMarkup(
       <editorial.Component
@@ -42,8 +44,10 @@ describe('EditorialTemplate', () => {
         labels={getLabels('de')}
       />,
     );
-    expect(htmlNoPhoto).toContain('editorial__hero-bar');
-    expect(htmlNoPhoto).not.toContain('editorial__hero-img');
+    expect(htmlNoPhoto).toContain('editorial__masthead--no-photo');
+    expect(htmlNoPhoto).toContain('editorial__masthead-bar');
+    expect(htmlNoPhoto).not.toContain('editorial__masthead--with-photo');
+    expect(htmlNoPhoto).not.toContain('editorial__masthead-img');
   });
 
   it('rendert EN-Labels bei locale=en', () => {

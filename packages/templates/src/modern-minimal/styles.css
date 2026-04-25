@@ -64,26 +64,28 @@
 }
 
 /* ─── Photo / Initials ──────────────────────────────────────────────────── */
+/* Photo is a substantial element of the masthead — square, soft corners,
+   sized to roughly match the full vertical extent of the header text block. */
 .modern-minimal__photo {
   flex-shrink: 0;
-  width: 36pt;
-  height: 36pt;
-  border-radius: 4pt;
+  width: 96pt;
+  height: 96pt;
+  border-radius: 6pt;
   object-fit: cover;
 }
 
 .modern-minimal__initials {
   flex-shrink: 0;
-  width: 36pt;
-  height: 36pt;
-  border-radius: 4pt;
+  width: 96pt;
+  height: 96pt;
+  border-radius: 6pt;
   background: var(--surface);
   color: var(--accent);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11pt;
-  font-weight: 600;
+  font-size: 30pt;
+  font-weight: 500;
   letter-spacing: 0.02em;
 }
 
@@ -207,4 +209,17 @@
 
 .modern-minimal__language-level {
   color: var(--text-muted);
+}
+
+/* ─── Page-2+ top breathing space ───────────────────────────────────────── */
+/* The core PDF generator (`packages/core/src/pdf.ts`) injects an empty
+   `<div class="cv-page-spacer">` with `break-before: page` before whichever
+   element starts each subsequent page. The default 16pt height nets out to
+   only ~8pt of visible top margin in this template (8pt of the spacer is
+   absorbed by the printed line's leading/half-leading, which sits inside the
+   first line box on the new page). Bumping the spacer to 32pt produces a
+   visible yMin of ~24pt, comfortably above the 16pt floor. The selector is
+   scoped to `.modern-minimal` so it never affects other templates. */
+.modern-minimal .cv-page-spacer {
+  height: 32pt !important;
 }
