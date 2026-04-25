@@ -56,9 +56,9 @@ export function PhotoCropper(props: PhotoCropperProps): JSX.Element {
   } = props;
 
   const [file, setFile] = useState<File | null>(initialFile ?? null);
-  const [imageUrl, setImageUrl] = useState<string | null>(() =>
-    initialFile ? URL.createObjectURL(initialFile) : null,
-  );
+  // Create the blob URL inside an effect so React StrictMode's double-invocation
+  // doesn't leak (or worse: revoke a URL that the rendered <img src=...> still uses).
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [aspect, setAspect] = useState<PhotoAspect>(defaultAspect);
   const [crop, setCrop] = useState<Crop | undefined>(undefined);
   const [pixelCrop, setPixelCrop] = useState<PixelCrop | null>(null);
@@ -66,10 +66,16 @@ export function PhotoCropper(props: PhotoCropperProps): JSX.Element {
   const imgRef = useRef<HTMLImageElement | null>(null);
 
   useEffect(() => {
+    if (!file) {
+      setImageUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(file);
+    setImageUrl(url);
     return () => {
-      if (imageUrl) URL.revokeObjectURL(imageUrl);
+      URL.revokeObjectURL(url);
     };
-  }, [imageUrl]);
+  }, [file]);
 
   const onPick = (e: ChangeEvent<HTMLInputElement>): void => {
     const next = e.target.files?.[0] ?? null;
@@ -85,9 +91,7 @@ export function PhotoCropper(props: PhotoCropperProps): JSX.Element {
       );
       return;
     }
-    if (imageUrl) URL.revokeObjectURL(imageUrl);
     setFile(next);
-    setImageUrl(URL.createObjectURL(next));
   };
 
   const onImageLoad = useCallback(
@@ -130,7 +134,6 @@ export function PhotoCropper(props: PhotoCropperProps): JSX.Element {
 
   const handleCancel = (): void => {
     setFile(null);
-    setImageUrl(null);
     setCrop(undefined);
     setPixelCrop(null);
     setError(null);
