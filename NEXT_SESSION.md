@@ -1,4 +1,4 @@
-# Prompt für nächste Session — cvMake Phase 7 (`@cvmake/ui`)
+# Prompt für nächste Session — cvMake Template-Review (vor Phase 7)
 
 Kopiere den folgenden Block in die neue Claude-Code-Session im Projektverzeichnis `/Users/markus/Developer/cvMake`:
 
@@ -6,43 +6,91 @@ Kopiere den folgenden Block in die neue Claude-Code-Session im Projektverzeichni
 
 ## Prompt
 
-Wir sind mitten in der cvMake-Implementierung auf Branch `feat/cvmake-mvp`. Phasen 0–6 sind durch, das Page-Margin-Polish-Tooling ist drauf (commit `e98aad5`). Heute geht's mit **Phase 7 — `@cvmake/ui`** weiter.
+Wir sind auf Branch `feat/cvmake-mvp`. Phasen 0–6 sind komplett, das Page-Margin-Polish landed. **Bevor wir mit Phase 7 (`@cvmake/ui`) anfangen, will ich jedes Template visuell durchreviewen.** Heißt: für alle 8 Templates Seite 1 + Seite 2 angucken, mein Feedback einsammeln, in ein Review-Dokument konsolidieren, und dann gemeinsam entscheiden, ob eine Polish-Runde (Phase 6.5) nötig ist oder wir direkt zu Phase 7 springen.
 
 ### Aktueller Stand
 
 ```bash
-git log --oneline main..feat/cvmake-mvp | head -10
+git log --oneline main..feat/cvmake-mvp | head -5
 ```
 
-- **Phasen 0–6 fertig**: Schema, Core (loader/i18n/photo/renderer/pdf), Templates-Foundation, Classic-Serif-Proof, CLI komplett, 8 Templates produktiv.
-- **Page-2-Top-Margin-Fix landed** (commit `e98aad5`): `packages/core/src/pdf.ts` injiziert via `page.evaluate()` einen 16pt `cv-page-spacer` vor dem ersten Element jeder neuen Seite. Puppeteer-Margin = 0 bleibt → full-bleed Sidebar-Gradient erhalten.
-  - **Sauber: ✅ tech-dev, academic, monochrome-dark, editorial, corporate** (yMin ≈ 16-32pt auf Seite 2+).
-  - **Partial: ⚠️ modern-minimal** (~8pt statt 16pt), **creative-accent** (Seite 2+4 ok, Seite 3 verpasst).
-  - **Broken: ❌ classic-serif** (Grid-Layout — `break-before:page` auf Grid-Items wird von Chromium nicht respektiert).
-  - Diese 3 Restprobleme sind dokumentiert in `docs/superpowers/plans/2026-04-24-cvmake-plan.md` Phase-6-Status; **NICHT in dieser Session lösen** — erst nach Phase 7+8 wenn das Web-UI das Editing erlaubt und Markus die Templates ggf. eh überarbeitet.
+- Phase 6 fertig, alle 8 Templates leben.
+- Commit `e98aad5`: Page-2-Top-Margin via `page.evaluate()` Spacer-Injection in `packages/core/src/pdf.ts`.
+  - **Sauber: tech-dev, academic, monochrome-dark, editorial, corporate**
+  - **Partial: modern-minimal (8pt), creative-accent (Seite 3 verpasst)**
+  - **Broken: classic-serif (Grid-Layout, `break-before:page` ignoriert)**
+- Tests: core 14/14, integration 1/1, templates 46/46, visual 8/8.
 
-**Test-Status:**
-- `pnpm --filter @cvmake/core test:unit` → 14/14
-- `pnpm --filter @cvmake/core test:integration` → 1/1
-- `pnpm --filter @cvmake/templates test:unit` → 46/46
-- `pnpm --filter @cvmake/templates test:visual` → 8/8
+### Review-Ablauf
 
-### Phase 7 — `@cvmake/ui`
+#### Schritt 1: Alle 8 PDFs frisch bauen
 
-**Plan-Datei**: `docs/superpowers/plans/2026-04-24-cvmake-plan.md` ab Zeile 3669 (`## Phase 7 — @cvmake/ui (Shared React Components)`).
+```bash
+pnpm --filter @cvmake/core build && pnpm --filter @cvmake/cli build
+for id in classic-serif modern-minimal creative-accent academic monochrome-dark editorial corporate tech-dev; do
+  node apps/cli/dist/index.js build data/cvs/cv.de.yaml -t $id -o out/cv.de.$id.pdf
+done
+```
 
-Ziel: Wiederverwendbare React-Komponenten als eigenes Workspace-Package `@cvmake/ui`, die später vom `apps/web` Next.js Editor genutzt werden. Komponenten:
-- `PhotoCropper` — react-image-crop Wrapper, liefert kreisrunden Crop als File für die Photo-Pipeline.
-- `ColorPicker` — palettenbasierter Picker (zeigt nur Palette-Tokens, keine free-form colors).
-- `TemplateCard` — Card mit Preview-PNG, Hover-State, click → select.
-- `FormField` — generischer Form-Field Wrapper mit Label, Error, Hilfetext.
-- `ArrayField` — add/remove/reorder UI für YAML-Arrays (Berufserfahrung, Skills, etc.).
+#### Schritt 2: Pro Template — Seite 1 + Seite 2 als PNG rendern und mir zeigen
 
-Jeweils Tests mit Vitest + Testing-Library. Storybook-artige Demo (interactive playground in `examples/`).
+Render-Befehl pro Template (rendere ALLE Seiten, nicht nur 1+2 — manche Templates haben 3-4 Seiten):
 
-### Skill für Ausführung
+```bash
+# Pages 1-4 (überspringt nicht-existierende stillschweigend)
+pdftoppm -png -r 80 out/cv.de.<TEMPLATE>.pdf out/_review_<TEMPLATE>
+ls out/_review_<TEMPLATE>-*.png
+```
 
-`superpowers:subagent-driven-development` (frischer Subagent pro Task + Spec/Code-Quality-Review). Hat in den Phasen 0–6 zuverlässig funktioniert.
+Dann **per Template** die PNGs in den Chat lesen (`Read` tool auf jede `.png`). **Eins nach dem anderen** — nicht alles auf einmal — damit ich pro Template gezielt Feedback geben kann.
+
+Reihenfolge zum Reviewen:
+1. classic-serif
+2. modern-minimal
+3. creative-accent
+4. academic
+5. monochrome-dark
+6. editorial
+7. corporate
+8. tech-dev
+
+#### Schritt 3: Pro Template Feedback einsammeln
+
+Pro Template Markus folgendes fragen:
+- Typografie ok? (Größe, Hierarchie, Lesbarkeit)
+- Spacing & Layout ok? (Gaps, Abstände, Zeilenhöhe)
+- Palette ok? (Akzentfarben, Kontrast)
+- Foto-Treatment ok? (Größe, Position, Border-Radius)
+- Section-Reihenfolge ok?
+- Seite-2+ Top-Margin ok? (visueller Sanity-Check, NICHT nur die `pdftotext`-Zahl)
+- Sonstige Auffälligkeiten?
+
+Mach dir pro Template Notizen in einem strukturierten Markdown-Dokument: `docs/template-review-2026-04-25.md` (oder mit aktuellem Datum). Format:
+
+```markdown
+## <template-id>
+
+**Pages:** 2 (or whatever)
+**Page-2 yMin:** <pdftotext-bbox value> pt
+**Status:** good / needs polish / broken
+
+### Findings
+- [ ] (item)
+- [ ] (item)
+
+### Notes
+…
+```
+
+#### Schritt 4: Entscheidungs-Punkt
+
+Nach dem Review aller 8 Templates: Markus zeigen, was die kritischsten Items sind, und vorschlagen:
+
+- **Option A — Phase 6.5 Polish-Runde**: Per-Template-Agent dispatchen (1 Agent pro Template das Polish braucht), parallel via `superpowers:dispatching-parallel-agents`. Skill ist erprobt aus Phase 6.
+- **Option B — Direkt Phase 7 starten**: Wenn die Findings minor sind, parken wir sie als TODOs und gehen zum UI weiter.
+- **Option C — Mix**: Nur die kaputten Templates (classic-serif page-2-bug, creative-accent page-3-bug) jetzt fixen, Rest später.
+
+Markus entscheidet. **Nichts ohne Freigabe committen oder pushen.**
 
 ### Memory + Konventionen
 
@@ -50,24 +98,19 @@ Auto-Memory in `/Users/markus/.claude/projects/-Users-markus-Developer-cvMake/me
 - **Keine "Co-Authored-By"-Zeilen** in Commits.
 - **Niemals pushen** ohne explizite Freigabe.
 - `pnpm build` und `pnpm typecheck` vor jedem Commit.
-- Definition-of-Done verlangt 4 Review-Agents (2 Codex + 2 Claude); für laufende Implementierungsarbeit pragmatisch handhaben, bei Phase-Abschluss konsequent durchziehen.
+- Definition-of-Done verlangt 4 Review-Agents — bei Phase-Abschluss konsequent.
 
-### Build-Commands Quick-Reference
+### Quick-Reference
 
 ```bash
-# Alles bauen, typechecken, testen
+# Lint/Typecheck/Test/Build
 pnpm lint && pnpm typecheck && pnpm build
 
-# Eine PDF für Smoke-Test (nach Core-Änderungen)
-node apps/cli/dist/index.js build data/cvs/cv.de.yaml -t tech-dev -o out/cv.de.tech-dev.pdf
+# Page-2 yMin-Probe (sanity-check)
+pdftotext -layout -bbox out/cv.de.<template>.pdf - 2>/dev/null | awk '/<page/{p++} p==2 && /<word/{print; exit}'
 
-# Alle 8 PDFs
-for id in classic-serif modern-minimal creative-accent academic monochrome-dark editorial corporate tech-dev; do
-  node apps/cli/dist/index.js build data/cvs/cv.de.yaml -t $id -o out/cv.de.$id.pdf
-done
-
-# Page-2 yMin-Probe (sanity-check page-margin fix nach Core-Änderungen)
-pdftotext -layout -bbox out/cv.de.tech-dev.pdf - 2>/dev/null | awk '/<page/{p++} p==2 && /<word/{print; exit}'
+# Eine PDF aus aktueller cv.de.yaml
+node apps/cli/dist/index.js build data/cvs/cv.de.yaml -t classic-serif -o out/test.pdf
 ```
 
-Leg los: Phase 7 Task 7.1 lesen, dann Subagent dispatchen.
+Leg los: PDFs frisch bauen, dann Template 1 (classic-serif) page 1+2+ rendern, in den Chat schicken, ich gucke.
