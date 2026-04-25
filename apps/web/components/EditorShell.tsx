@@ -11,8 +11,8 @@ import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import type { ZodIssue } from 'zod';
 import { ConflictModal } from './ConflictModal';
 import { PreviewFrame } from './PreviewFrame';
-import { SaveIndicator } from './SaveIndicator';
 import { Sidebar } from './Sidebar';
+import { TopBar } from './TopBar';
 import { CustomSectionsSection } from './sections/CustomSectionsSection';
 import { EducationSection } from './sections/EducationSection';
 import { ExperienceSection } from './sections/ExperienceSection';
@@ -34,7 +34,7 @@ interface Props {
   bootstrap: PreviewBootstrap;
 }
 
-export function EditorShell({ initialData, initialMtime, slug, bootstrap }: Props) {
+export function EditorShell({ initialData, initialMtime, slug, allSlugs, bootstrap }: Props) {
   const form = useForm<CVData>({
     defaultValues: initialData,
     resolver: zodResolver(CVDataSchema),
@@ -64,19 +64,14 @@ export function EditorShell({ initialData, initialMtime, slug, bootstrap }: Prop
   return (
     <FormProvider {...form}>
       <div className="flex h-screen flex-col bg-bg text-text">
-        {/* biome-ignore lint/a11y/noInteractiveElementToNoninteractiveRole: explicit banner landmark for testability */}
-        <header role="banner" className="flex h-12 items-center justify-between border-b px-4">
-          <div className="flex items-center gap-3">
-            <span className="font-semibold">forq</span>
-            <span className="text-sm text-text-muted">{slug}</span>
-          </div>
-          <SaveIndicator
-            state={autosave.state}
-            errorMessage={autosave.errorMessage}
-            onRetry={autosave.retry}
-            lastSavedAt={autosave.lastSavedAt}
-          />
-        </header>
+        <TopBar
+          slug={slug}
+          allSlugs={allSlugs}
+          saveState={autosave.state}
+          saveError={autosave.errorMessage}
+          onRetry={autosave.retry}
+          lastSavedAt={autosave.lastSavedAt}
+        />
         <div className="flex flex-1 overflow-hidden">
           <Sidebar bootstrap={bootstrap} />
           {/* biome-ignore lint/a11y/useSemanticElements: explicit role="form" is intentional — <form> only has implicit role="form" when given an accessible name */}
