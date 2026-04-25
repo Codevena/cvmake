@@ -1,0 +1,5 @@
+@import "tailwindcss";
+@import "@codevena/forq-ui/styles/tailwind.css";
+
+@source '../../packages/ui/src/**/*.{ts,tsx}';
+@source './**/*.{ts,tsx}';
