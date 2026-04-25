@@ -1,15 +1,18 @@
-import { copyFile, rm } from 'node:fs/promises';
+import { copyFile, mkdir, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { expect, test } from '@playwright/test';
+import { dataPath } from './_shared/setup';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const WEB_ROOT = path.resolve(HERE, '..');
 const SRC = path.resolve(HERE, 'fixtures', 'cv.broken.yaml');
-const DST = path.join(WEB_ROOT, 'data', 'cvs', 'cv.broken.yaml');
+const DST = dataPath('cv.broken');
 
 test.describe('broken yaml', () => {
-  test.beforeAll(() => copyFile(SRC, DST));
+  test.beforeAll(async () => {
+    await mkdir(path.dirname(DST), { recursive: true });
+    await copyFile(SRC, DST);
+  });
   test.afterAll(() => rm(DST, { force: true }));
 
   test('Banner zeigt Fehler, Export disabled', async ({ page }) => {
