@@ -9,6 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import type { ZodIssue } from 'zod';
+import { ConflictModal } from './ConflictModal';
 import { PreviewFrame } from './PreviewFrame';
 import { SaveIndicator } from './SaveIndicator';
 import { Sidebar } from './Sidebar';
@@ -43,7 +44,7 @@ export function EditorShell({ initialData, initialMtime, slug, bootstrap }: Prop
 
   const watched = useWatch({ control: form.control }) as CVData;
   const debounced = useDebouncedValue(watched, 150);
-  const [, setConflict] = useState<ConflictPayload | null>(null);
+  const [conflict, setConflict] = useState<ConflictPayload | null>(null);
 
   const autosave = useAutosave({
     slug,
@@ -57,7 +58,7 @@ export function EditorShell({ initialData, initialMtime, slug, bootstrap }: Prop
         applyZodIssues(e.issues as ZodIssue[], form.setError);
       }
     },
-    paused: false,
+    paused: conflict !== null,
   });
 
   return (
@@ -104,6 +105,37 @@ export function EditorShell({ initialData, initialMtime, slug, bootstrap }: Prop
           </section>
         </div>
       </div>
+      {conflict && (
+        <ConflictModal
+          slug={slug}
+          currentData={conflict.currentData}
+          currentMtime={conflict.currentMtime}
+          isFormDirty={form.formState.isDirty}
+          onReload={(data, mtime) => {
+            form.reset(data);
+            autosave.expectedMtimeRef.current = mtime;
+            setConflict(null);
+          }}
+          onOverwrite={async (mtime) => {
+            autosave.expectedMtimeRef.current = mtime;
+            setConflict(null);
+            const res = await fetch('/api/save', {
+              method: 'POST',
+              headers: { 'content-type': 'application/json' },
+              body: JSON.stringify({
+                slug,
+                data: form.getValues(),
+                expectedMtime: mtime,
+              }),
+            });
+            if (res.ok) {
+              const body = (await res.json()) as { mtime: number };
+              autosave.expectedMtimeRef.current = body.mtime;
+            }
+          }}
+          onCancel={() => setConflict(null)}
+        />
+      )}
     </FormProvider>
   );
 }
