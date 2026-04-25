@@ -12,6 +12,7 @@ import {
 } from '@codevena/forq-core';
 import { clearRegistry, registerTemplate, getTemplate } from '../../src/registry.js';
 import { editorial } from '../../src/editorial/index.js';
+import { loadTemplateCss } from '../../src/css.js';
 import { fullFixture } from '@codevena/forq-schema/test/fixtures.js';
 
 const BASELINE_DIR = path.resolve('__tests__/__visual__/editorial');
@@ -26,7 +27,7 @@ async function renderPageOneAsPng(paletteId: string): Promise<Buffer> {
   const template = getTemplate('editorial');
   if (!template) throw new Error('editorial not registered');
   const rendered = renderCV({ data: fullFixture, template, paletteId });
-  const css = `${rendered.css}\n${(template as unknown as { css: string }).css}`;
+  const css = `${rendered.css}\n${loadTemplateCss('editorial')}`;
   const html = wrapHtmlDocument({ title: 'CV', html: rendered.html, css });
   const browser = await puppeteer.launch({
     headless: true,

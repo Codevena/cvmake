@@ -2,6 +2,7 @@ import { generatePDF, renderCV, wrapHtmlDocument } from '@codevena/forq-core';
 import { CVDataSchema } from '@codevena/forq-schema';
 import { bootstrapTemplates, getTemplate } from '@codevena/forq-templates';
 import { NextResponse } from 'next/server';
+import { getPreviewBootstrap } from '@/lib/preview-bootstrap';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -43,7 +44,9 @@ export async function POST(req: Request): Promise<Response> {
     template,
     ...(body.paletteId !== undefined ? { paletteId: body.paletteId } : {}),
   });
-  const fullCss = `${(template as { css?: string }).css ?? ''}\n${css}`;
+  const bootstrap = getPreviewBootstrap();
+  const tplCss = bootstrap.templates[body.templateId]?.css ?? '';
+  const fullCss = `${tplCss}\n${css}`;
   const doc = wrapHtmlDocument({
     title: `${parsed.data.personal.firstName} CV`,
     html,
