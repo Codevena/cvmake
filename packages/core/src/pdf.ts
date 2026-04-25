@@ -42,7 +42,7 @@ export async function generatePDF(
     const pdf = await page.pdf({
       format: opts.format ?? 'A4',
       printBackground: true,
-      margin: opts.margin ?? { top: '20mm', right: '0mm', bottom: '18mm', left: '0mm' },
+      margin: opts.margin ?? { top: '0mm', right: '0mm', bottom: '0mm', left: '0mm' },
       preferCSSPageSize: true,
     });
     return Buffer.from(pdf);
