@@ -6,6 +6,7 @@ import { bootstrapTemplates } from '@codevena/forq-templates';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { PreviewFrame } from './PreviewFrame';
+import { Sidebar } from './Sidebar';
 import { CustomSectionsSection } from './sections/CustomSectionsSection';
 import { EducationSection } from './sections/EducationSection';
 import { ExperienceSection } from './sections/ExperienceSection';
@@ -47,10 +48,7 @@ export function EditorShell({ initialData, slug, bootstrap }: Props) {
           <span className="ml-4 text-sm text-text-muted">{slug}</span>
         </header>
         <div className="flex flex-1 overflow-hidden">
-          {/* biome-ignore lint/a11y/noRedundantRoles: explicit complementary landmark for testability + intent */}
-          <aside role="complementary" className="w-80 shrink-0 overflow-y-auto border-r p-4">
-            Sidebar
-          </aside>
+          <Sidebar bootstrap={bootstrap} />
           {/* biome-ignore lint/a11y/useSemanticElements: explicit role="form" is intentional — <form> only has implicit role="form" when given an accessible name */}
           <form
             // biome-ignore lint/a11y/noRedundantRoles: explicit role="form" is intentional for the same reason
