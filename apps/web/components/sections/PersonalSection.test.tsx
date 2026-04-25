@@ -12,7 +12,7 @@ function Wrapper({ initial }: { initial: CVData }) {
   });
   return (
     <FormProvider {...form}>
-      <PersonalSection />
+      <PersonalSection slug="cv.de" />
     </FormProvider>
   );
 }

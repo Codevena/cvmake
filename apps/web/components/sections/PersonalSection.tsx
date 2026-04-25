@@ -2,6 +2,7 @@
 import type { CVData } from '@codevena/forq-schema';
 import { Input } from '@codevena/forq-ui';
 import { Controller, useFormContext } from 'react-hook-form';
+import { PhotoUploadField } from '../PhotoUploadField';
 
 // With exactOptionalPropertyTypes:true the Phase-7 <Input> rejects an
 // explicit `error: undefined`. Spread the prop only when a message exists.
@@ -9,7 +10,7 @@ function errProp(message: string | undefined): { error: string } | Record<string
   return message ? { error: message } : {};
 }
 
-export function PersonalSection() {
+export function PersonalSection({ slug }: { slug: string }) {
   const { control } = useFormContext<CVData>();
   return (
     <fieldset className="flex flex-col gap-3">
@@ -97,13 +98,8 @@ export function PersonalSection() {
       <Controller
         control={control}
         name="personal.photo"
-        render={({ field, fieldState }) => (
-          <Input
-            label="Foto-Pfad (vorerst manuell)"
-            value={field.value ?? ''}
-            onChange={field.onChange}
-            {...errProp(fieldState.error?.message)}
-          />
+        render={({ field }) => (
+          <PhotoUploadField slug={slug} value={field.value ?? ''} onChange={field.onChange} />
         )}
       />
       <fieldset className="grid grid-cols-2 gap-3 rounded border p-3">
