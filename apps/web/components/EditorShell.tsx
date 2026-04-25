@@ -1,11 +1,16 @@
 'use client';
 import type { PreviewBootstrap } from '@/lib/preview-bootstrap';
+import { type ConflictPayload, useAutosave } from '@/lib/use-autosave';
 import { useDebouncedValue } from '@/lib/use-debounced-value';
+import { applyZodIssues } from '@/lib/zod-issue-mapping';
 import { type CVData, CVDataSchema } from '@codevena/forq-schema';
 import { bootstrapTemplates } from '@codevena/forq-templates';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
+import type { ZodIssue } from 'zod';
 import { PreviewFrame } from './PreviewFrame';
+import { SaveIndicator } from './SaveIndicator';
 import { Sidebar } from './Sidebar';
 import { CustomSectionsSection } from './sections/CustomSectionsSection';
 import { EducationSection } from './sections/EducationSection';
@@ -28,7 +33,7 @@ interface Props {
   bootstrap: PreviewBootstrap;
 }
 
-export function EditorShell({ initialData, slug, bootstrap }: Props) {
+export function EditorShell({ initialData, initialMtime, slug, bootstrap }: Props) {
   const form = useForm<CVData>({
     defaultValues: initialData,
     resolver: zodResolver(CVDataSchema),
@@ -38,14 +43,38 @@ export function EditorShell({ initialData, slug, bootstrap }: Props) {
 
   const watched = useWatch({ control: form.control }) as CVData;
   const debounced = useDebouncedValue(watched, 150);
+  const [, setConflict] = useState<ConflictPayload | null>(null);
+
+  const autosave = useAutosave({
+    slug,
+    data: watched,
+    isDirty: form.formState.isDirty,
+    isValid: form.formState.isValid,
+    expectedMtime: initialMtime,
+    onConflict: setConflict,
+    onError: (e) => {
+      if (e.kind === 'validation') {
+        applyZodIssues(e.issues as ZodIssue[], form.setError);
+      }
+    },
+    paused: false,
+  });
 
   return (
     <FormProvider {...form}>
       <div className="flex h-screen flex-col bg-bg text-text">
         {/* biome-ignore lint/a11y/noInteractiveElementToNoninteractiveRole: explicit banner landmark for testability */}
-        <header role="banner" className="flex h-12 items-center border-b px-4">
-          <span className="font-semibold">forq</span>
-          <span className="ml-4 text-sm text-text-muted">{slug}</span>
+        <header role="banner" className="flex h-12 items-center justify-between border-b px-4">
+          <div className="flex items-center gap-3">
+            <span className="font-semibold">forq</span>
+            <span className="text-sm text-text-muted">{slug}</span>
+          </div>
+          <SaveIndicator
+            state={autosave.state}
+            errorMessage={autosave.errorMessage}
+            onRetry={autosave.retry}
+            lastSavedAt={autosave.lastSavedAt}
+          />
         </header>
         <div className="flex flex-1 overflow-hidden">
           <Sidebar bootstrap={bootstrap} />
