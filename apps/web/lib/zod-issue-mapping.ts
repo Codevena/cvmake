@@ -7,7 +7,7 @@ export function applyZodIssues<T extends FieldValues>(
 ): void {
   for (const iss of issues) {
     const dotPath = iss.path.join('.');
-    if (!dotPath) continue;
+    if (!dotPath) continue; // root-level issues have no RHF field; hoist via setError('root', ...) if needed
     setError(dotPath as Path<T>, { type: 'server', message: iss.message });
   }
 }
