@@ -307,10 +307,10 @@ Detailed behavior per component. Each ships with at least 3 tests (renders / onC
 
 ### 7.4 PhotoCropper
 - **Two render states:**
-  1. **No file** — drag-drop zone with `<input type="file" accept="image/jpeg,image/png,image/webp,image/heic">`.
+  1. **No file** — drag-drop zone with `<input type="file" accept="image/jpeg,image/png,image/webp">`.
   2. **File selected** — `<ReactCrop>` from `react-image-crop` with current aspect; aspect-toggle buttons above; "Cancel" + "Confirm" buttons below.
 - **Client validation:** file size `> maxBytes` or MIME not in whitelist → inline error inside the drop-zone, the file is **not** loaded into the cropper UI, and `onConfirm` is not called.
-- **MIME whitelist:** `image/jpeg`, `image/png`, `image/webp`, `image/heic`.
+- **MIME whitelist:** `image/jpeg`, `image/png`, `image/webp`. (HEIC support deferred — browsers cannot decode HEIC in `<img>`. Phase 8+ may add server-side conversion.)
 - **Output conversion:** react-image-crop returns percent-based crop; the component multiplies by `image.naturalWidth / image.naturalHeight` before calling `onConfirm`.
 
 ### 7.5 ColorPicker
