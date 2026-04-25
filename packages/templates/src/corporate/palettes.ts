@@ -1,4 +1,4 @@
-import type { ColorPalette } from '@cvmake/schema';
+import type { ColorPalette } from '@codevena/forq-schema';
 
 export const palettes: ColorPalette[] = [
   {

@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import yaml from 'js-yaml';
-import { CVDataSchema, type CVData, type Locale } from '@cvmake/schema';
+import { CVDataSchema, type CVData, type Locale } from '@codevena/forq-schema';
 import { ValidationError, YAMLParseError } from './errors.js';
 
 function inferLocaleFromFilename(filePath: string): Locale | null {

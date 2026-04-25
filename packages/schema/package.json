@@ -1,5 +1,5 @@
 {
-  "name": "@cvmake/schema",
+  "name": "@codevena/forq-schema",
   "version": "0.0.0",
   "private": true,
   "type": "module",

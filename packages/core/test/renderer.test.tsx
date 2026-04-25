@@ -1,7 +1,7 @@
 /** @vitest-environment node */
 import { describe, expect, it } from 'vitest';
-import type { TemplateDefinition } from '@cvmake/schema';
-import { minimalFixture } from '@cvmake/schema/test/fixtures.js';
+import type { TemplateDefinition } from '@codevena/forq-schema';
+import { minimalFixture } from '@codevena/forq-schema/test/fixtures.js';
 import { renderCV } from '../src/renderer.js';
 
 const fakeTemplate: TemplateDefinition = {

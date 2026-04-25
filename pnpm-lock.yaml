@@ -23,13 +23,13 @@ importers:
 
   apps/cli:
     dependencies:
-      '@cvmake/core':
+      '@codevena/forq-core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@cvmake/schema':
+      '@codevena/forq-schema':
         specifier: workspace:*
         version: link:../../packages/schema
-      '@cvmake/templates':
+      '@codevena/forq-templates':
         specifier: workspace:*
         version: link:../../packages/templates
       commander:
@@ -54,16 +54,16 @@ importers:
 
   apps/web:
     dependencies:
-      '@cvmake/core':
+      '@codevena/forq-core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@cvmake/schema':
+      '@codevena/forq-schema':
         specifier: workspace:*
         version: link:../../packages/schema
-      '@cvmake/templates':
+      '@codevena/forq-templates':
         specifier: workspace:*
         version: link:../../packages/templates
-      '@cvmake/ui':
+      '@codevena/forq-ui':
         specifier: workspace:*
         version: link:../../packages/ui
       '@hookform/resolvers':
@@ -118,7 +118,7 @@ importers:
 
   packages/core:
     dependencies:
-      '@cvmake/schema':
+      '@codevena/forq-schema':
         specifier: workspace:*
         version: link:../schema
       js-yaml:
@@ -183,10 +183,10 @@ importers:
 
   packages/templates:
     dependencies:
-      '@cvmake/core':
+      '@codevena/forq-core':
         specifier: workspace:*
         version: link:../core
-      '@cvmake/schema':
+      '@codevena/forq-schema':
         specifier: workspace:*
         version: link:../schema
       react:
@@ -226,7 +226,7 @@ importers:
 
   packages/ui:
     dependencies:
-      '@cvmake/schema':
+      '@codevena/forq-schema':
         specifier: workspace:*
         version: link:../schema
       react:

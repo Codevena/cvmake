@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getTemplate, listTemplates, registerTemplate, clearRegistry } from '../src/registry.js';
-import type { TemplateDefinition } from '@cvmake/schema';
+import type { TemplateDefinition } from '@codevena/forq-schema';
 import type { ReactElement } from 'react';
 
 const stub: TemplateDefinition = {

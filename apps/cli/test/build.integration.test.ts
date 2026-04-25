@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import { createRequire } from 'node:module';
 import { afterAll, describe, expect, it } from 'vitest';
 import { runBuild } from '../src/commands/build.js';
-import { shutdownPdfBrowser } from '@cvmake/core';
+import { shutdownPdfBrowser } from '@codevena/forq-core';
 
 afterAll(() => shutdownPdfBrowser());
 
@@ -12,7 +12,7 @@ const require = createRequire(import.meta.url);
 
 describe('runBuild integration', () => {
   it('erzeugt PDF mit erwarteten Strings', async () => {
-    const out = await mkdtemp(path.join(tmpdir(), 'cvmake-cli-'));
+    const out = await mkdtemp(path.join(tmpdir(), 'forq-cli-'));
     const pdfPath = path.join(out, 'cv.pdf');
     await runBuild({
       yaml: path.resolve('../../data/cvs/cv.de.yaml'),

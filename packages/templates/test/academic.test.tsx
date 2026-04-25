@@ -1,8 +1,8 @@
 /** @vitest-environment node */
 import { describe, expect, it } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { fullFixture, minimalFixture } from '@cvmake/schema/test/fixtures.js';
-import { getLabels } from '@cvmake/core';
+import { fullFixture, minimalFixture } from '@codevena/forq-schema/test/fixtures.js';
+import { getLabels } from '@codevena/forq-core';
 import { academic } from '../src/academic/index.js';
 
 const palette = academic.palettes[0]!;

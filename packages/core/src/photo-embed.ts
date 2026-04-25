@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import type { CVData } from '@cvmake/schema';
+import type { CVData } from '@codevena/forq-schema';
 
 function mimetypeFromExt(ext: string): string | null {
   switch (ext.toLowerCase()) {
