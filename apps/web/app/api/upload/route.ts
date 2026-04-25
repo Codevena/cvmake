@@ -1,8 +1,8 @@
 import { mkdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { processPhoto } from '@codevena/forq-core';
-import { NextResponse } from 'next/server';
 import { photoDir, uploadStagingDir, validateSlug } from '@/lib/data-paths';
+import { processPhoto } from '@codevena/forq-core/photo';
+import { NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';

@@ -1,5 +1,5 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { bootstrapTemplates } from '@codevena/forq-templates';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 const VALID_DATA = {
   meta: { locale: 'de', updatedAt: '2026-04-25' },
@@ -23,8 +23,8 @@ async function post(body: unknown) {
 describe('POST /api/export', () => {
   beforeAll(() => bootstrapTemplates());
   afterAll(async () => {
-    const core = await import('@codevena/forq-core');
-    await core.shutdownPdfBrowser();
+    const pdf = await import('@codevena/forq-core/pdf');
+    await pdf.shutdownPdfBrowser();
   });
 
   it('liefert application/pdf mit Content-Disposition', async () => {

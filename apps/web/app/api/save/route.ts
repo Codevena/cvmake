@@ -1,10 +1,10 @@
 import { stat } from 'node:fs/promises';
-import { loadCV } from '@codevena/forq-core';
+import { atomicWriteFile } from '@/lib/atomic-write';
+import { resolveCvPath } from '@/lib/data-paths';
+import { loadCV } from '@codevena/forq-core/loader';
 import { CVDataSchema } from '@codevena/forq-schema';
 import yaml from 'js-yaml';
 import { NextResponse } from 'next/server';
-import { atomicWriteFile } from '@/lib/atomic-write';
-import { resolveCvPath } from '@/lib/data-paths';
 
 export const dynamic = 'force-dynamic';
 
@@ -41,18 +41,12 @@ export async function POST(req: Request): Promise<NextResponse> {
     } catch {
       currentData = null;
     }
-    return NextResponse.json(
-      { kind: 'conflict', currentData, currentMtime },
-      { status: 409 },
-    );
+    return NextResponse.json({ kind: 'conflict', currentData, currentMtime }, { status: 409 });
   }
   // validation
   const parsed = CVDataSchema.safeParse(body.data);
   if (!parsed.success) {
-    return NextResponse.json(
-      { kind: 'validation', issues: parsed.error.issues },
-      { status: 422 },
-    );
+    return NextResponse.json({ kind: 'validation', issues: parsed.error.issues }, { status: 422 });
   }
   const stamped = {
     ...parsed.data,

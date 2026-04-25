@@ -1,6 +1,6 @@
 import { readdir } from 'node:fs/promises';
 import { dataDir, resolveCvPath } from '@/lib/data-paths';
-import { loadCV } from '@codevena/forq-core';
+import { loadCV } from '@codevena/forq-core/loader';
 import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
