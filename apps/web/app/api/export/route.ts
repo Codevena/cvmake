@@ -1,8 +1,10 @@
-import { generatePDF, renderCV, wrapHtmlDocument } from '@codevena/forq-core';
+import { getPreviewBootstrap } from '@/lib/preview-bootstrap';
+import { wrapHtmlDocument } from '@codevena/forq-core/html-document';
+import { generatePDF } from '@codevena/forq-core/pdf';
+import { renderCV } from '@codevena/forq-core/renderer';
 import { CVDataSchema } from '@codevena/forq-schema';
 import { bootstrapTemplates, getTemplate } from '@codevena/forq-templates';
 import { NextResponse } from 'next/server';
-import { getPreviewBootstrap } from '@/lib/preview-bootstrap';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -30,10 +32,7 @@ export async function POST(req: Request): Promise<Response> {
   }
   const parsed = CVDataSchema.safeParse(body.data);
   if (!parsed.success) {
-    return NextResponse.json(
-      { kind: 'validation', issues: parsed.error.issues },
-      { status: 422 },
-    );
+    return NextResponse.json({ kind: 'validation', issues: parsed.error.issues }, { status: 422 });
   }
   const template = getTemplate(body.templateId);
   if (!template) {

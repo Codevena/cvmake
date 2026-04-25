@@ -10,6 +10,14 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./errors": {
+      "types": "./dist/errors.d.ts",
+      "default": "./dist/errors.js"
+    },
+    "./html-document": {
+      "types": "./dist/html-document.d.ts",
+      "default": "./dist/html-document.js"
+    },
     "./loader": {
       "types": "./dist/loader.d.ts",
       "default": "./dist/loader.js"
@@ -18,13 +26,21 @@
       "types": "./dist/renderer.d.ts",
       "default": "./dist/renderer.js"
     },
-    "./pdf": {
-      "types": "./dist/pdf.d.ts",
-      "default": "./dist/pdf.js"
+    "./renderer-types": {
+      "types": "./dist/renderer-types.d.ts",
+      "default": "./dist/renderer-types.js"
     },
     "./photo": {
       "types": "./dist/photo.d.ts",
       "default": "./dist/photo.js"
+    },
+    "./photo-embed": {
+      "types": "./dist/photo-embed.d.ts",
+      "default": "./dist/photo-embed.js"
+    },
+    "./pdf": {
+      "types": "./dist/pdf.d.ts",
+      "default": "./dist/pdf.js"
     },
     "./i18n": {
       "types": "./dist/i18n.d.ts",

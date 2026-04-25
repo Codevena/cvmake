@@ -2,7 +2,7 @@ import { readdir, stat } from 'node:fs/promises';
 import { EditorShell } from '@/components/EditorShell';
 import { dataDir, resolveCvPath } from '@/lib/data-paths';
 import { getPreviewBootstrap } from '@/lib/preview-bootstrap';
-import { loadCV } from '@codevena/forq-core';
+import { loadCV } from '@codevena/forq-core/loader';
 import { bootstrapTemplates } from '@codevena/forq-templates';
 
 export const dynamic = 'force-dynamic';
