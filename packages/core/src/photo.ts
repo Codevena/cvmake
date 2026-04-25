@@ -8,6 +8,7 @@ export interface ProcessPhotoOptions {
   slug: string;
   maxBytes?: number | undefined;
   targetSize?: number | undefined;
+  crop?: { left: number; top: number; width: number; height: number } | undefined;
 }
 
 export interface ProcessedPhoto {
@@ -37,7 +38,16 @@ export async function processPhoto(opts: ProcessPhotoOptions): Promise<Processed
   }
 
   const buffer = await readFile(inputPath);
-  const pipeline = sharp(buffer).rotate().resize({
+  let pipeline = sharp(buffer).rotate();
+  if (opts.crop) {
+    pipeline = pipeline.extract({
+      left: Math.round(opts.crop.left),
+      top: Math.round(opts.crop.top),
+      width: Math.round(opts.crop.width),
+      height: Math.round(opts.crop.height),
+    });
+  }
+  pipeline = pipeline.resize({
     width: targetSize,
     height: targetSize,
     fit: 'cover',
