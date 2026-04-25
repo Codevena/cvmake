@@ -3,3 +3,8 @@
   body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
 html, body { margin: 0; padding: 0; }
+
+/* Page-break rules for paged media (PDF) */
+h1, h2, h3 { break-after: avoid; }
+li, dt, dd { break-inside: avoid; }
+p { orphans: 3; widows: 3; }

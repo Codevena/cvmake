@@ -26,26 +26,33 @@ export function EditorialTemplate({ data, palette, locale, labels }: TemplatePro
   return (
     <article className="editorial">
       <div className="editorial__page">
-        {/* Hero strip — full-width photo or thin accent bar */}
-        <div className="editorial__hero">
+        {/* Magazine-cover masthead (page 1 only): photo on the left,
+            name + title + contacts on the right.
+            When no photo, masthead collapses to single column with
+            an accent top-bar. */}
+        <header
+          className={
+            hasPhoto
+              ? 'editorial__masthead editorial__masthead--with-photo'
+              : 'editorial__masthead editorial__masthead--no-photo'
+          }
+        >
           {hasPhoto ? (
-            <img
-              className="editorial__hero-img"
-              src={data.personal.photo}
-              alt={`${data.personal.firstName} ${data.personal.lastName}`}
-            />
+            <div className="editorial__masthead-photo">
+              <img
+                className="editorial__masthead-img"
+                src={data.personal.photo}
+                alt={`${data.personal.firstName} ${data.personal.lastName}`}
+              />
+            </div>
           ) : (
-            <div className="editorial__hero-bar" aria-hidden="true" />
+            <div className="editorial__masthead-bar" aria-hidden="true" />
           )}
-        </div>
 
-        {/* Masthead */}
-        <header className="editorial__masthead">
-          <h1 className="editorial__name">
-            {data.personal.firstName} {data.personal.lastName}
-          </h1>
-
-          <div className="editorial__byline-block">
+          <div className="editorial__masthead-text">
+            <h1 className="editorial__name">
+              {data.personal.firstName} {data.personal.lastName}
+            </h1>
             {data.personal.title && (
               <div className="editorial__title">{data.personal.title}</div>
             )}
@@ -61,8 +68,11 @@ export function EditorialTemplate({ data, palette, locale, labels }: TemplatePro
           </div>
         </header>
 
-        {/* Body: 2-column newspaper grid */}
-        <div className="editorial__body">
+        {/* Body: 2-column newspaper grid.
+            <main> is used so the shared pdf.ts spacer-injection
+            walker can find this as the paginating container and
+            inject ~16pt top breathing-space on page 2+. */}
+        <main className="editorial__body">
           {/* Summary spans full width with drop-cap */}
           {sections.includes('summary') && data.summary && (
             <div className="editorial__summary-wrap">
@@ -202,7 +212,7 @@ export function EditorialTemplate({ data, palette, locale, labels }: TemplatePro
               ))}
             </section>
           ))}
-        </div>
+        </main>
       </div>
     </article>
   );

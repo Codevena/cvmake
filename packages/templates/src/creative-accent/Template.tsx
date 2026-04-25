@@ -11,6 +11,14 @@ export function CreativeAccentTemplate({ data, palette: _palette, locale, labels
     hidden: data.rendering.hiddenSections ?? [],
   });
 
+  // Skills + languages live in the sidebar (right column) so the cream
+  // accent column always carries content and the main flow stays compact
+  // enough to fit on two pages. Keep them out of the main flow.
+  const mainSections = sections.filter((s) => s !== 'skills' && s !== 'languages');
+
+  const hasSkills = !!(data.skills && (data.skills.categorized || data.skills.stack));
+  const hasLanguages = !!(data.languages && data.languages.length > 0);
+
   return (
     <article className="creative-accent">
       <div className="creative-accent__page">
@@ -26,8 +34,8 @@ export function CreativeAccentTemplate({ data, palette: _palette, locale, labels
             )}
           </header>
 
-          {/* Dynamic sections */}
-          {sections.map((section) => {
+          {/* Dynamic sections (skills + languages handled in sidebar) */}
+          {mainSections.map((section) => {
             if (section === 'summary' && data.summary) {
               return (
                 <section className="creative-accent__section" key="summary">
@@ -102,51 +110,6 @@ export function CreativeAccentTemplate({ data, palette: _palette, locale, labels
                       )}
                     </div>
                   ))}
-                </section>
-              );
-            }
-
-            if (section === 'skills' && data.skills && (data.skills.categorized || data.skills.stack)) {
-              return (
-                <section className="creative-accent__section" key="skills">
-                  <h2 className="creative-accent__section-heading">{labels.skills}</h2>
-                  {data.skills.categorized
-                    ? Object.entries(data.skills.categorized).map(([group, items]) => (
-                        <div className="creative-accent__tag-group" key={group}>
-                          <div className="creative-accent__tag-group-name">{group}</div>
-                          <div className="creative-accent__tags">
-                            {items.map((item) => (
-                              <span className="creative-accent__pill" key={item}>
-                                {item}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      ))
-                    : data.skills.stack && (
-                        <div className="creative-accent__tags">
-                          {data.skills.stack.map((item) => (
-                            <span className="creative-accent__pill" key={item}>
-                              {item}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                </section>
-              );
-            }
-
-            if (section === 'languages' && data.languages && data.languages.length > 0) {
-              return (
-                <section className="creative-accent__section" key="languages">
-                  <h2 className="creative-accent__section-heading">{labels.languages}</h2>
-                  <div className="creative-accent__tags">
-                    {data.languages.map((l) => (
-                      <span className="creative-accent__pill" key={l.name}>
-                        {l.name} — {l.label ?? l.level}
-                      </span>
-                    ))}
-                  </div>
                 </section>
               );
             }
@@ -242,6 +205,49 @@ export function CreativeAccentTemplate({ data, palette: _palette, locale, labels
                 )}
               </dl>
             </section>
+
+            {/* Skills (in sidebar to balance the 60/40 layout) */}
+            {hasSkills && (
+              <section className="creative-accent__sidebar-section">
+                <h2 className="creative-accent__sidebar-heading">{labels.skills}</h2>
+                {data.skills?.categorized
+                  ? Object.entries(data.skills.categorized).map(([group, items]) => (
+                      <div className="creative-accent__tag-group" key={group}>
+                        <div className="creative-accent__tag-group-name">{group}</div>
+                        <div className="creative-accent__tags">
+                          {items.map((item) => (
+                            <span className="creative-accent__pill" key={item}>
+                              {item}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ))
+                  : data.skills?.stack && (
+                      <div className="creative-accent__tags">
+                        {data.skills.stack.map((item) => (
+                          <span className="creative-accent__pill" key={item}>
+                            {item}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+              </section>
+            )}
+
+            {/* Languages */}
+            {hasLanguages && (
+              <section className="creative-accent__sidebar-section">
+                <h2 className="creative-accent__sidebar-heading">{labels.languages}</h2>
+                <div className="creative-accent__tags">
+                  {data.languages!.map((l) => (
+                    <span className="creative-accent__pill" key={l.name}>
+                      {l.name} — {l.label ?? l.level}
+                    </span>
+                  ))}
+                </div>
+              </section>
+            )}
           </div>
         </aside>
       </div>

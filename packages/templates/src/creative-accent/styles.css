@@ -2,11 +2,9 @@
 @import '../shared/reset.css';
 @import '../shared/print.css';
 
-/* Sidebar gradient on html/body so it repeats on every printed page */
-html, body {
-  background: linear-gradient(to right, var(--bg) calc(100% - 238pt), var(--surface) calc(100% - 238pt));
-  background-attachment: fixed;
-}
+/* Cream column painted via a position:fixed pseudo so it repeats on
+   every page in Chromium's paginated PDF output, regardless of where
+   the main column's content ends on the last page. */
 
 /* ── Root layout ──────────────────────────────────────────────── */
 .creative-accent {
@@ -14,6 +12,20 @@ html, body {
   font-size: 10pt;
   line-height: 1.5;
   color: var(--text);
+  position: relative;
+}
+
+.creative-accent::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 238pt;
+  background: var(--surface);
+  z-index: -1;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
 }
 
 .creative-accent__page {
@@ -32,7 +44,6 @@ html, body {
 .creative-accent__sidebar {
   padding: 16pt 12mm 0;
   position: relative;
-  /* background handled by root gradient */
 }
 
 /* ── Photo — full-bleed square, overlaps into main ────────────── */
@@ -43,8 +54,6 @@ html, body {
   display: block;
   /* Pull left to overlap slightly into main column */
   margin-left: -12pt;
-  border: 3pt solid var(--bg);
-  box-shadow: 0 2pt 12pt rgba(0, 0, 0, 0.15);
 }
 
 /* ── Initials fallback (same dimensions as photo) ─────────────── */
@@ -168,8 +177,9 @@ html, body {
 
 /* ── Experience / Education entries ──────────────────────────── */
 .creative-accent__entry {
-  margin-bottom: 10pt;
-  break-inside: avoid;
+  margin-bottom: 8pt;
+  /* Allow bullets to break across pages — keep only the heading + first
+     line atomic via the head/title rules below. */
 }
 
 .creative-accent__entry-head {
@@ -177,6 +187,8 @@ html, body {
   justify-content: space-between;
   align-items: baseline;
   gap: 8pt;
+  break-inside: avoid;
+  break-after: avoid;
 }
 
 .creative-accent__entry-title {

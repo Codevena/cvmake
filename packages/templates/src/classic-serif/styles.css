@@ -49,6 +49,10 @@ html, body {
 }
 .classic-serif__title { color: var(--text-muted); font-style: italic; margin-top: 4pt; }
 .classic-serif__section { margin-top: 14pt; }
+/* Sidebar sections are short (PERSÖNLICHE DATEN, KENNTNISSE, SPRACHEN).
+   Keep them together so headings never get separated from their items
+   (e.g. SPRACHEN heading + first language on page 1, rest on page 2). */
+.classic-serif__sidebar > .classic-serif__section { break-inside: avoid; }
 .classic-serif__section h2 {
   font-family: 'Playfair Display', serif;
   font-size: 12pt;
