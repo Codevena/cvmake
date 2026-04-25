@@ -1,59 +1,133 @@
-# Prompt für nächste Session — cvMake Implementation Planning
+# Prompt für nächste Session — cvMake (Phase 6 Polish + Phase 7–10)
 
-Kopiere den folgenden Block in deine neue Claude-Code-Session (im Projektverzeichnis `/Users/markus/Developer/cvMake`):
+Kopiere den folgenden Block in die neue Claude-Code-Session im Projektverzeichnis `/Users/markus/Developer/cvMake`:
 
 ---
 
 ## Prompt
 
-Wir haben in der vorherigen Session die Spec für **cvMake** fertig gebrainstormt (ein Open-Source CV-Generator). Die Design-Spec liegt in `docs/superpowers/specs/2026-04-24-cvmake-design.md` und wurde bereits committed (Commit `686a308` auf Branch `main`).
+Wir sind mitten in der cvMake-Implementierung. Die ersten 6 Phasen aus `docs/superpowers/plans/2026-04-24-cvmake-plan.md` sind fast komplett auf dem Branch `feat/cvmake-mvp`. Heute (2026-04-25) ging der Context der vorherigen Session zur Neige. Lies zuerst den Stand und mach mit dem **akuten Bug** weiter, dann die **offenen Phasen 7–10**.
 
-**Deine Aufgabe jetzt:** Invoke das `superpowers:writing-plans`-Skill und erstelle einen detaillierten Implementation-Plan, der die Spec in umsetzbare Phasen zerlegt.
+### Aktueller Stand (Branch `feat/cvmake-mvp`)
 
-### Kontext zum Wiedereinlesen
+```bash
+git log --oneline main..feat/cvmake-mvp | head -50
+```
 
-- **Spec:** `docs/superpowers/specs/2026-04-24-cvmake-design.md` — komplettes Design-Dokument mit Architektur, Datenmodell, Flows, Error-Handling, Tests. Erst die Spec komplett lesen, bevor der Plan geschrieben wird.
-- **Memory:** Meine User-Profile- und Projekt-Memories liegen unter `/Users/markus/.claude/projects/-Users-markus-Developer-cvMake/memory/` — insbesondere:
-  - `feedback_parallel_design_agents.md` — **WICHTIG:** Jedes der 8 Templates muss durch einen eigenen dedizierten Agent designed/perfektioniert werden. Bis zu 10 Agents parallel dispatchen über das `dispatching-parallel-agents`-Skill. Nicht batchen.
-  - `project_cvmake.md` — Scope + alle 10 Brainstorming-Entscheidungen.
-  - `user_role.md` — mein Profil (Fullstack Dev, Deutsch, Hetzner + Coolify).
+- **Phase 0–5 fertig**: pnpm-Workspace, Schema, Core (loader/i18n/photo/renderer/pdf), Templates-Foundation, Classic-Serif-Proof, CLI mit `build`/`validate`/`list-templates`/`build-all`.
+- **Phase 6 fast fertig**: 8 Templates leben (`classic-serif`, `modern-minimal`, `creative-accent`, `academic`, `monochrome-dark`, `editorial`, `corporate`, `tech-dev`). 7 davon wurden parallel von Design-Agents implementiert. Alle haben Snapshot-Tests + Visual-Baselines. 8 PDFs aus Markus' echtem `data/cvs/cv.de.yaml` werden gebaut.
 
-### Wichtige Rahmenbedingungen für den Plan
+**Test-Status:**
+- `pnpm --filter @cvmake/core test:unit` → 14/14
+- `pnpm --filter @cvmake/core test:integration` → 1/1
+- `pnpm --filter @cvmake/templates test:unit` → 46/46
+- `pnpm --filter @cvmake/templates test:visual` → 8/8
 
-1. **Build-Reihenfolge folgt den Dependencies:** `schema` → `core` → `templates` → `apps`. Turborepo-Pipeline nutzen.
-2. **End-to-End-Proof vor Parallelisierung:** Erst 1 Template (z. B. Classic Serif) komplett durchbauen — Loader, Renderer, PDF, CLI-Command, ein funktionierendes PDF vom echten Markus-Content. Das beweist die Architektur, bevor wir 7 Templates parallel bauen.
-3. **Template-Phase = parallele Agents.** Nach dem End-to-End-Proof: `dispatching-parallel-agents` mit einem Agent pro Template, jeder mit einem detaillierten Brief (Style-Direction, Typografie, Palette, Layout, Foto-Treatment, Section-Rendering, Tests, Visual-Baseline).
-4. **Web-UI kommt NACH den Templates**, nicht davor. Die Templates + CLI müssen zuerst stehen und visuell getestet sein, bevor wir den Editor draufbauen.
-5. **Visual-Regression ist Teil der Template-Definition-of-Done** — ohne committed Baseline-Image kein Merge.
-6. **Tech-Stack folgt der Spec:** Next.js 16, TypeScript strict, pnpm Workspace, Turborepo, Zod, Puppeteer, sharp, react-image-crop, Biome, Vitest, Playwright. Prisma wird NICHT gebraucht (kein DB, keine Auth).
-7. **Real-Content-Test:** Meinen echten CV (die alte PDF-Datei liegt unter `/Users/markus/Desktop/Markus_Wiesecke_CV_2025-06-27.pdf`) als Basis nutzen, um `data/cvs/cv.de.yaml` zu füllen. Englische Variante durch Content-Aktualisierung mit dem „aktuellen" PDF (`/Users/markus/Desktop/Markus_Wiesecke_CV_aktuell.pdf`) anreichern.
+PDFs: `out/cv.de.<template>.pdf` (8 Stück, 126–321 KB).
 
-### Meine Arbeitsweise
+### AKUTER BUG (zuerst fixen!)
 
-- Sprache: Deutsch.
-- Ich bin Fullstack Dev, arbeite Next.js/TS/Postgres, deploye auf eigenem Hetzner + Coolify. Du kannst technisch präzise sein.
-- Qualität > Geschwindigkeit. Nicht batchen, nicht abkürzen.
-- Nach Git-Workflow: lokal committen ist okay, **nie ohne Rückfrage pushen**.
-- Build-Check (`pnpm build` / `tsc --noEmit`) vor jedem Commit. Code muss typen-sauber sein.
-- Commit-Messages: **keine** „Co-Authored-By Claude" Zeilen.
+**Symptom:** Auf Seite 2+ hat der Content keinen Top-Margin — der erste Section-Heading klebt am oberen Seitenrand. Beispiel: `out/cv.de.tech-dev.pdf` Seite 2.
 
-### Was ich von dir erwarte
+**Bisherige Fix-Versuche:**
+- `@page { margin: 28mm 0 18mm 0 }` in `packages/templates/src/shared/print.css` — gesetzt
+- `padding-top: 16pt` auf Sidebar/Main-Containers in 4 Sidebar-Templates — gesetzt
+- `background-attachment: fixed` für Body-Gradient in 4 Sidebar-Templates — gesetzt (löste Sidebar-"Stufe" auf Seite 2)
 
-1. Lies die Spec vollständig (`docs/superpowers/specs/2026-04-24-cvmake-design.md`).
-2. Lies meine Memories (`MEMORY.md` + verlinkte Dateien).
-3. Invoke `superpowers:writing-plans`.
-4. Erstelle einen Plan mit klaren Phasen, Milestones, Review-Checkpoints und expliziten Hinweisen, wo parallele Agents dispatched werden.
-5. Schreibe den Plan nach `docs/superpowers/plans/2026-04-24-cvmake-plan.md`.
-6. Committe den Plan lokal.
-7. Frage mich vor dem Start der Implementierung nach Review.
+Diese Fixes haben Seite 1 verbessert (Foto/Name haben Atemraum, Sidebar-Hintergrund läuft full-bleed durch). Aber Seite 2 hat **immer noch** keinen Top-Margin.
 
-Leg los.
+**Vermuteter Root Cause** (BITTE VERIFIZIEREN):
 
----
+`packages/core/src/pdf.ts` Zeile 45 setzt:
+```ts
+margin: opts.margin ?? { top: '0mm', right: '0mm', bottom: '0mm', left: '0mm' },
+```
 
-## Hintergrund falls relevant
+Dieses Puppeteer-Options-`margin` überschreibt **immer** die CSS-`@page { margin }`-Regel — auch wenn beide gesetzt sind. Daher wird `@page { margin: 28mm 0 18mm 0 }` ignoriert, und Content beginnt auf jeder Seite bei 0mm.
 
-- Projektpfad: `/Users/markus/Developer/cvMake`
-- Git: Branch `main`, erster Commit `686a308 docs: add cvMake design spec` ist bereits drin.
-- Spec-Review ist durch mich schon erfolgt — die Datei ist final.
-- Visual Companion Session: `.superpowers/brainstorm/` (nicht in Git, per `.gitignore` ausgeschlossen).
+**Vorgeschlagener Fix:**
+
+Lass `margin` in `page.pdf()` weg, sodass Chrome das CSS-`@page`-margin respektiert:
+
+```ts
+// packages/core/src/pdf.ts
+const pdfOptions: Parameters<typeof page.pdf>[0] = {
+  format: opts.format ?? 'A4',
+  printBackground: true,
+  preferCSSPageSize: true,
+};
+if (opts.margin) {
+  pdfOptions.margin = opts.margin;
+}
+const pdf = await page.pdf(pdfOptions);
+```
+
+So verhält sich das System:
+- Wenn Caller `opts.margin` setzt → das wird verwendet (override).
+- Wenn nicht → Chrome nutzt CSS `@page { margin }` aus shared/print.css.
+- Body-Background (gradient) paintet **full-bleed** auf dem ganzen Sheet, weil das page-level ist (unabhängig vom Content-Margin).
+
+**Verifikation (kritisch!):**
+
+1. Fix in `packages/core/src/pdf.ts` anwenden.
+2. `pnpm --filter @cvmake/core build && pnpm --filter @cvmake/cli build`
+3. Build alle 8 PDFs neu:
+   ```bash
+   for id in classic-serif modern-minimal creative-accent academic monochrome-dark editorial corporate tech-dev; do
+     node apps/cli/dist/index.js build data/cvs/cv.de.yaml -t $id -o out/cv.de.$id.pdf
+   done
+   ```
+4. Öffne `out/cv.de.tech-dev.pdf` Seite 2 — der Sidebar-bg muss bis zum Top der Seite gehen, **UND** der erste Content (`#eigeninitiative`) muss 28mm vom Page-Top entfernt sein.
+5. Falls Background nicht mehr full-bleed ist: das wäre ein Indikator dass Chrome das Page-Layout anders interpretiert als gehofft. Dann Plan B: Puppeteer-margin setzen auf `{ top: '28mm', bottom: '18mm', left: '0mm', right: '0mm' }` UND zusätzlich eine separate Page-Background-Strategie testen (z. B. `<div class="page-bg">` mit `position: fixed`).
+6. Visual-Baselines werden vermutlich neu generiert werden müssen: `UPDATE_VISUAL=1 pnpm --filter @cvmake/templates test:visual`, dann ohne UPDATE verifizieren.
+7. Commit: `fix(core): respect css @page margin by not overriding in puppeteer`. Falls Baselines aktualisiert: zweiter Commit `test(templates): regenerate baselines after page-margin fix`.
+
+Markus reviewt visuell. KEIN Push ohne Freigabe.
+
+### Memory + Konventionen
+
+Alle stehen in `/Users/markus/.claude/projects/-Users-markus-Developer-cvMake/memory/`:
+- `user_role.md` — Markus profile
+- `project_cvmake.md` — Projekt-Scope + Brainstorming-Entscheidungen
+- `feedback_parallel_design_agents.md` — pro Template ein Agent (Phase 6 hat das genutzt)
+
+Globale Regeln (aus `~/.claude/CLAUDE.md`):
+- **Keine "Co-Authored-By"-Zeilen** in Commit-Messages.
+- **Niemals pushen** ohne explizite Freigabe von Markus.
+- `pnpm build` und `pnpm typecheck` vor jedem Commit.
+- Definition-of-Done verlangt eigentlich 4 Review-Agents (2 Codex + 2 Claude), aber für die laufende Implementierungsarbeit pragmatisch handhaben — bei größeren PRs/Phasenabschluss konsequent durchziehen.
+
+### Nach dem Fix: Phase 7–10
+
+Sobald der Page-Margin-Bug behoben ist und alle 8 PDFs sauber aussehen, mit Phase 7 weitermachen. **Plan-Datei**: `docs/superpowers/plans/2026-04-24-cvmake-plan.md` — Phasen 7, 8, 9, 10.
+
+- **Phase 7** — `@cvmake/ui` (PhotoCropper, ColorPicker, TemplateCard, FormField, ArrayField). 6 Tasks, sequenziell.
+- **Phase 8** — `apps/web` (Next.js 16 Editor mit Live-Preview, API-Routes für Load/Save/Upload/Export). 10 Tasks.
+- **Phase 9** — CI + E2E + Visual-Regression vollständig (Playwright-Setup, 5 E2E-Flows, CI-Workflow erweitern).
+- **Phase 10** — README mit allen 8 Template-Screenshots, MIT-Lizenz, CONTRIBUTING.
+
+Skill für Ausführung: `superpowers:subagent-driven-development` (frischer Subagent pro Task + Spec/Code-Quality-Review). Hat in Phase 0–6 gut funktioniert.
+
+### Build-Commands Quick-Reference
+
+```bash
+# Vollständiger Lint/Typecheck/Test/Build
+pnpm lint && pnpm typecheck && pnpm build
+
+# Nur Templates testen
+pnpm --filter @cvmake/templates test:unit
+pnpm --filter @cvmake/templates test:visual
+
+# Visual-Baselines regenerieren (nach absichtlicher Layout-Änderung)
+UPDATE_VISUAL=1 pnpm --filter @cvmake/templates test:visual
+
+# Eine PDF bauen
+node apps/cli/dist/index.js build data/cvs/cv.de.yaml -t classic-serif -o out/test.pdf
+
+# Alle 8 PDFs bauen
+for id in classic-serif modern-minimal creative-accent academic monochrome-dark editorial corporate tech-dev; do
+  node apps/cli/dist/index.js build data/cvs/cv.de.yaml -t $id -o out/cv.de.$id.pdf
+done
+```
+
+Leg los: erst der Page-Margin-Fix, dann Markus zeigt sich die PDFs an, dann Phase 7.
