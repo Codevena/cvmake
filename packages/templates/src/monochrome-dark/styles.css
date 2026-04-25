@@ -12,6 +12,7 @@ body,
 /* Sidebar gradient on html/body so it repeats on every printed page */
 html, body {
   background: linear-gradient(to right, var(--surface) 200pt, var(--bg) 200pt);
+  background-attachment: fixed;
   print-color-adjust: exact;
   -webkit-print-color-adjust: exact;
 }
@@ -33,7 +34,7 @@ html, body {
 
 /* ── Sidebar ────────────────────────────────────────────────────── */
 .monochrome-dark__sidebar {
-  padding: 0 12mm;
+  padding: 16pt 12mm 0;
   color: var(--text);
   print-color-adjust: exact;
   -webkit-print-color-adjust: exact;
@@ -42,7 +43,7 @@ html, body {
 
 /* ── Main content ───────────────────────────────────────────────── */
 .monochrome-dark__main {
-  padding: 0 14mm;
+  padding: 16pt 14mm 0;
 }
 
 /* ── Photo ──────────────────────────────────────────────────────── */

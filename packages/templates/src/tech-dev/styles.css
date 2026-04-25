@@ -5,6 +5,7 @@
 /* Sidebar gradient on html/body so it repeats on every printed page */
 html, body {
   background: linear-gradient(to right, var(--surface) 200pt, var(--bg) 200pt);
+  background-attachment: fixed;
 }
 
 /* ── Root ──────────────────────────────────────────────────── */
@@ -23,7 +24,7 @@ html, body {
 
 /* ── Sidebar ────────────────────────────────────────────────── */
 .tech-dev__sidebar {
-  padding: 0 10mm;
+  padding: 16pt 10mm 0;
   font-family: 'JetBrains Mono', 'Courier New', monospace;
   font-size: 9pt;
   color: var(--text);
@@ -129,7 +130,7 @@ html, body {
 
 /* ── Main column ────────────────────────────────────────────── */
 .tech-dev__main {
-  padding: 0 14mm;
+  padding: 16pt 14mm 0;
 }
 
 /* Terminal prompt line */
