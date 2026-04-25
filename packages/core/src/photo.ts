@@ -20,7 +20,7 @@ export interface ProcessedPhoto {
 
 const DEFAULT_MAX_BYTES = 10 * 1024 * 1024;
 const DEFAULT_TARGET = 600;
-const SLUG_RE = /^[a-z0-9-]+$/;
+const SLUG_RE = /^(?!\.+$)[a-z0-9.-]+$/;
 
 export async function processPhoto(opts: ProcessPhotoOptions): Promise<ProcessedPhoto> {
   const {
