@@ -1,6 +1,7 @@
 'use client';
 import { cssVariables } from '@/lib/css-vars';
 import type { PreviewBootstrap } from '@/lib/preview-bootstrap';
+import { applyHiddenSections } from '@/lib/render-helpers';
 import { getLabels } from '@codevena/forq-core';
 import type { CVData, ColorPalette } from '@codevena/forq-schema';
 import { getTemplate } from '@codevena/forq-templates';
@@ -93,6 +94,7 @@ export function PreviewFrame({ data, bootstrap, templateId, paletteId, accentOve
 
   const tplDef = getTemplate(templateId);
   const palette = effectivePalette(bootstrap, templateId, paletteId, accentOverride);
+  const filtered = applyHiddenSections(data);
 
   return (
     <>
@@ -105,7 +107,7 @@ export function PreviewFrame({ data, bootstrap, templateId, paletteId, accentOve
       {root && tplDef && palette
         ? createPortal(
             <tplDef.Component
-              data={data}
+              data={filtered}
               palette={palette}
               locale={data.meta.locale}
               labels={getLabels(data.meta.locale)}
