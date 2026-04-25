@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ChangeEvent, SyntheticEvent } from 'react';
 import ReactCrop, { type Crop, type PixelCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -21,13 +21,28 @@ export interface PhotoCropperProps {
   className?: string;
 }
 
-const ALLOWED_MIME = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/heic']);
+const ALLOWED_MIME = new Set(['image/jpeg', 'image/png', 'image/webp']);
 const DEFAULT_MAX = 10 * 1024 * 1024;
 const ASPECT_VALUE: Record<PhotoAspect, number | undefined> = {
   '1:1': 1,
   '3:4': 3 / 4,
   free: undefined,
 };
+
+function computeCenteredCrop(img: HTMLImageElement, aspect: PhotoAspect): PixelCrop | undefined {
+  const ratio = ASPECT_VALUE[aspect];
+  if (ratio === undefined) return undefined;
+  const size = Math.min(img.width, img.height) * 0.8;
+  const w = ratio >= 1 ? size : size * ratio;
+  const h = ratio >= 1 ? size / ratio : size;
+  return {
+    unit: 'px',
+    x: (img.width - w) / 2,
+    y: (img.height - h) / 2,
+    width: w,
+    height: h,
+  };
+}
 
 export function PhotoCropper(props: PhotoCropperProps): JSX.Element {
   const {
@@ -41,7 +56,7 @@ export function PhotoCropper(props: PhotoCropperProps): JSX.Element {
   } = props;
 
   const [file, setFile] = useState<File | null>(initialFile ?? null);
-  const [imageUrl, setImageUrl] = useState<string | null>(
+  const [imageUrl, setImageUrl] = useState<string | null>(() =>
     initialFile ? URL.createObjectURL(initialFile) : null,
   );
   const [aspect, setAspect] = useState<PhotoAspect>(defaultAspect);
@@ -49,6 +64,12 @@ export function PhotoCropper(props: PhotoCropperProps): JSX.Element {
   const [pixelCrop, setPixelCrop] = useState<PixelCrop | null>(null);
   const [error, setError] = useState<string | null>(null);
   const imgRef = useRef<HTMLImageElement | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (imageUrl) URL.revokeObjectURL(imageUrl);
+    };
+  }, [imageUrl]);
 
   const onPick = (e: ChangeEvent<HTMLInputElement>): void => {
     const next = e.target.files?.[0] ?? null;
@@ -73,23 +94,22 @@ export function PhotoCropper(props: PhotoCropperProps): JSX.Element {
     (e: SyntheticEvent<HTMLImageElement>): void => {
       const img = e.currentTarget;
       imgRef.current = img;
-      const ratio = ASPECT_VALUE[aspect];
-      if (ratio === undefined) return;
-      const size = Math.min(img.width, img.height) * 0.8;
-      const w = ratio >= 1 ? size : size * ratio;
-      const h = ratio >= 1 ? size / ratio : size;
-      const next: PixelCrop = {
-        unit: 'px',
-        x: (img.width - w) / 2,
-        y: (img.height - h) / 2,
-        width: w,
-        height: h,
-      };
+      const next = computeCenteredCrop(img, aspect);
+      if (next === undefined) return;
       setCrop(next);
       setPixelCrop(next);
     },
     [aspect],
   );
+
+  const changeAspect = (a: PhotoAspect): void => {
+    setAspect(a);
+    if (imgRef.current) {
+      const next = computeCenteredCrop(imgRef.current, a);
+      setCrop(next);
+      setPixelCrop(next ?? null);
+    }
+  };
 
   const handleConfirm = (): void => {
     if (!file || !pixelCrop || !imgRef.current) return;
@@ -109,7 +129,6 @@ export function PhotoCropper(props: PhotoCropperProps): JSX.Element {
   };
 
   const handleCancel = (): void => {
-    if (imageUrl) URL.revokeObjectURL(imageUrl);
     setFile(null);
     setImageUrl(null);
     setCrop(undefined);
@@ -128,11 +147,11 @@ export function PhotoCropper(props: PhotoCropperProps): JSX.Element {
     return (
       <div className={wrapperClass}>
         <p className="text-sm text-text-muted">
-          Upload a photo (JPEG, PNG, WebP, HEIC; max {Math.round(maxBytes / 1024 / 1024)}MB)
+          Upload a photo (JPEG, PNG, WebP; max {Math.round(maxBytes / 1024 / 1024)}MB)
         </p>
         <input
           type="file"
-          accept="image/jpeg,image/png,image/webp,image/heic"
+          accept="image/jpeg,image/png,image/webp"
           onChange={onPick}
           aria-label="Upload photo"
           className="text-sm"
@@ -156,7 +175,7 @@ export function PhotoCropper(props: PhotoCropperProps): JSX.Element {
             <button
               key={a}
               type="button"
-              onClick={() => setAspect(a)}
+              onClick={() => changeAspect(a)}
               aria-pressed={active}
               className={cls}
             >
