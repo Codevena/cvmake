@@ -30,8 +30,8 @@ function joinYM(year: string, month: string): string {
   return `${year}-${month}`;
 }
 
-const fieldClass =
-  'rounded-md border border-border bg-surface px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent disabled:cursor-not-allowed disabled:opacity-60';
+const FIELD_BASE =
+  'rounded-md border bg-surface px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent disabled:cursor-not-allowed disabled:opacity-60';
 
 export function DateRangeInput(props: DateRangeInputProps): JSX.Element {
   const currentYear = new Date().getFullYear();
@@ -76,14 +76,15 @@ export function DateRangeInput(props: DateRangeInputProps): JSX.Element {
   const errorText = error ?? internalError;
 
   const wrapperClass = ['flex flex-col gap-1', className].filter(Boolean).join(' ');
+  const fieldClass = `${FIELD_BASE} ${errorText ? 'border-error' : 'border-border'}`;
 
   return (
-    <div className={wrapperClass}>
+    <fieldset className={wrapperClass}>
       {label && (
-        <span className="text-sm font-medium text-text">
+        <legend className="text-sm font-medium text-text mb-1">
           {label}
           {required && <span className="text-error"> *</span>}
-        </span>
+        </legend>
       )}
       <div className="flex flex-wrap items-center gap-2">
         <select
@@ -147,16 +148,11 @@ export function DateRangeInput(props: DateRangeInputProps): JSX.Element {
         </select>
 
         <label className="ml-2 inline-flex items-center gap-1 text-sm text-text-muted">
-          <input
-            type="checkbox"
-            checked={isCurrent}
-            onChange={toggleCurrent}
-            disabled={disabled}
-          />
+          <input type="checkbox" checked={isCurrent} onChange={toggleCurrent} disabled={disabled} />
           {currentLabel}
         </label>
       </div>
       {errorText && <p className="text-sm text-error">{errorText}</p>}
-    </div>
+    </fieldset>
   );
 }
