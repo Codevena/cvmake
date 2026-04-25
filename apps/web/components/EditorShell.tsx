@@ -8,6 +8,7 @@ import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { PreviewFrame } from './PreviewFrame';
 import { EducationSection } from './sections/EducationSection';
 import { ExperienceSection } from './sections/ExperienceSection';
+import { LanguagesSection } from './sections/LanguagesSection';
 import { PersonalSection } from './sections/PersonalSection';
 import { SkillsSection } from './sections/SkillsSection';
 import { SummarySection } from './sections/SummarySection';
@@ -61,6 +62,7 @@ export function EditorShell({ initialData, slug, bootstrap }: Props) {
             <ExperienceSection />
             <EducationSection />
             <SkillsSection />
+            <LanguagesSection />
           </form>
           <section className="flex-1 overflow-hidden p-4">
             <PreviewFrame
