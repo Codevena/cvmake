@@ -25,4 +25,30 @@ describe('processPhoto', () => {
       processPhoto({ inputPath: 'nonexistent', outputDir: outDir, slug: 'x', maxBytes: 1 }),
     ).rejects.toThrow();
   });
+
+  it('wendet das crop-Rechteck vor resize an', async () => {
+    const input = path.join(import.meta.dirname, 'fixtures', 'photo-input.jpg');
+    const noCrop = await processPhoto({ inputPath: input, outputDir: outDir, slug: 'a' });
+    const noCropBytes = (await readFile(noCrop.jpg)).byteLength;
+    const cropped = await processPhoto({
+      inputPath: input,
+      outputDir: outDir,
+      slug: 'b',
+      crop: { left: 0, top: 0, width: 100, height: 100 },
+    });
+    const croppedBytes = (await readFile(cropped.jpg)).byteLength;
+    expect(croppedBytes).not.toBe(noCropBytes);
+  });
+
+  it('lehnt out-of-bounds crop ab', async () => {
+    const input = path.join(import.meta.dirname, 'fixtures', 'photo-input.jpg');
+    await expect(
+      processPhoto({
+        inputPath: input,
+        outputDir: outDir,
+        slug: 'oob',
+        crop: { left: 0, top: 0, width: 99999, height: 99999 },
+      }),
+    ).rejects.toThrow();
+  });
 });
