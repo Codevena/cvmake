@@ -4,7 +4,6 @@ export async function atomicWriteFile(target: string, contents: string | Buffer)
   const tmp = `${target}.${process.pid}.${Date.now()}.tmp`;
   await writeFile(tmp, contents);
   try {
-    await rm(target, { force: true });
     await rename(tmp, target);
   } catch (err) {
     await rm(tmp, { force: true });
