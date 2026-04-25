@@ -1,0 +1,56 @@
+'use client';
+import type { PreviewBootstrap } from '@/lib/preview-bootstrap';
+import { type CVData, CVDataSchema } from '@codevena/forq-schema';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { FormProvider, useForm } from 'react-hook-form';
+
+interface Props {
+  initialData: CVData;
+  initialMtime: number;
+  slug: string;
+  allSlugs: string[];
+  bootstrap: PreviewBootstrap;
+}
+
+export function EditorShell({ initialData, slug }: Props) {
+  const form = useForm<CVData>({
+    defaultValues: initialData,
+    resolver: zodResolver(CVDataSchema),
+    mode: 'onChange',
+    shouldUnregister: false,
+  });
+
+  return (
+    <FormProvider {...form}>
+      <div className="flex h-screen flex-col bg-bg text-text">
+        {/* biome-ignore lint/a11y/noInteractiveElementToNoninteractiveRole: explicit banner landmark for testability */}
+        <header role="banner" className="flex h-12 items-center border-b px-4">
+          <span className="font-semibold">forq</span>
+          <span className="ml-4 text-sm text-text-muted">{slug}</span>
+        </header>
+        <div className="flex flex-1 overflow-hidden">
+          {/* biome-ignore lint/a11y/noRedundantRoles: explicit complementary landmark for testability + intent */}
+          <aside role="complementary" className="w-80 shrink-0 overflow-y-auto border-r p-4">
+            Sidebar
+          </aside>
+          {/* biome-ignore lint/a11y/useSemanticElements: explicit role="form" is intentional — <form> only has implicit role="form" when given an accessible name */}
+          <form
+            // biome-ignore lint/a11y/noRedundantRoles: explicit role="form" is intentional for the same reason
+            role="form"
+            className="flex-1 overflow-y-auto p-6"
+            onSubmit={(e) => e.preventDefault()}
+          >
+            Form
+          </form>
+          <section className="flex-1 overflow-hidden p-4">
+            <iframe
+              title="CV Preview"
+              className="h-full w-full bg-white"
+              sandbox="allow-same-origin"
+            />
+          </section>
+        </div>
+      </div>
+    </FormProvider>
+  );
+}
