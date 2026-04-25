@@ -5,6 +5,7 @@ import { getTemplate, listTemplates } from '@codevena/forq-templates';
 import { ColorPicker, PaletteSelector, TemplateCard } from '@codevena/forq-ui';
 import { useEffect, useRef } from 'react';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
+import { HiddenSectionsToggles } from './HiddenSectionsToggles';
 
 interface Props {
   bootstrap: PreviewBootstrap;
@@ -93,6 +94,10 @@ export function Sidebar(_props: Props) {
             </div>
           )}
         />
+      </section>
+      <section className="mt-4">
+        <h2 className="mb-2 text-sm font-semibold">Sichtbare Sections</h2>
+        <HiddenSectionsToggles />
       </section>
     </aside>
   );
