@@ -1,8 +1,16 @@
 'use client';
 import type { PreviewBootstrap } from '@/lib/preview-bootstrap';
+import { useDebouncedValue } from '@/lib/use-debounced-value';
 import { type CVData, CVDataSchema } from '@codevena/forq-schema';
+import { bootstrapTemplates } from '@codevena/forq-templates';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useForm, useWatch } from 'react-hook-form';
+import { PreviewFrame } from './PreviewFrame';
+
+// Populate the template registry on the client. `bootstrapTemplates()` is
+// idempotent (calls clearRegistry() first), so running it at module load is
+// safe in browser, tests, and React strict mode.
+bootstrapTemplates();
 
 interface Props {
   initialData: CVData;
@@ -12,13 +20,16 @@ interface Props {
   bootstrap: PreviewBootstrap;
 }
 
-export function EditorShell({ initialData, slug }: Props) {
+export function EditorShell({ initialData, slug, bootstrap }: Props) {
   const form = useForm<CVData>({
     defaultValues: initialData,
     resolver: zodResolver(CVDataSchema),
     mode: 'onChange',
     shouldUnregister: false,
   });
+
+  const watched = useWatch({ control: form.control }) as CVData;
+  const debounced = useDebouncedValue(watched, 150);
 
   return (
     <FormProvider {...form}>
@@ -43,10 +54,12 @@ export function EditorShell({ initialData, slug }: Props) {
             Form
           </form>
           <section className="flex-1 overflow-hidden p-4">
-            <iframe
-              title="CV Preview"
-              className="h-full w-full bg-white"
-              sandbox="allow-same-origin"
+            <PreviewFrame
+              data={debounced}
+              bootstrap={bootstrap}
+              templateId={debounced?.rendering?.template ?? 'classic-serif'}
+              paletteId={debounced?.rendering?.palette}
+              accentOverride={debounced?.rendering?.accentOverride}
             />
           </section>
         </div>
