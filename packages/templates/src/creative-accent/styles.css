@@ -5,6 +5,7 @@
 /* Sidebar gradient on html/body so it repeats on every printed page */
 html, body {
   background: linear-gradient(to right, var(--bg) calc(100% - 238pt), var(--surface) calc(100% - 238pt));
+  background-attachment: fixed;
 }
 
 /* ── Root layout ──────────────────────────────────────────────── */
@@ -23,13 +24,13 @@ html, body {
 
 /* ── Main content column (left 60 %) ──────────────────────────── */
 .creative-accent__main {
-  padding: 0 14mm 0 18mm;
+  padding: 16pt 14mm 0 18mm;
   overflow: hidden;
 }
 
 /* ── Accent sidebar column (right 40 %) ──────────────────────── */
 .creative-accent__sidebar {
-  padding: 0 12mm;
+  padding: 16pt 12mm 0;
   position: relative;
   /* background handled by root gradient */
 }

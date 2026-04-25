@@ -4,6 +4,7 @@
 /* Sidebar gradient on html/body so it repeats on every printed page */
 html, body {
   background: linear-gradient(to right, var(--surface) 220pt, var(--bg) 220pt);
+  background-attachment: fixed;
 }
 
 .classic-serif {
@@ -17,12 +18,12 @@ html, body {
   grid-template-columns: 220pt 1fr;
 }
 .classic-serif__sidebar {
-  padding: 0 12mm;
+  padding: 16pt 12mm 0;
   color: var(--text);
   /* background handled by root gradient */
 }
 .classic-serif__main {
-  padding: 0 14mm;
+  padding: 16pt 14mm 0;
 }
 .classic-serif__photo {
   width: 140pt;
