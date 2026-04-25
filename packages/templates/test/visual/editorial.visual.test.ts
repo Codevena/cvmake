@@ -26,7 +26,7 @@ async function renderPageOneAsPng(paletteId: string): Promise<Buffer> {
   registerTemplate(editorial);
   const template = getTemplate('editorial');
   if (!template) throw new Error('editorial not registered');
-  const rendered = renderCV({ data: fullFixture, template, paletteId });
+  const rendered = await renderCV({ data: fullFixture, template, paletteId });
   const css = `${rendered.css}\n${loadTemplateCss('editorial')}`;
   const html = wrapHtmlDocument({ title: 'CV', html: rendered.html, css });
   const browser = await puppeteer.launch({

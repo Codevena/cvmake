@@ -1,8 +1,12 @@
-import { renderToStaticMarkup } from 'react-dom/server';
 import { getLabels } from './i18n.js';
 import type { RenderInput, RenderOutput } from './renderer-types.js';
 
-export function renderCV({ data, template, paletteId }: RenderInput): RenderOutput {
+export async function renderCV({
+  data,
+  template,
+  paletteId,
+}: RenderInput): Promise<RenderOutput> {
+  const { renderToStaticMarkup } = await import('react-dom/server');
   const palette =
     template.palettes.find((p) => p.id === paletteId) ?? template.palettes[0];
   if (!palette) throw new Error(`template ${template.meta.id} has no palettes`);

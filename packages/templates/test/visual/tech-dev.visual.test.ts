@@ -22,7 +22,7 @@ afterAll(() => shutdownPdfBrowser());
 
 async function renderPageOneAsPng(paletteId: string): Promise<Buffer> {
   const template = techDev;
-  const rendered = renderCV({ data: fullFixture, template, paletteId });
+  const rendered = await renderCV({ data: fullFixture, template, paletteId });
   const css = `${rendered.css}\n${loadTemplateCss('tech-dev')}`;
   const html = wrapHtmlDocument({ title: 'CV', html: rendered.html, css });
   const browser = await puppeteer.launch({
