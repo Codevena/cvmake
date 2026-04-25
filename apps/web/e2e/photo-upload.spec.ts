@@ -2,13 +2,11 @@ import { rm, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { expect, test } from '@playwright/test';
-import { installFixture, uninstallFixture } from './_shared/setup';
+import { installFixture, photoPath, uninstallFixture } from './_shared/setup';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-// `apps/web` package root (the dev server resolves public/photos relative to its cwd).
-const WEB_ROOT = path.resolve(HERE, '..');
-const PHOTO_JPG = path.join(WEB_ROOT, 'public', 'photos', 'cv.test.de.jpg');
-const PHOTO_WEBP = path.join(WEB_ROOT, 'public', 'photos', 'cv.test.de.webp');
+const PHOTO_JPG = photoPath('cv.test.de', 'jpg');
+const PHOTO_WEBP = photoPath('cv.test.de', 'webp');
 
 test.describe('photo upload', () => {
   test.beforeAll(() => installFixture('cv.test.de'));
