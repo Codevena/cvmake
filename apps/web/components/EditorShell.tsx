@@ -86,7 +86,7 @@ export function EditorShell({ initialData, initialMtime, slug, bootstrap }: Prop
             className="flex-1 overflow-y-auto p-6"
             onSubmit={(e) => e.preventDefault()}
           >
-            <PersonalSection />
+            <PersonalSection slug={slug} />
             <SummarySection />
             <ExperienceSection />
             <EducationSection />
