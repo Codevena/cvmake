@@ -6,6 +6,7 @@ import { bootstrapTemplates } from '@codevena/forq-templates';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { PreviewFrame } from './PreviewFrame';
+import { EducationSection } from './sections/EducationSection';
 import { ExperienceSection } from './sections/ExperienceSection';
 import { PersonalSection } from './sections/PersonalSection';
 import { SummarySection } from './sections/SummarySection';
@@ -57,6 +58,7 @@ export function EditorShell({ initialData, slug, bootstrap }: Props) {
             <PersonalSection />
             <SummarySection />
             <ExperienceSection />
+            <EducationSection />
           </form>
           <section className="flex-1 overflow-hidden p-4">
             <PreviewFrame
