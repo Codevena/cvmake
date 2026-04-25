@@ -3439,6 +3439,13 @@ git commit -m "test(cli): add pdf build integration test"
 
 ## Phase 6 — Parallele Template-Implementierung (7 Agents)
 
+> **Status (2026-04-25):** Phase 6 fertig — alle 8 Templates leben (`classic-serif`, `modern-minimal`, `creative-accent`, `academic`, `monochrome-dark`, `editorial`, `corporate`, `tech-dev`). Snapshot-Tests 46/46, Visual-Baselines 8/8, Markus' echtes `cv.de.yaml` produziert 8 PDFs. Page-2-Top-Margin-Bug per `page.evaluate()`-Spacer-Injection in `packages/core/src/pdf.ts` adressiert (commit `e98aad5`); Puppeteer-Margin bleibt bei 0 → full-bleed Sidebar-Gradient erhalten. Bekannte Restprobleme (für Phase 6.5 / Polish-Runde):
+> - **classic-serif**: page 2 yMin = 1.14 — `break-before:page` auf Grid-Items wird von Chromium nicht zuverlässig respektiert.
+> - **creative-accent (4 pages)**: page 3 yMin = 0.75 — der Spacer-Detector verpasst den Übergang von Seite 2 → 3.
+> - **modern-minimal**: page 2 yMin = 8.0 — partielle Wirkung, ~8pt statt 16pt Top-Spacing.
+>
+> Alternative Approaches getestet und verworfen: A1 (`display: table-header-group` div), A3 (`@page { @top { background } }` und `position: running()`), A6 (Puppeteer `headerTemplate` mit Gradient-Strip — funktionierte für tech-dev, aber benötigte per-template Palette-Threading), A7 (`margin-break: keep`). Detail-Findings im Commit-Log.
+
 Ziel: Die verbleibenden 7 Templates durch je einen dedizierten Agent parallel implementieren lassen. **Benutze das `dispatching-parallel-agents`-Skill.** Jeder Agent bekommt einen vollständigen Brief (Style-Richtung, Typografie, Palette, Layout, Foto-Treatment, Section-Rendering, Tests, Visual-Baseline). Nach Abschluss jedes Agenten: Review + Merge + erneuter Run der gesamten Test-Suite.
 
 **Feedback-Memory:** Kein Batching. Ein Agent = ein Template. Jeder liefert in einem eigenen Worktree oder Branch, Merge in main erfolgt einzeln nach Review.
