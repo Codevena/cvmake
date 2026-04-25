@@ -9,6 +9,7 @@ import { PreviewFrame } from './PreviewFrame';
 import { EducationSection } from './sections/EducationSection';
 import { ExperienceSection } from './sections/ExperienceSection';
 import { PersonalSection } from './sections/PersonalSection';
+import { SkillsSection } from './sections/SkillsSection';
 import { SummarySection } from './sections/SummarySection';
 
 // Populate the template registry on the client. `bootstrapTemplates()` is
@@ -59,6 +60,7 @@ export function EditorShell({ initialData, slug, bootstrap }: Props) {
             <SummarySection />
             <ExperienceSection />
             <EducationSection />
+            <SkillsSection />
           </form>
           <section className="flex-1 overflow-hidden p-4">
             <PreviewFrame
