@@ -1,6 +1,4 @@
-# Prompt für nächste Session — forq Template-Review (vor Phase 7)
-
-> **Hinweis (2026-04-25):** Projekt wurde von `cvMake` zu `forq` umbenannt. Branch `feat/cvmake-mvp` bleibt vorerst, wird beim ersten Merge zu `main` ggf. umbenannt. Siehe `docs/superpowers/specs/2026-04-25-naming-decision.md`.
+# Prompt für nächste Session — forq Phase 7 (`@codevena/forq-ui`)
 
 Kopiere den folgenden Block in die neue Claude-Code-Session im Projektverzeichnis `/Users/markus/Developer/cvMake`:
 
@@ -8,7 +6,9 @@ Kopiere den folgenden Block in die neue Claude-Code-Session im Projektverzeichni
 
 ## Prompt
 
-Wir sind auf Branch `feat/cvmake-mvp`. Phasen 0–6 sind komplett, das Page-Margin-Polish landed. **Bevor wir mit Phase 7 (`@codevena/forq-ui`) anfangen, will ich jedes Template visuell durchreviewen.** Heißt: für alle 8 Templates Seite 1 + Seite 2 angucken, mein Feedback einsammeln, in ein Review-Dokument konsolidieren, und dann gemeinsam entscheiden, ob eine Polish-Runde (Phase 6.5) nötig ist oder wir direkt zu Phase 7 springen.
+Wir sind auf Branch `feat/cvmake-mvp`, Repo `Codevena/forq` (private). Phase 0–6 + 6.5 sind komplett, Projekt von `cvMake` zu `forq` umbenannt, alle Templates polished, Repo auf GitHub gepusht.
+
+**Heute: Phase 7 — `@codevena/forq-ui`.** UI-Primitives, die später vom Web-Editor (Phase 8) konsumiert werden. **Vor dem Code: kurzes Brainstorming** zu Stack-/API-Entscheidungen — sonst bauen wir blind. Skill: `superpowers:brainstorming`.
 
 ### Aktueller Stand
 
@@ -16,103 +16,85 @@ Wir sind auf Branch `feat/cvmake-mvp`. Phasen 0–6 sind komplett, das Page-Marg
 git log --oneline main..feat/cvmake-mvp | head -5
 ```
 
-- Phase 6 fertig, alle 8 Templates leben.
-- Commit `e98aad5`: Page-2-Top-Margin via `page.evaluate()` Spacer-Injection in `packages/core/src/pdf.ts`.
-  - **Sauber: tech-dev, academic, monochrome-dark, editorial, corporate**
-  - **Partial: modern-minimal (8pt), creative-accent (Seite 3 verpasst)**
-  - **Broken: classic-serif (Grid-Layout, `break-before:page` ignoriert)**
-- Tests: core 14/14, integration 1/1, templates 46/46, visual 8/8.
+- Letzter Commit: `09d0b92 chore: rename project from cvmake to forq`
+- Davor: `1da86a6 fix(templates): phase 6.5 polish` + `3ed8914 docs: next-session prompt`
+- Repo live: https://github.com/Codevena/forq (private, kein CI)
+- `packages/ui/` ist Stub (`src/index.ts` exportiert nur `UI_VERSION`)
+- `apps/web/` ist Next.js 16 Stub (`app/page.tsx` rendert "forq")
+- `packages/ui/package.json` hat bereits `react-image-crop@11.0.7` als Dep
+- `apps/web/package.json` hat bereits Tailwind v4 (`tailwindcss@4.0.0-beta.3`, `@tailwindcss/postcss`), `react-hook-form`, `@hookform/resolvers`, `zod`
 
-### Review-Ablauf
+### Geplante Komponenten (laut Design-Spec §11 / §4)
 
-#### Schritt 1: Alle 8 PDFs frisch bauen
+1. **PhotoCropper** — Datei-Upload + Crop-UI, basiert auf `react-image-crop`. Output: gecroppter File-Blob (an `processPhoto()` aus `@codevena/forq-core`).
+2. **ColorPicker / PaletteSelector** — visuelles Picker-Grid für Template-Paletten (jedes Template hat 3–5 Paletten in `palettes.ts`).
+3. **TemplateCard** — Template-Preview-Kachel (Thumbnail + Name + Selected-State).
+4. **Form Primitives** — `<Input>`, `<Textarea>`, `<Select>`, `<DateRangeInput>` (Monat/Jahr-Pair), `<BulletListEditor>` (drag-reorder, add/remove). Alles strict-typed gegen die Zod-Schemas aus `@codevena/forq-schema`.
 
-```bash
-pnpm --filter @codevena/forq-core build && pnpm --filter @codevena/forq-cli build
-for id in classic-serif modern-minimal creative-accent academic monochrome-dark editorial corporate tech-dev; do
-  node apps/cli/dist/index.js build data/cvs/cv.de.yaml -t $id -o out/cv.de.$id.pdf
-done
-```
+### Brainstorming-Themen (vor dem Coden)
 
-#### Schritt 2: Pro Template — Seite 1 + Seite 2 als PNG rendern und mir zeigen
+#### Theme 1: Styling-Stack
 
-Render-Befehl pro Template (rendere ALLE Seiten, nicht nur 1+2 — manche Templates haben 3-4 Seiten):
+- **A) Pure Tailwind v4** (schon in `apps/web` installiert) — minimaler, keine zusätzlichen Deps, direkter
+- **B) shadcn/ui auf Tailwind v4** — vorgefertigte komponierbare Primitives (Dialog, Form, etc.), aber: shadcn ist "copy-paste in app", passt nicht 100% zum Lib-Pattern (`packages/ui` als wiederverwendbare Lib)
+- **C) Headless UI (Radix) + custom Tailwind-Styling** — Hybrid
 
-```bash
-# Pages 1-4 (überspringt nicht-existierende stillschweigend)
-pdftoppm -png -r 80 out/cv.de.<TEMPLATE>.pdf out/_review_<TEMPLATE>
-ls out/_review_<TEMPLATE>-*.png
-```
+#### Theme 2: Component-API & Form-State
 
-Dann **per Template** die PNGs in den Chat lesen (`Read` tool auf jede `.png`). **Eins nach dem anderen** — nicht alles auf einmal — damit ich pro Template gezielt Feedback geben kann.
+- React Hook Form ist schon in den `apps/web` Deps. Frage: Liefern wir die Components als unkontrolliert (RHF-friendly via `register()`) oder kontrolliert (eigener `value`/`onChange`)? Oder beide via Forwarding?
 
-Reihenfolge zum Reviewen:
-1. classic-serif
-2. modern-minimal
-3. creative-accent
-4. academic
-5. monochrome-dark
-6. editorial
-7. corporate
-8. tech-dev
+#### Theme 3: YAML ↔ Form Sync (Phase 8 Vorbereitung, hier Konzept)
 
-#### Schritt 3: Pro Template Feedback einsammeln
+- Debounced auto-save zurück in YAML? Explizit "Save"-Button? Optimistic update + Snapshot-Liste (Undo)?
+- Wo lebt der Single-Source-of-Truth-State im Editor? RHF-State? Zustand-Store? URL-Param?
 
-Pro Template Markus folgendes fragen:
-- Typografie ok? (Größe, Hierarchie, Lesbarkeit)
-- Spacing & Layout ok? (Gaps, Abstände, Zeilenhöhe)
-- Palette ok? (Akzentfarben, Kontrast)
-- Foto-Treatment ok? (Größe, Position, Border-Radius)
-- Section-Reihenfolge ok?
-- Seite-2+ Top-Margin ok? (visueller Sanity-Check, NICHT nur die `pdftotext`-Zahl)
-- Sonstige Auffälligkeiten?
+#### Theme 4: Photo-Pipeline-Trennung
 
-Mach dir pro Template Notizen in einem strukturierten Markdown-Dokument: `docs/template-review-2026-04-25.md` (oder mit aktuellem Datum). Format:
+- PhotoCropper liefert nur Crop-Region & Original-Blob → Server (`@codevena/forq-core` `processPhoto`) erzeugt `.webp` + `.jpg`. UI-Component soll **nicht** sharp-Aufrufe enthalten (Browser-Kontext).
 
-```markdown
-## <template-id>
+### Empfohlener Ablauf
 
-**Pages:** 2 (or whatever)
-**Page-2 yMin:** <pdftotext-bbox value> pt
-**Status:** good / needs polish / broken
+1. **`Skill: superpowers:brainstorming`** öffnen.
+2. Themes 1–4 durchgehen (1 Frage = 1 Antwort, Multiple-Choice).
+3. Approved Design → Spec nach `docs/superpowers/specs/2026-04-25-forq-ui-design.md` schreiben.
+4. **`Skill: superpowers:writing-plans`** für den Implementation-Plan.
+5. Implementation: pro Component 1 Datei + 1 Vitest-Test (DOM via `happy-dom`, schon installiert). `packages/ui/test:unit` muss am Ende grün sein (aktuell skipt es weil keine Test-Files existieren).
+6. Visual Story-ähnliche Demo: nicht via Storybook (out of scope für MVP), sondern als simple `apps/web/app/_dev-ui/` Test-Page wenn nötig — damit du die Components live siehst.
 
-### Findings
-- [ ] (item)
-- [ ] (item)
+### Akzeptanz-Kriterium für Phase 7
 
-### Notes
-…
-```
-
-#### Schritt 4: Entscheidungs-Punkt
-
-Nach dem Review aller 8 Templates: Markus zeigen, was die kritischsten Items sind, und vorschlagen:
-
-- **Option A — Phase 6.5 Polish-Runde**: Per-Template-Agent dispatchen (1 Agent pro Template das Polish braucht), parallel via `superpowers:dispatching-parallel-agents`. Skill ist erprobt aus Phase 6.
-- **Option B — Direkt Phase 7 starten**: Wenn die Findings minor sind, parken wir sie als TODOs und gehen zum UI weiter.
-- **Option C — Mix**: Nur die kaputten Templates (classic-serif page-2-bug, creative-accent page-3-bug) jetzt fixen, Rest später.
-
-Markus entscheidet. **Nichts ohne Freigabe committen oder pushen.**
+- `pnpm --filter @codevena/forq-ui build` grün
+- `pnpm --filter @codevena/forq-ui test:unit` grün (mind. 1 Test je Component)
+- Components werden in `packages/ui/src/index.ts` exportiert
+- TypeScript-Types passen 1:1 zu den Zod-Schemas (für Form-Felder via `z.infer`)
 
 ### Memory + Konventionen
 
 Auto-Memory in `/Users/markus/.claude/projects/-Users-markus-Developer-cvMake/memory/`. Globale Regeln (aus `~/.claude/CLAUDE.md`):
 - **Keine "Co-Authored-By"-Zeilen** in Commits.
 - **Niemals pushen** ohne explizite Freigabe.
-- `pnpm build` und `pnpm typecheck` vor jedem Commit.
+- `pnpm typecheck && pnpm build` vor jedem Commit.
 - Definition-of-Done verlangt 4 Review-Agents — bei Phase-Abschluss konsequent.
 
 ### Quick-Reference
 
 ```bash
-# Lint/Typecheck/Test/Build
+# Lint / Typecheck / Test / Build
 pnpm lint && pnpm typecheck && pnpm build
 
-# Page-2 yMin-Probe (sanity-check)
-pdftotext -layout -bbox out/cv.de.<template>.pdf - 2>/dev/null | awk '/<page/{p++} p==2 && /<word/{print; exit}'
+# Aktuelle Tests
+pnpm --filter @codevena/forq-ui test:unit              # noch leer
+pnpm --filter @codevena/forq-templates test:unit       # 46/46
+pnpm --filter @codevena/forq-templates test:visual     # 8/8
+pnpm --filter @codevena/forq-cli test:integration      # 1/1
 
-# Eine PDF aus aktueller cv.de.yaml
-node apps/cli/dist/index.js build data/cvs/cv.de.yaml -t classic-serif -o out/test.pdf
+# CLI smoketest
+node apps/cli/dist/index.js --help
+
+# 8 PDFs neu bauen
+for id in classic-serif modern-minimal creative-accent academic monochrome-dark editorial corporate tech-dev; do
+  node apps/cli/dist/index.js build data/cvs/cv.de.yaml -t $id -o out/cv.de.$id.pdf
+done
 ```
 
-Leg los: PDFs frisch bauen, dann Template 1 (classic-serif) page 1+2+ rendern, in den Chat schicken, ich gucke.
+Leg los: `superpowers:brainstorming` öffnen, Theme 1 (Styling-Stack) als erste Frage stellen.
