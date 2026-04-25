@@ -1,0 +1,8 @@
+meta: { locale: de, updatedAt: '2026-04-25' }
+personal:
+  firstName: TestVorname
+  lastName: TestNachname
+  contacts: {}
+experience: []
+education: []
+rendering: { template: classic-serif }
