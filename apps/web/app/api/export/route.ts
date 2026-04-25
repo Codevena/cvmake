@@ -38,7 +38,7 @@ export async function POST(req: Request): Promise<Response> {
   if (!template) {
     return NextResponse.json({ kind: 'unknown_template' }, { status: 404 });
   }
-  const { html, css } = renderCV({
+  const { html, css } = await renderCV({
     data: parsed.data,
     template,
     ...(body.paletteId !== undefined ? { paletteId: body.paletteId } : {}),

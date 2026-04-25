@@ -30,7 +30,7 @@ export async function runBuild(args: BuildArgs): Promise<void> {
     throw new Error(`unknown template: ${templateId}`);
   }
   const paletteId = args.palette ?? data.rendering.palette;
-  const rendered = renderCV({
+  const rendered = await renderCV({
     data,
     template,
     ...(paletteId !== undefined ? { paletteId } : {}),

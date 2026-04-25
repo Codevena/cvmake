@@ -38,8 +38,8 @@ const fakeTemplate: TemplateDefinition = {
 };
 
 describe('renderCV', () => {
-  it('rendert HTML mit Locale-Label', () => {
-    const out = renderCV({ data: minimalFixture, template: fakeTemplate });
+  it('rendert HTML mit Locale-Label', async () => {
+    const out = await renderCV({ data: minimalFixture, template: fakeTemplate });
     expect(out.html).toContain('<h1>Markus Wiesecke</h1>');
     expect(out.html).toContain('Berufserfahrung');
     expect(out.locale).toBe('de');

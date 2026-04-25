@@ -24,7 +24,7 @@ async function renderPageOneAsPng(paletteId: string): Promise<Buffer> {
   bootstrapTemplates();
   const template = getTemplate('classic-serif');
   if (!template) throw new Error('classic-serif not registered');
-  const rendered = renderCV({ data: fullFixture, template, paletteId });
+  const rendered = await renderCV({ data: fullFixture, template, paletteId });
   const css = `${rendered.css}\n${loadTemplateCss('classic-serif')}`;
   const html = wrapHtmlDocument({ title: 'CV', html: rendered.html, css });
   const browser = await puppeteer.launch({

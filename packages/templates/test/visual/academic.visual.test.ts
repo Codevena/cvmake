@@ -24,7 +24,7 @@ async function renderPageOneAsPng(paletteId: string): Promise<Buffer> {
   bootstrapTemplates();
   const template = getTemplate('academic');
   if (!template) throw new Error('academic not registered');
-  const rendered = renderCV({ data: fullFixture, template, paletteId });
+  const rendered = await renderCV({ data: fullFixture, template, paletteId });
   const css = `${rendered.css}\n${loadTemplateCss('academic')}`;
   const html = wrapHtmlDocument({ title: 'CV', html: rendered.html, css });
   const browser = await puppeteer.launch({
