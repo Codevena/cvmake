@@ -1,10 +1,10 @@
 {
-  "name": "@cvmake/cli",
+  "name": "@codevena/forq-cli",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "main": "./dist/index.js",
-  "bin": { "cvmake": "./bin/cvmake" },
+  "bin": { "forq": "./bin/forq" },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc --noEmit",
@@ -13,9 +13,9 @@
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {
-    "@cvmake/core": "workspace:*",
-    "@cvmake/schema": "workspace:*",
-    "@cvmake/templates": "workspace:*",
+    "@codevena/forq-core": "workspace:*",
+    "@codevena/forq-schema": "workspace:*",
+    "@codevena/forq-templates": "workspace:*",
     "commander": "12.1.0",
     "picocolors": "1.1.1"
   },

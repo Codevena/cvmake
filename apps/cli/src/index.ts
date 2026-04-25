@@ -4,7 +4,7 @@ import { runValidate } from './commands/validate.js';
 import { runListTemplates } from './commands/list-templates.js';
 
 const program = new Command();
-program.name('cvmake').description('cvMake CLI').version('0.0.0');
+program.name('forq').description('forq CLI — fork-friendly OSS CV builder').version('0.0.0');
 
 program
   .command('build')

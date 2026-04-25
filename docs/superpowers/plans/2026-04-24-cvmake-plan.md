@@ -1,5 +1,7 @@
 # cvMake Implementation Plan
 
+> **Renamed:** Project was renamed from `cvMake` to `forq` on 2026-04-25. Package paths in this plan reference `@cvmake/*`; the codebase now uses `@codevena/forq-*`. The plan remains structurally accurate. See [`docs/superpowers/specs/2026-04-25-naming-decision.md`](../specs/2026-04-25-naming-decision.md).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Einen produktionsreifen Open-Source CV-Generator bauen: YAML-Source-of-Truth + Next.js Web-UI + Puppeteer-PDF + 8 individuell perfektionierte Templates, MIT-lizenziert, fork-freundlich.

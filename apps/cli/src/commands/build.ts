@@ -8,8 +8,8 @@ import {
   renderCV,
   wrapHtmlDocument,
   shutdownPdfBrowser,
-} from '@cvmake/core';
-import { bootstrapTemplates, getTemplate } from '@cvmake/templates';
+} from '@codevena/forq-core';
+import { bootstrapTemplates, getTemplate } from '@codevena/forq-templates';
 
 export interface BuildArgs {
   yaml: string;

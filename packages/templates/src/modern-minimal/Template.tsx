@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import type { TemplateProps } from '@cvmake/schema';
+import type { TemplateProps } from '@codevena/forq-schema';
 import { formatDateRange } from '../utils/dates.js';
 import { initials } from '../utils/initials.js';
 import { resolveSectionOrder } from '../utils/sections.js';

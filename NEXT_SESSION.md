@@ -1,4 +1,6 @@
-# Prompt für nächste Session — cvMake Template-Review (vor Phase 7)
+# Prompt für nächste Session — forq Template-Review (vor Phase 7)
+
+> **Hinweis (2026-04-25):** Projekt wurde von `cvMake` zu `forq` umbenannt. Branch `feat/cvmake-mvp` bleibt vorerst, wird beim ersten Merge zu `main` ggf. umbenannt. Siehe `docs/superpowers/specs/2026-04-25-naming-decision.md`.
 
 Kopiere den folgenden Block in die neue Claude-Code-Session im Projektverzeichnis `/Users/markus/Developer/cvMake`:
 
@@ -6,7 +8,7 @@ Kopiere den folgenden Block in die neue Claude-Code-Session im Projektverzeichni
 
 ## Prompt
 
-Wir sind auf Branch `feat/cvmake-mvp`. Phasen 0–6 sind komplett, das Page-Margin-Polish landed. **Bevor wir mit Phase 7 (`@cvmake/ui`) anfangen, will ich jedes Template visuell durchreviewen.** Heißt: für alle 8 Templates Seite 1 + Seite 2 angucken, mein Feedback einsammeln, in ein Review-Dokument konsolidieren, und dann gemeinsam entscheiden, ob eine Polish-Runde (Phase 6.5) nötig ist oder wir direkt zu Phase 7 springen.
+Wir sind auf Branch `feat/cvmake-mvp`. Phasen 0–6 sind komplett, das Page-Margin-Polish landed. **Bevor wir mit Phase 7 (`@codevena/forq-ui`) anfangen, will ich jedes Template visuell durchreviewen.** Heißt: für alle 8 Templates Seite 1 + Seite 2 angucken, mein Feedback einsammeln, in ein Review-Dokument konsolidieren, und dann gemeinsam entscheiden, ob eine Polish-Runde (Phase 6.5) nötig ist oder wir direkt zu Phase 7 springen.
 
 ### Aktueller Stand
 
@@ -26,7 +28,7 @@ git log --oneline main..feat/cvmake-mvp | head -5
 #### Schritt 1: Alle 8 PDFs frisch bauen
 
 ```bash
-pnpm --filter @cvmake/core build && pnpm --filter @cvmake/cli build
+pnpm --filter @codevena/forq-core build && pnpm --filter @codevena/forq-cli build
 for id in classic-serif modern-minimal creative-accent academic monochrome-dark editorial corporate tech-dev; do
   node apps/cli/dist/index.js build data/cvs/cv.de.yaml -t $id -o out/cv.de.$id.pdf
 done

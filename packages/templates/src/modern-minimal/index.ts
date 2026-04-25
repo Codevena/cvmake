@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import type { TemplateDefinition } from '@cvmake/schema';
+import type { TemplateDefinition } from '@codevena/forq-schema';
 import { meta as templateMeta } from './meta.js';
 import { palettes } from './palettes.js';
 import { ModernMinimalTemplate } from './Template.js';

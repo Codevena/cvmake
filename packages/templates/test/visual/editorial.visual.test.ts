@@ -9,10 +9,10 @@ import {
   renderCV,
   wrapHtmlDocument,
   shutdownPdfBrowser,
-} from '@cvmake/core';
+} from '@codevena/forq-core';
 import { clearRegistry, registerTemplate, getTemplate } from '../../src/registry.js';
 import { editorial } from '../../src/editorial/index.js';
-import { fullFixture } from '@cvmake/schema/test/fixtures.js';
+import { fullFixture } from '@codevena/forq-schema/test/fixtures.js';
 
 const BASELINE_DIR = path.resolve('__tests__/__visual__/editorial');
 const ACTUAL_DIR = path.resolve('__tests__/__visual__/editorial/.actual');

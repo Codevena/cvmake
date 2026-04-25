@@ -1,6 +1,8 @@
 # cvMake — Design Spec
 
-**Status:** Draft · **Created:** 2026-04-24 · **Owner:** Markus Wiesecke
+**Status:** Superseded · **Created:** 2026-04-24 · **Owner:** Markus Wiesecke
+
+> **Project renamed `cvMake` → `forq` on 2026-04-25.** The architecture and decisions in this spec still apply; only the name and package paths changed (`@cvmake/*` → `@codevena/forq-*`). See [`docs/superpowers/specs/2026-04-25-naming-decision.md`](./2026-04-25-naming-decision.md) for the rename rationale.
 
 ## 1. Summary
 

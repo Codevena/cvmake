@@ -9,9 +9,9 @@ import {
   renderCV,
   wrapHtmlDocument,
   shutdownPdfBrowser,
-} from '@cvmake/core';
+} from '@codevena/forq-core';
 import { techDev } from '../../src/tech-dev/index.js';
-import { fullFixture } from '@cvmake/schema/test/fixtures.js';
+import { fullFixture } from '@codevena/forq-schema/test/fixtures.js';
 
 const BASELINE_DIR = path.resolve('__tests__/__visual__/tech-dev');
 const ACTUAL_DIR = path.resolve('__tests__/__visual__/tech-dev/.actual');

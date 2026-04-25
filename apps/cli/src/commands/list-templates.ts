@@ -1,5 +1,5 @@
 import pc from 'picocolors';
-import { bootstrapTemplates, listTemplates } from '@cvmake/templates';
+import { bootstrapTemplates, listTemplates } from '@codevena/forq-templates';
 
 export function runListTemplates(): number {
   bootstrapTemplates();

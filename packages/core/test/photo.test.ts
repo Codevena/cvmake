@@ -7,7 +7,7 @@ import { processPhoto } from '../src/photo.js';
 describe('processPhoto', () => {
   let outDir = '';
   beforeEach(async () => {
-    outDir = await mkdtemp(path.join(tmpdir(), 'cvmake-photo-'));
+    outDir = await mkdtemp(path.join(tmpdir(), 'forq-photo-'));
   });
   afterEach(() => rm(outDir, { recursive: true, force: true }));
 

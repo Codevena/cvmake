@@ -1,6 +1,6 @@
 # Template Review — 2026-04-25
 
-Visual review of all 8 templates before Phase 7 (`@cvmake/ui`). Source PDFs built from `data/cvs/cv.de.yaml` after commit `e98aad5` (page-margin spacer-injection).
+Visual review of all 8 templates before Phase 7 (`@codevena/forq-ui`). Source PDFs built from `data/cvs/cv.de.yaml` after commit `e98aad5` (page-margin spacer-injection).
 
 ## Summary
 
@@ -147,12 +147,12 @@ Dispatch one parallel agent per template that needs work, in parallel:
 
 Skill: `superpowers:dispatching-parallel-agents`. Validated workflow from phase 6.
 
-**Pros:** ship phase 7 (`@cvmake/ui`) on top of 8 polished templates. No follow-up cleanup needed.
+**Pros:** ship phase 7 (`@codevena/forq-ui`) on top of 8 polished templates. No follow-up cleanup needed.
 **Cons:** +1 session before phase 7. Editorial may need design brainstorming first (its concept is broken, not just its CSS).
 
 ### Option B — Direct Phase 7
 
-Park all findings as TODOs, start `@cvmake/ui` immediately on the current template state.
+Park all findings as TODOs, start `@codevena/forq-ui` immediately on the current template state.
 
 **Pros:** unblocks the UI work fastest.
 **Cons:** the UI surfaces broken templates to users (4/8 have issues). User sees `editorial` and thinks the whole product is broken.

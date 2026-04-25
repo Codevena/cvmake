@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { ReactElement } from 'react';
 import { validateTemplate } from '../src/validate.js';
-import type { TemplateDefinition } from '@cvmake/schema';
+import type { TemplateDefinition } from '@codevena/forq-schema';
 
 const base: TemplateDefinition = {
   meta: {
