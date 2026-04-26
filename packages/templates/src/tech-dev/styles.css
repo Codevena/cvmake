@@ -199,9 +199,9 @@ html, body {
 /* Company hashtag + role title row */
 .tech-dev__entry-title-row {
   display: flex;
-  align-items: baseline;
-  gap: 5pt;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1pt;
 }
 
 /* #company in accent monospace 8pt */
