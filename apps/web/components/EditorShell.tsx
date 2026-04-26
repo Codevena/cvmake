@@ -45,6 +45,12 @@ export function EditorShell({ initialData, initialMtime, slug, allSlugs, bootstr
   const watched = useWatch({ control: form.control }) as CVData;
   const debounced = useDebouncedValue(watched, 150);
   const [conflict, setConflict] = useState<ConflictPayload | null>(null);
+  // Per spec §10.2 the autosave loop must stay paused after the user clicks
+  // "Abbrechen" on the conflict modal — otherwise the next debounced save
+  // would re-hit /api/save with the same stale mtime and 409 again, looping
+  // until the user resolves the conflict. Only an explicit Reload or a
+  // successful Overwrite is allowed to resume autosave.
+  const [conflictPaused, setConflictPaused] = useState(false);
 
   const autosave = useAutosave({
     slug,
@@ -58,7 +64,7 @@ export function EditorShell({ initialData, initialMtime, slug, allSlugs, bootstr
         applyZodIssues(e.issues as ZodIssue[], form.setError);
       }
     },
-    paused: conflict !== null,
+    paused: conflict !== null || conflictPaused,
   });
 
   return (
@@ -110,25 +116,48 @@ export function EditorShell({ initialData, initialMtime, slug, allSlugs, bootstr
             form.reset(data);
             autosave.expectedMtimeRef.current = mtime;
             setConflict(null);
+            // Reload resolved the conflict — resume autosave.
+            setConflictPaused(false);
           }}
           onOverwrite={async (mtime) => {
-            autosave.expectedMtimeRef.current = mtime;
-            setConflict(null);
-            const res = await fetch('/api/save', {
-              method: 'POST',
-              headers: { 'content-type': 'application/json' },
-              body: JSON.stringify({
-                slug,
-                data: form.getValues(),
-                expectedMtime: mtime,
-              }),
-            });
-            if (res.ok) {
+            // Await the response BEFORE dismissing the modal so a failed
+            // overwrite stays visible for the user to retry. Previously we
+            // closed the modal optimistically and a network/server error
+            // would silently drop the user's intent.
+            try {
+              const res = await fetch('/api/save', {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify({
+                  slug,
+                  data: form.getValues(),
+                  expectedMtime: mtime,
+                }),
+              });
+              if (!res.ok) {
+                const text = await res.text().catch(() => '');
+                window.alert(
+                  `Überschreiben fehlgeschlagen (HTTP ${res.status})${text ? `:\n${text}` : ''}`,
+                );
+                return;
+              }
               const body = (await res.json()) as { mtime: number };
               autosave.expectedMtimeRef.current = body.mtime;
+              setConflict(null);
+              // Successful overwrite resolves the conflict — resume autosave.
+              setConflictPaused(false);
+            } catch (err) {
+              window.alert(`Überschreiben fehlgeschlagen: ${(err as Error).message}`);
             }
           }}
-          onCancel={() => setConflict(null)}
+          onCancel={() => {
+            // Per spec §10.2: closing the modal without resolving must keep
+            // autosave paused. The user has to pick Reload or Overwrite next
+            // time the conflict surfaces (or fix the file by hand) — we must
+            // not silently start 409-looping again in the background.
+            setConflictPaused(true);
+            setConflict(null);
+          }}
         />
       )}
     </FormProvider>

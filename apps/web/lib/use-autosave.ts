@@ -38,6 +38,11 @@ export function useAutosave(opts: UseAutosaveOpts): UseAutosaveReturn {
   const lastSerializedRef = useRef<string>('');
   const expectedMtimeRef = useRef<number>(opts.expectedMtime);
   const inFlightRef = useRef<AbortController | null>(null);
+  // Tracks the pending "saved → clean" transition timer so that a subsequent
+  // save can cancel it before scheduling a new one. Without this, a stale 3s
+  // timer from an earlier save can fire while the next edit is in-flight and
+  // clobber the new state (`saving` / `dirty`) back to `clean`.
+  const savedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [state, setState] = useState<SaveState>('clean');
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
   const [lastSavedAt, setLastSavedAt] = useState<number | undefined>(undefined);
@@ -101,7 +106,8 @@ export function useAutosave(opts: UseAutosaveOpts): UseAutosaveReturn {
       lastSerializedRef.current = JSON.stringify(payload);
       setLastSavedAt(Date.now());
       setState('saved');
-      setTimeout(() => setState('clean'), 3000);
+      if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
+      savedTimerRef.current = setTimeout(() => setState('clean'), 3000);
     } catch (err) {
       if ((err as Error).name === 'AbortError') return;
       lastSerializedRef.current = JSON.stringify(payload);
@@ -134,6 +140,15 @@ export function useAutosave(opts: UseAutosaveOpts): UseAutosaveReturn {
   const retry = useCallback(() => {
     void save(optsRef.current.data);
   }, [save]);
+
+  // Clear any pending "saved → clean" timer on unmount to avoid setting
+  // state on an unmounted component (and to keep timers tidy in tests).
+  useEffect(
+    () => () => {
+      if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
+    },
+    [],
+  );
 
   return { state, errorMessage, lastSavedAt, expectedMtimeRef, retry };
 }
