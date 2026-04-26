@@ -99,6 +99,86 @@ describe('useAutosave', () => {
     expect(result.current.state).toBe('saved');
   });
 
+  it('langsamer zweiter Save: stale clean-Timer überschreibt nicht den saving-State', async () => {
+    // Simulates the delayed-save scenario: the first save resolves quickly
+    // and schedules a 3s "saved → clean" timer. Then a second save starts
+    // before that timer fires but its network response is delayed past the
+    // 3s mark. Without the START-of-save clear, the stale clean timer fires
+    // while the second save is still in 'saving', clobbering the indicator
+    // back to 'clean'. After the fix the stale timer is cleared up-front.
+    let resolveSecond: ((res: Response) => void) | null = null;
+    let callIndex = 0;
+    vi.spyOn(globalThis, 'fetch').mockImplementation(() => {
+      const idx = callIndex++;
+      if (idx === 0) {
+        return Promise.resolve(
+          new Response(JSON.stringify({ ok: true, mtime: 200 }), {
+            status: 200,
+            headers: { 'content-type': 'application/json' },
+          }),
+        );
+      }
+      // Second call: keep open until we resolve manually so we can advance
+      // past the 3s stale-timer mark while the request is in-flight.
+      return new Promise<Response>((resolve) => {
+        resolveSecond = resolve;
+      });
+    });
+    const { result, rerender } = renderHook(
+      ({ data }: { data: CVData }) =>
+        useAutosave({
+          slug: 'cv.de',
+          data,
+          isDirty: true,
+          isValid: true,
+          expectedMtime: 1,
+          onConflict: vi.fn(),
+          onError: vi.fn(),
+          paused: false,
+        }),
+      { initialProps: { data: DATA } },
+    );
+    // T=0..2.1s: First save fires after 2s debounce, resolves immediately,
+    // sets state='saved' and schedules the 3s clean timer (fires at T=5.1s).
+    await act(async () => {
+      vi.advanceTimersByTime(2100);
+    });
+    await waitFor(() => expect(result.current.expectedMtimeRef.current).toBe(200));
+    expect(result.current.state).toBe('saved');
+    // T=2.6s: Edit again, well within the 3s clean window. Debounce schedules
+    // the second save for T=4.6s — BEFORE the T=5.1s stale clean timer.
+    await act(async () => {
+      vi.advanceTimersByTime(500);
+    });
+    rerender({ data: { ...DATA, personal: { ...DATA.personal, firstName: 'Slow' } } });
+    // T=2.6 → 4.7s: debounce fires, save() runs, clears the stale timer at
+    // the START (the fix), then setState('saving') and awaits the never-
+    // resolving fetch. Without the fix the T=5.1s stale timer would later
+    // fire during that wait and clobber state back to 'clean'.
+    await act(async () => {
+      vi.advanceTimersByTime(2100);
+    });
+    expect(result.current.state).toBe('saving');
+    // T=4.7 → 7.7s: advance well past the original T=5.1s clean timer.
+    // With the fix the timer was cleared at start-of-save, so nothing fires.
+    await act(async () => {
+      vi.advanceTimersByTime(3000);
+    });
+    // Second save still in-flight → must remain 'saving', NEVER 'clean'.
+    expect(result.current.state).toBe('saving');
+    // Resolve the second save and verify state moves to 'saved'.
+    await act(async () => {
+      resolveSecond?.(
+        new Response(JSON.stringify({ ok: true, mtime: 201 }), {
+          status: 200,
+          headers: { 'content-type': 'application/json' },
+        }),
+      );
+    });
+    await waitFor(() => expect(result.current.expectedMtimeRef.current).toBe(201));
+    expect(result.current.state).toBe('saved');
+  });
+
   it('bei 409 → onConflict mit currentData', async () => {
     const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation(
       async () =>

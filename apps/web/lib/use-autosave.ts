@@ -59,6 +59,15 @@ export function useAutosave(opts: UseAutosaveOpts): UseAutosaveReturn {
   const save = useCallback(async (payload: CVData) => {
     const current = optsRef.current;
     if (current.paused) return;
+    // Clear any pending "saved → clean" timer at the START — before the
+    // await — so a stale timer from the previous save can never fire during
+    // the new save's `'saving'` state and clobber it back to `'clean'`.
+    // Without this, a slow second save (>3s) would briefly flash 'clean'
+    // while still in-flight.
+    if (savedTimerRef.current) {
+      clearTimeout(savedTimerRef.current);
+      savedTimerRef.current = null;
+    }
     inFlightRef.current?.abort();
     const ctrl = new AbortController();
     inFlightRef.current = ctrl;
