@@ -47,3 +47,7 @@ public/photos/*
 
 # Visual regression test actual screenshots (ephemeral, baselines are committed)
 **/__visual__/**/.actual/
+
+# Personal / sensitive data — never commit (kept local only)
+data/letters/
+scripts/build-letter.mjs
