@@ -4233,4 +4233,79 @@ Wait for explicit user confirmation before `git push`.
 
 If any of these are tripped during execution, fix inline and adjust dependent tasks.
 
+---
+
+## Completion Summary (2026-04-26)
+
+**Status:** ✅ MERGED to `feat/cvmake-mvp` and pushed to `origin/feat/cvmake-mvp` on 2026-04-26.
+
+**Commit range:** `9582fd6..1779414` (46 commits ahead of `main`).
+
+**Final test/build state:**
+- `pnpm typecheck` → clean (10/10 packages)
+- `pnpm build` → green; 9 routes registered in `apps/web` (`/`, `/cv/[slug]`, `/dev-ui`, 5× `/api/*`, `/_not-found`)
+- Unit tests: 178 passing across 6 packages (schema 9 · core 16 · ui 38 · templates 46 · cli 2 · web 67)
+- E2E tests: 5/5 Playwright specs green in 9.5s
+- Lint: 139 errors (≤ 143 Phase-7 baseline → criterion §14.5 met)
+- Manual: real `cv.de.yaml`/`cv.en.yaml` editable end-to-end (after data-dir fix in `47ac337`)
+
+### Actual vs Planned Deltas
+
+The 31 planned tasks all executed in order, but several structural surprises required additional commits beyond the plan:
+
+| Surprise | When | Resolution | Fix Commit(s) |
+|---|---|---|---|
+| `processPhoto` slug regex `/^[a-z0-9-]+$/` rejected `cv.de` (no dots), but data-paths' regex allows them | Task 8 | Aligned core's SLUG_RE to data-paths' `^(?!\.+$)[a-z0-9.-]+$` | `d63cc36` |
+| Templates `index.ts` had `readFileSync` for CSS — Turbopack rejects `node:fs` in client chunks | Task 26 (e2e blocked) | Removed `css` getter from all 8 templates; CSS reads moved to server-only consumers via new `@codevena/forq-templates/css` subpath; CLI updated to use `loadTemplateCss(id)` | `1f24789` |
+| `@codevena/forq-core` barrel re-exports `renderer.js` (with `react-dom/server`) — Next 16 RSC rejects this transitively even from Server Components when reachable from Client graph | Task 26 (e2e blocked) | Split `forq-core` into client-safe subpath exports (`/i18n`, `/errors`, `/html-document`, `/loader`, `/renderer`, `/photo`, `/pdf`, `/photo-embed`); all 8 server-side files in `apps/web` migrated | `0c86537` |
+| `react-dom/server` static import in `renderer.tsx` was rejected by Next 16's bundler even after subpath split | Task 29 (pdf-export e2e blocked) | Made `renderCV` async; `renderToStaticMarkup` loaded via `await import('react-dom/server')`; all 11 callers updated | `8ff193d` |
+| `apps/web` running with cwd=`apps/web` read CVs from `apps/web/data/cvs/` — invisible to user's real CVs at workspace root `/data/cvs/` | Task 31 (acceptance) | `data-paths.ts` walks up from cwd looking for `pnpm-workspace.yaml`; e2e setup writes/reads at repo root | `47ac337` |
+| Phase-7 `<PhotoCropper>` revoked blob URL during React StrictMode effect cleanup → `naturalWidth=0` → `extract_area: bad extract area` (400) | Task 28 (photo-upload e2e) | Captured URL inside the effect; cleanup revokes the captured URL not the current one. Also added `sharp` as direct dep of `apps/web` (Turbopack `serverExternalPackages` couldn't resolve it transitively) | `4508a62` |
+
+These 6 issues + their fix commits represent the largest unanticipated chunk of Phase 8 — almost all client-bundling concerns that the original plan didn't anticipate (Next 16 + Turbopack are stricter than Next 15 about server-only modules in client graphs).
+
+### DoD Review Results
+
+The plan's Task 31 specified 4 review agents per `~/.claude/CLAUDE.md`. Three rounds were needed:
+
+**Round 1** (4 reviewers on 40-commit base):
+- 1× APPROVED (Claude spec)
+- 3× CHANGES_REQUESTED with 5 important code issues + 2 spec violations: `useAutosave` setTimeout clobber, `onOverwrite` race + silent failure, `/api/upload` size pre-check + 413, `/api/save` deleted-file → 409, `atomic-write` temp collision; spec: ConflictModal Cancel must keep autosave paused, export filename uses `lastName` not slug.
+
+**Round 1 fixes** (3 commits): `d9feb0f` backend hardening, `c58a872` autosave/conflict frontend, `76bfe98` slug-based filename.
+
+**Round 2** (re-review):
+- 1× APPROVED (Claude spec)
+- 3× CHANGES_REQUESTED with 2 new issues: `savedTimerRef` cleared only after success not at start of next save; `/api/save` 409 with `currentData: null` violates spec §5.3 type contract.
+
+**Round 2 fixes** (2 commits): `4c074e2` clear timer at save start, `f5998f4` widen `ConflictPayload.currentData` to `CVData | null` + ConflictModal disables Reload when null.
+
+**Round 3** (re-review):
+- 3× APPROVED (Codex code, Claude code, Claude spec)
+- 1× CHANGES_REQUESTED (Codex spec) with 4 nits: e2e palette-reset assertion, e2e iframe `<img>` src assertion, SaveIndicator dirty copy missing "(auto-save in 2s)", atomic-write spec-doc drift (the `rm` step had been deliberately removed in commit `b65f8b6` per Round-1 Codex's own recommendation).
+
+**Closure decision:** Pragmatic close-out (option C). 3/4 reviewers approve; the 4 Round-3 nits are documented as Phase-9 backlog in `.review-logs/phase8-mvp-deferred.md` (with 6 additional MVP-acceptable gaps: RSC error banner, export error toast, drag-drop UX, EXIF crop bounds, CLI barrel imports, repo-wide lint cleanup).
+
+### Phase-9 Backlog (10 items)
+
+Documented in `.review-logs/phase8-mvp-deferred.md`. Categories:
+- **Test breadth:** D1 (template-switch palette assert), D2 (photo-upload iframe img assert)
+- **UI polish:** D3 (SaveIndicator copy), D6 (export client error toast), D7 (drag-drop)
+- **Error handling:** D5 (RSC YAML error banner)
+- **Spec-doc drift:** D4 (atomic-write rm-step removal — code is correct, doc needs update)
+- **Hardening:** D8 (EXIF rotate bounds re-check)
+- **Cleanup:** D9 (CLI barrel imports), D10 (repo-wide biome baseline 139 errors)
+
+### Lessons Learned
+
+1. **Next 16 + Turbopack client/server boundary is stricter than Next 15.** The whole class of "this server-only module is reachable from a client component via the package barrel" surfaced as 4 separate structural fixes (templates `readFileSync`, core barrel, `react-dom/server` import, `sharp` direct dep). A future plan should anticipate this by recommending sub-path exports from day one for any package consumed by both server and client.
+
+2. **The plan's atomic-write `rm-then-rename` pattern was a misfit for POSIX.** Round-1 Codex review caught this immediately and recommended dropping the `rm`. The simpler `writeFile(tmp) → rename(tmp, target)` is both more correct and easier to reason about. Spec text at §5.3 outlived the code (deferred to D4).
+
+3. **Strict CLAUDE.md DoD ("zero findings") + N reviewers on a 40+ commit feature → escalating rounds.** With diminishing returns: Round 1 found 7 important issues; Round 2 found 2; Round 3 found 4 nits. After Round 3 the user explicitly pulled the close-out trigger ("Option C") rather than chase Round N+1. Recommendation for future Phase-Nplus plans: bake in an explicit "after K rounds, deferred items go to Phase-(N+1) backlog" policy.
+
+4. **Per-task review can be relaxed mid-execution.** First 3 tasks ran with full implementer + spec-reviewer + code-quality-reviewer. After Task 3 the user switched to implementer-only mode (option 3) — this saved ~80 subagent dispatches and the final 4-agent DoD caught the cumulative issues just fine.
+
+5. **The plan was 4236 lines / 31 tasks. The final commit log was 46 commits (15 unplanned).** A 50% commit overhead is normal for a phase this size; the plan's structure held up well as a scaffolding document.
+
 
