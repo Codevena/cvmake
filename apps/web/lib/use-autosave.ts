@@ -5,7 +5,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDebouncedValue } from './use-debounced-value';
 import { useHotkey } from './use-hotkey';
 
-export type ConflictPayload = { currentData: CVData; currentMtime: number };
+// `currentData: null` represents the "file deleted externally" case where the
+// server returns 409 because the file is missing on disk. The conflict modal
+// must handle this distinctly — Reload is impossible (no data to reload to),
+// only Overwrite (re-create) and Cancel are valid actions.
+export type ConflictPayload = { currentData: CVData | null; currentMtime: number };
 export type ServerError =
   | { kind: 'validation'; issues: unknown[] }
   | { kind: 'server' | 'network'; message: string };
@@ -85,7 +89,7 @@ export function useAutosave(opts: UseAutosaveOpts): UseAutosaveReturn {
         }),
       });
       if (res.status === 409) {
-        const body = (await res.json()) as { currentData: CVData; currentMtime: number };
+        const body = (await res.json()) as { currentData: CVData | null; currentMtime: number };
         // Stamp lastSerialized so the auto-save effect does not loop on the
         // same payload while the conflict modal is being resolved.
         lastSerializedRef.current = JSON.stringify(payload);

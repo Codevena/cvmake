@@ -4,7 +4,10 @@ import { useState } from 'react';
 
 interface Props {
   slug: string;
-  currentData: CVData;
+  // `null` signals the file was deleted externally — Reload is then impossible
+  // (there is no on-disk version to reload to). Overwrite still works (it
+  // re-creates the file) and Cancel is always available.
+  currentData: CVData | null;
   currentMtime: number;
   isFormDirty: boolean;
   onReload: (data: CVData, mtime: number) => void;
@@ -22,6 +25,8 @@ export function ConflictModal({
   onCancel,
 }: Props) {
   const [confirmReload, setConfirmReload] = useState(false);
+  const fileDeleted = currentData === null;
+  const reloadDisabledTitle = fileDeleted ? 'Datei existiert nicht mehr' : undefined;
   return (
     // biome-ignore lint/a11y/useSemanticElements: native <dialog> requires showModal()/close() imperative APIs; explicit role="dialog" on a controlled overlay is the React-friendly pattern here
     <div
@@ -32,12 +37,19 @@ export function ConflictModal({
     >
       <div className="max-w-lg rounded bg-surface p-6 text-text shadow-xl">
         <h2 id="conflict-title" className="text-lg font-semibold">
-          Datei wurde extern verändert
+          {fileDeleted ? 'Datei wurde extern gelöscht' : 'Datei wurde extern verändert'}
         </h2>
-        <p className="mt-2 text-sm">
-          Die YAML-Datei <code>data/cvs/{slug}.yaml</code> wurde seit dem Laden geändert (z. B. via{' '}
-          <code>git pull</code> oder einem anderen Editor). Was möchtest du tun?
-        </p>
+        {fileDeleted ? (
+          <p className="mt-2 text-sm">
+            Die YAML-Datei <code>data/cvs/{slug}.yaml</code> wurde extern <strong>gelöscht</strong>.
+            Was möchtest du tun?
+          </p>
+        ) : (
+          <p className="mt-2 text-sm">
+            Die YAML-Datei <code>data/cvs/{slug}.yaml</code> wurde seit dem Laden geändert (z. B.
+            via <code>git pull</code> oder einem anderen Editor). Was möchtest du tun?
+          </p>
+        )}
         {confirmReload ? (
           <div className="mt-4 flex flex-col gap-2">
             <p className="text-sm text-error">
@@ -46,8 +58,13 @@ export function ConflictModal({
             <div className="flex gap-2">
               <button
                 type="button"
-                className="rounded border px-3 py-1"
-                onClick={() => onReload(currentData, currentMtime)}
+                disabled={fileDeleted}
+                title={reloadDisabledTitle}
+                className="rounded border px-3 py-1 disabled:cursor-not-allowed disabled:opacity-50"
+                onClick={() => {
+                  if (!currentData) return;
+                  onReload(currentData, currentMtime);
+                }}
               >
                 Ja, neu laden
               </button>
@@ -64,10 +81,14 @@ export function ConflictModal({
           <div className="mt-4 flex gap-2">
             <button
               type="button"
-              className="rounded border px-3 py-1"
-              onClick={() =>
-                isFormDirty ? setConfirmReload(true) : onReload(currentData, currentMtime)
-              }
+              disabled={fileDeleted}
+              title={reloadDisabledTitle}
+              className="rounded border px-3 py-1 disabled:cursor-not-allowed disabled:opacity-50"
+              onClick={() => {
+                if (!currentData) return;
+                if (isFormDirty) setConfirmReload(true);
+                else onReload(currentData, currentMtime);
+              }}
             >
               Datenträger neu laden
             </button>
