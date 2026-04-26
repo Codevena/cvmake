@@ -25,18 +25,53 @@
 ## Phasenübersicht
 
 | Phase | Ziel | Parallel? |
-|-------|------|-----------|
-| 0 | Monorepo-Scaffold | — |
-| 1 | `@cvmake/schema` | — |
-| 2 | `@cvmake/core` (Loader, i18n, Photo, Renderer, PDF) | — |
-| 3 | Templates-Foundation (Registry, Shared-CSS, Fonts) | — |
-| 4 | **End-to-End-Proof: Classic Serif** + CLI-Minimal + Markus-Content | — |
-| 5 | CLI vollständig (build/validate/list-templates) | — |
-| 6 | **7 Templates parallel** (Agent pro Template) | 7 Agents |
-| 7 | `@cvmake/ui` (PhotoCropper, ColorPicker, …) | — |
-| 8 | `apps/web` (Editor, Preview, API-Routes) | — |
-| 9 | CI + E2E + Visual-Regression | — |
-| 10 | README + Docs + Screenshots | — |
+|-------|------|-----------|---------------------|
+| 0 | Monorepo-Scaffold | — | ✅ Done |
+| 1 | `@cvmake/schema` | — | ✅ Done |
+| 2 | `@cvmake/core` (Loader, i18n, Photo, Renderer, PDF) | — | ✅ Done |
+| 3 | Templates-Foundation (Registry, Shared-CSS, Fonts) | — | ✅ Done |
+| 4 | **End-to-End-Proof: Classic Serif** + CLI-Minimal + Markus-Content | — | ✅ Done |
+| 5 | CLI vollständig (build/validate/list-templates) | — | ✅ Done |
+| 6 | **7 Templates parallel** (Agent pro Template) | 7 Agents | ✅ Done |
+| 7 | `@cvmake/ui` (PhotoCropper, ColorPicker, …) | — | ✅ Done — siehe `2026-04-25-forq-ui.md` |
+| 8 | `apps/web` (Editor, Preview, API-Routes) | — | ✅ Done — siehe `2026-04-25-forq-editor.md` (32 Tasks, 47 Commits, 178 unit + 5 e2e green, lint 139 ≤ 143 baseline, gepusht zu `origin/main` und `origin/feat/cvmake-mvp` am 2026-04-26) |
+| 8b | Phase-8-Backlog (10 deferred items D1–D10) | — | ⏸ Geplant via remote-Routine `trig_01DdJXYWNhhRpmqDzzzVWwvN` für 2026-05-10 (mechanische D1–D4, D8, D9 als Cleanup-PR) |
+| 9 | CI + E2E + Visual-Regression | — | ⬜ Offen — eigene Brainstorming/Plan-Session nötig |
+| 10 | README + Docs + Screenshots + Release | — | ⬜ Offen — siehe ⚠️ Critical Finding unten zu Personal-Data-Strategie BEVOR Phase 10 startet |
+
+> Die untenstehenden Per-Task-Step-Checkboxen (`- [ ]`) wurden während Phase 0–8 nicht zurückgekreuzt — der Status oben in dieser Tabelle ist die maßgebliche Quelle. Die Per-Task-Listen bleiben als Plan-Historie erhalten.
+
+---
+
+## ⚠️ Critical Finding (2026-04-26): Personal Data in Git History
+
+**Befund:** Die Dateien `data/cvs/cv.de.yaml`, `data/cvs/cv.en.yaml` und `data/cvs/photos/markus.jpg` sind seit Phase 0 in der Git-History committed und enthalten **echte persönliche Daten** von Markus:
+- Vor- und Nachname, Geburtsdatum, Familienstand, Führerscheinklasse
+- Telefonnummer, E-Mail-Adresse, GitHub/LinkedIn-Handles, Wohnort
+- Vollständige Arbeits- und Ausbildungshistorie
+- Foto
+
+Zusätzlich liegt im lokalen Working-Tree (jetzt via `.gitignore` ausgeschlossen, **nicht** committed):
+- `data/letters/anschreiben_lorent.html` — Bewerbungsanschreiben an konkretes Unternehmen
+- `scripts/build-letter.mjs` — zugehöriger Helper
+
+**Status quo:** Repo `https://github.com/Codevena/forq` ist **private** — die committed Daten sind vorerst nur für berechtigte Personen sichtbar.
+
+**Konflikt mit Projektziel:** Das Projekt ist als **OSS / "build in public"** geplant (Repo wird public, andere forken und ersetzen Daten). Sobald das Repo public geht, ist die komplette History — inklusive aller persönlicher Daten in jedem Phase-0-bis-8-Commit — öffentlich einsehbar.
+
+**Optionen vor Public-Going (Phase 10 Voraussetzung):**
+
+A) **Git-History rewrite** mit `git filter-repo` (oder BFG Repo-Cleaner): alle Versionen von `cv.de.yaml`, `cv.en.yaml`, `markus.jpg`, `markus.webp` aus der gesamten History entfernen, durch fictional Sample-Daten ersetzen, Force-push. Risiko: bricht alle bestehenden Forks/Clones, alle Commit-SHAs ändern sich.
+
+B) **Separates OSS-Repo** anlegen, Code ohne `data/cvs/`-Inhalte rüberkopieren, fictional Sample-Daten committen, ab da öffentlich entwickeln. Das `forq`-Repo bleibt privat als Markus' eigenes Setup. Saubere Trennung, aber Aufwand für initiale Migration und parallele Pflege.
+
+C) **Repo bleibt long-term private** — der OSS-Showcase-Aspekt entfällt. Markus nutzt es nur für sich. Einfachste Lösung, aber Projektziel "build in public" geht verloren.
+
+D) **Hybrid:** `data/cvs/*.yaml` aus aktivem Tracking entfernen via `.gitignore` + `git rm --cached`, fictional Sample-Daten als `data/cvs/example.de.yaml` committen. History bleibt wie sie ist (Daten in alten Commits). Akzeptabel wenn Public-Audience sich nicht durch `git log -p` gräbt — Security-by-Obscurity. Funktional für Public-Going aber nicht sauber.
+
+**Empfehlung:** Entscheidung in eigener Brainstorming-Session vor Phase 10. Der Phase-10-Plan kann nicht verbindlich geschrieben werden bevor die Personal-Data-Strategie geklärt ist.
+
+**Kein Blocker für Phase 9:** CI + Visual-Regression-Setup ist orthogonal zur Daten-Frage — das kann unabhängig laufen und sollte als Nächstes angegangen werden.
 
 ---
 
