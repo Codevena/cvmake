@@ -47,4 +47,31 @@ describe('<ConflictModal />', () => {
     fireEvent.click(screen.getByRole('button', { name: /überschreiben/ }));
     expect(onOverwrite).toHaveBeenCalledWith(42);
   });
+
+  it('deleted file: Reload disabled, Overwrite enabled', () => {
+    const onReload = vi.fn();
+    const onOverwrite = vi.fn();
+    render(
+      <ConflictModal
+        slug="cv.de"
+        currentData={null}
+        currentMtime={0}
+        isFormDirty={false}
+        onReload={onReload}
+        onOverwrite={onOverwrite}
+        onCancel={vi.fn()}
+      />,
+    );
+    // Title + body reflect the deletion case.
+    expect(screen.getByText(/extern gelöscht/i)).toBeInTheDocument();
+    const reloadBtn = screen.getByRole('button', { name: /Datenträger neu laden/ });
+    expect(reloadBtn).toBeDisabled();
+    expect(reloadBtn).toHaveAttribute('title', 'Datei existiert nicht mehr');
+    // Clicking the disabled button must not call onReload.
+    fireEvent.click(reloadBtn);
+    expect(onReload).not.toHaveBeenCalled();
+    // Overwrite still works (re-creates the file).
+    fireEvent.click(screen.getByRole('button', { name: /überschreiben/ }));
+    expect(onOverwrite).toHaveBeenCalledWith(0);
+  });
 });
