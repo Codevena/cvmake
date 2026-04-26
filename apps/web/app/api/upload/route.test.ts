@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, readdir, readFile, rm } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, readdir, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -47,5 +47,20 @@ describe('POST /api/upload', () => {
     form.append('aspect', '1:1');
     const res = await post(form);
     expect(res.status).toBe(400);
+  });
+
+  it('413 wenn Datei größer als 10 MB', async () => {
+    // 10 MB + 1 byte → must be rejected before we attempt to buffer/process.
+    const oversize = new Uint8Array(10 * 1024 * 1024 + 1);
+    const form = new FormData();
+    form.append('file', new Blob([oversize], { type: 'image/jpeg' }), 'big.jpg');
+    form.append('slug', 'cv.de');
+    form.append('crop', JSON.stringify({ x: 0, y: 0, width: 1, height: 1 }));
+    form.append('aspect', '1:1');
+    const res = await post(form);
+    expect(res.status).toBe(413);
+    const body = await res.json();
+    expect(body.kind).toBe('too_large');
+    expect(body.maxBytes).toBe(10 * 1024 * 1024);
   });
 });

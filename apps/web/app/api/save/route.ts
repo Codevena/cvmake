@@ -27,21 +27,33 @@ export async function POST(req: Request): Promise<NextResponse> {
   } catch {
     return NextResponse.json({ kind: 'invalid_slug' }, { status: 400 });
   }
-  // mtime guard
-  let currentMtime = 0;
-  try {
-    currentMtime = (await stat(target)).mtimeMs;
-  } catch {
-    // file doesn't exist yet — accept and create
-  }
-  if (currentMtime !== 0 && currentMtime !== body.expectedMtime) {
+  // mtime guard.
+  //
+  // Per spec §10.2 we treat an externally-deleted file as a conflict — the
+  // user opened the editor on a known mtime (>0) but the file is now gone,
+  // which is exactly the kind of out-of-band change the conflict modal is
+  // designed to handle. Only when the client signals "create new" by sending
+  // expectedMtime === 0 do we accept a missing file and let it be created.
+  const stExists = await stat(target).catch(() => null);
+  if (!stExists) {
+    if (body.expectedMtime > 0) {
+      return NextResponse.json(
+        { kind: 'conflict', currentData: null, currentMtime: 0 },
+        { status: 409 },
+      );
+    }
+    // expectedMtime === 0 → first save of a new file; fall through.
+  } else if (stExists.mtimeMs !== body.expectedMtime) {
     let currentData: unknown = null;
     try {
       currentData = await loadCV(target);
     } catch {
       currentData = null;
     }
-    return NextResponse.json({ kind: 'conflict', currentData, currentMtime }, { status: 409 });
+    return NextResponse.json(
+      { kind: 'conflict', currentData, currentMtime: stExists.mtimeMs },
+      { status: 409 },
+    );
   }
   // validation
   const parsed = CVDataSchema.safeParse(body.data);

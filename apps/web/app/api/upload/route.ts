@@ -7,6 +7,8 @@ import { NextResponse } from 'next/server';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+
 export async function POST(req: Request): Promise<NextResponse> {
   let form: FormData;
   try {
@@ -37,6 +39,12 @@ export async function POST(req: Request): Promise<NextResponse> {
     crop = JSON.parse(cropRaw);
   } catch {
     return NextResponse.json({ kind: 'bad_crop' }, { status: 400 });
+  }
+  // Reject oversize uploads BEFORE buffering the body into memory. Blob has a
+  // synchronous `size` property, so we can short-circuit here and avoid loading
+  // multi-megabyte payloads into a Buffer just to throw them away.
+  if (file.size > MAX_UPLOAD_BYTES) {
+    return NextResponse.json({ kind: 'too_large', maxBytes: MAX_UPLOAD_BYTES }, { status: 413 });
   }
   const buf = Buffer.from(await file.arrayBuffer());
   await mkdir(photoDir(), { recursive: true });
