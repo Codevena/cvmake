@@ -29,6 +29,7 @@ export function TopBar({ slug, allSlugs, saveState, saveError, onRetry, lastSave
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
           data,
+          slug,
           templateId: data.rendering.template,
           paletteId: data.rendering.palette,
         }),
