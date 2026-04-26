@@ -77,4 +77,22 @@ describe('POST /api/save', () => {
     const res = await post({ slug: '..', data: VALID_DATA, expectedMtime: 1 });
     expect(res.status).toBe(400);
   });
+
+  it('409 wenn Datei extern gelöscht wurde (expectedMtime > 0, file fehlt)', async () => {
+    // No file written — simulates external `rm` between editor open and save.
+    const res = await post({ slug: 'cv.de', data: VALID_DATA, expectedMtime: 12345 });
+    expect(res.status).toBe(409);
+    const body = await res.json();
+    expect(body.kind).toBe('conflict');
+    expect(body.currentData).toBeNull();
+    expect(body.currentMtime).toBe(0);
+  });
+
+  it('200 wenn Datei neu (expectedMtime === 0)', async () => {
+    // No file written, but client signals "create new" via expectedMtime=0.
+    const res = await post({ slug: 'cv.de', data: VALID_DATA, expectedMtime: 0 });
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.ok).toBe(true);
+  });
 });

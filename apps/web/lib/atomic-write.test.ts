@@ -20,4 +20,19 @@ describe('atomicWriteFile', () => {
     expect(await readFile(target, 'utf8')).toBe('new');
     await rm(dir, { recursive: true, force: true });
   });
+
+  it('überlebt parallele Writes ohne Temp-Path-Kollision', async () => {
+    // Without crypto randomness in the temp filename, two concurrent same-
+    // process writes that share Date.now() will collide on the temp path
+    // and one of them will fail / corrupt the other. The randomBytes suffix
+    // must guarantee uniqueness, so the last writer always wins with a clean
+    // result and no errors are thrown.
+    const dir = await mkdtemp(path.join(tmpdir(), 'aw-'));
+    const target = path.join(dir, 'c.txt');
+    const writers = Array.from({ length: 16 }, (_, i) => atomicWriteFile(target, `payload-${i}`));
+    await expect(Promise.all(writers)).resolves.not.toThrow();
+    const final = await readFile(target, 'utf8');
+    expect(final).toMatch(/^payload-\d+$/);
+    await rm(dir, { recursive: true, force: true });
+  });
 });
