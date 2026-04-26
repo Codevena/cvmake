@@ -20,6 +20,7 @@ interface ExportRequest {
   data: unknown;
   templateId: string;
   paletteId?: string;
+  slug?: string;
 }
 
 export async function POST(req: Request): Promise<Response> {
@@ -52,7 +53,11 @@ export async function POST(req: Request): Promise<Response> {
     css: fullCss,
   });
   const pdf = await generatePDF(doc);
-  const filename = `${parsed.data.personal.lastName}-${body.templateId}.pdf`.toLowerCase();
+  // Spec §11: filename is `${slug}-${templateId}.pdf` when the caller knows
+  // the slug. Falling back to lastName keeps the route useful for ad-hoc
+  // payloads (e.g. tests) that don't carry a slug.
+  const filename =
+    `${body.slug ?? parsed.data.personal.lastName}-${body.templateId}.pdf`.toLowerCase();
   return new Response(new Uint8Array(pdf), {
     status: 200,
     headers: {

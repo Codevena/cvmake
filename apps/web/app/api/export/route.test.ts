@@ -37,6 +37,13 @@ describe('POST /api/export', () => {
     expect(buf.subarray(0, 4).toString()).toBe('%PDF');
   }, 60_000);
 
+  it('Filename enthält slug wenn übergeben (Spec §11)', async () => {
+    const res = await post({ data: VALID_DATA, templateId: 'classic-serif', slug: 'cv.de' });
+    expect(res.status).toBe(200);
+    const cd = res.headers.get('content-disposition') ?? '';
+    expect(cd).toContain('cv.de-classic-serif.pdf');
+  }, 60_000);
+
   it('422 bei invaliden Daten', async () => {
     const res = await post({ data: { broken: true }, templateId: 'classic-serif' });
     expect(res.status).toBe(422);
