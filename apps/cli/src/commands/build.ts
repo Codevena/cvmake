@@ -1,13 +1,10 @@
 import { mkdir, readdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import {
-  embedPhoto,
-  generatePDF,
-  loadCV,
-  renderCV,
-  shutdownPdfBrowser,
-  wrapHtmlDocument,
-} from '@codevena/forq-core';
+import { wrapHtmlDocument } from '@codevena/forq-core/html-document';
+import { loadCV } from '@codevena/forq-core/loader';
+import { generatePDF, shutdownPdfBrowser } from '@codevena/forq-core/pdf';
+import { embedPhoto } from '@codevena/forq-core/photo-embed';
+import { renderCV } from '@codevena/forq-core/renderer';
 import { bootstrapTemplates, getTemplate } from '@codevena/forq-templates';
 import { loadTemplateCss } from '@codevena/forq-templates/css';
 import pc from 'picocolors';
