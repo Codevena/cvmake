@@ -8,11 +8,13 @@ describe('embedPhoto', () => {
     const data = {
       meta: { locale: 'de' as const },
       personal: {
-        firstName: 'A', lastName: 'B',
+        firstName: 'A',
+        lastName: 'B',
         photo: 'photo-input.jpg',
         contacts: {},
       },
-      experience: [], education: [],
+      experience: [],
+      education: [],
       rendering: { template: 'x' },
     };
     const embedded = await embedPhoto(data, baseDir);
@@ -24,11 +26,13 @@ describe('embedPhoto', () => {
     const data = {
       meta: { locale: 'de' as const },
       personal: {
-        firstName: 'A', lastName: 'B',
+        firstName: 'A',
+        lastName: 'B',
         photo: 'missing.jpg',
         contacts: {},
       },
-      experience: [], education: [],
+      experience: [],
+      education: [],
       rendering: { template: 'x' },
     };
     const embedded = await embedPhoto(data, '/nonexistent');
@@ -41,11 +45,13 @@ describe('embedPhoto', () => {
     const data = {
       meta: { locale: 'de' as const },
       personal: {
-        firstName: 'A', lastName: 'B',
+        firstName: 'A',
+        lastName: 'B',
         photo: url,
         contacts: {},
       },
-      experience: [], education: [],
+      experience: [],
+      education: [],
       rendering: { template: 'x' },
     };
     const embedded = await embedPhoto(data, '/whatever');
@@ -56,7 +62,8 @@ describe('embedPhoto', () => {
     const data = {
       meta: { locale: 'de' as const },
       personal: { firstName: 'A', lastName: 'B', contacts: {} },
-      experience: [], education: [],
+      experience: [],
+      education: [],
       rendering: { template: 'x' },
     };
     const embedded = await embedPhoto(data, '/whatever');

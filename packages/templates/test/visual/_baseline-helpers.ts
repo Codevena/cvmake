@@ -31,10 +31,7 @@ export async function diffAgainstBaseline({
   const filename = `${paletteId}.page${pageNumber}.png`;
   const baselinePath = path.join(baselineDir, filename);
   const actualPath = path.join(actualDir, filename);
-  const diffPath = path.join(
-    actualDir,
-    `${paletteId}.page${pageNumber}.diff.png`,
-  );
+  const diffPath = path.join(actualDir, `${paletteId}.page${pageNumber}.diff.png`);
 
   await mkdir(actualDir, { recursive: true });
   await writeFile(actualPath, png);

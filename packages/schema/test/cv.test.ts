@@ -16,9 +16,7 @@ describe('CVDataSchema', () => {
   });
 
   it('erzwingt locale de|en', () => {
-    expect(() =>
-      CVDataSchema.parse({ ...minimalFixture, meta: { locale: 'fr' } }),
-    ).toThrow();
+    expect(() => CVDataSchema.parse({ ...minimalFixture, meta: { locale: 'fr' } })).toThrow();
   });
 
   it('validiert E-Mail-Format', () => {

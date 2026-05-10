@@ -1,7 +1,7 @@
 import { Command } from 'commander';
 import { runBuild, runBuildAll } from './commands/build.js';
-import { runValidate } from './commands/validate.js';
 import { runListTemplates } from './commands/list-templates.js';
+import { runValidate } from './commands/validate.js';
 
 const program = new Command();
 program.name('forq').description('forq CLI — fork-friendly OSS CV builder').version('0.0.0');
@@ -12,9 +12,14 @@ program
   .option('-t, --template <id>', 'Template-ID (default: aus YAML rendering.template)')
   .option('-p, --palette <id>', 'Palette-ID (default: aus YAML)')
   .option('-o, --output <path>', 'Output-PDF-Pfad', 'out/cv.pdf')
-  .action(async (yaml: string, opts: { template?: string | undefined; palette?: string | undefined; output: string }) => {
-    await runBuild({ yaml, template: opts.template, palette: opts.palette, output: opts.output });
-  });
+  .action(
+    async (
+      yaml: string,
+      opts: { template?: string | undefined; palette?: string | undefined; output: string },
+    ) => {
+      await runBuild({ yaml, template: opts.template, palette: opts.palette, output: opts.output });
+    },
+  );
 
 program
   .command('validate')

@@ -1,10 +1,10 @@
-import path from 'node:path';
 import { mkdtemp, readFile, rm, stat } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
 import { createRequire } from 'node:module';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { shutdownPdfBrowser } from '@codevena/forq-core';
 import { afterAll, describe, expect, it } from 'vitest';
 import { runBuild } from '../src/commands/build.js';
-import { shutdownPdfBrowser } from '@codevena/forq-core';
 
 afterAll(() => shutdownPdfBrowser());
 

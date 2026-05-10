@@ -1,14 +1,10 @@
-import { afterAll, describe, expect, it } from 'vitest';
-import puppeteer from 'puppeteer';
-import {
-  renderCV,
-  shutdownPdfBrowser,
-  wrapHtmlDocument,
-} from '@codevena/forq-core';
-import { clearRegistry, getTemplate, registerTemplate } from '../../src/registry.js';
-import { editorial } from '../../src/editorial/index.js';
-import { loadTemplateCss } from '../../src/css.js';
+import { renderCV, shutdownPdfBrowser, wrapHtmlDocument } from '@codevena/forq-core';
 import { fullFixture } from '@codevena/forq-schema/test/fixtures.js';
+import puppeteer from 'puppeteer';
+import { afterAll, describe, expect, it } from 'vitest';
+import { loadTemplateCss } from '../../src/css.js';
+import { editorial } from '../../src/editorial/index.js';
+import { clearRegistry, getTemplate, registerTemplate } from '../../src/registry.js';
 import { THRESHOLD_RATIO, diffAgainstBaseline } from './_baseline-helpers.js';
 
 const TEMPLATE_ID = 'editorial';
@@ -43,16 +39,13 @@ async function renderPageOneAsPng(paletteId: string): Promise<Buffer> {
 }
 
 describe(`${TEMPLATE_ID} visual baseline`, () => {
-  it.each(editorial.palettes.map((p) => p.id))(
-    'matches baseline für %s',
-    async (paletteId) => {
-      const png = await renderPageOneAsPng(paletteId);
-      const { ratio } = await diffAgainstBaseline({
-        templateId: TEMPLATE_ID,
-        paletteId,
-        png,
-      });
-      expect(ratio).toBeLessThan(THRESHOLD_RATIO);
-    },
-  );
+  it.each(editorial.palettes.map((p) => p.id))('matches baseline für %s', async (paletteId) => {
+    const png = await renderPageOneAsPng(paletteId);
+    const { ratio } = await diffAgainstBaseline({
+      templateId: TEMPLATE_ID,
+      paletteId,
+      png,
+    });
+    expect(ratio).toBeLessThan(THRESHOLD_RATIO);
+  });
 });

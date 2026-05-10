@@ -1,7 +1,33 @@
 import type { Locale } from '@codevena/forq-schema';
 
-const MONTHS_DE = ['Jan.', 'Feb.', 'März', 'Apr.', 'Mai', 'Juni', 'Juli', 'Aug.', 'Sep.', 'Okt.', 'Nov.', 'Dez.'];
-const MONTHS_EN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MONTHS_DE = [
+  'Jan.',
+  'Feb.',
+  'März',
+  'Apr.',
+  'Mai',
+  'Juni',
+  'Juli',
+  'Aug.',
+  'Sep.',
+  'Okt.',
+  'Nov.',
+  'Dez.',
+];
+const MONTHS_EN = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
 
 export function formatMonthYear(iso: string, locale: Locale): string {
   const match = /^(\d{4})(?:-(\d{2}))?(?:-(\d{2}))?$/.exec(iso);

@@ -1,10 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
-@import '../shared/reset.css';
-@import '../shared/print.css';
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
+@import "../shared/reset.css";
+@import "../shared/print.css";
 
 /* ─── Root ─────────────────────────────────────────────────────────────── */
 .modern-minimal {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
   font-size: 10pt;
   line-height: 1.6;
   color: var(--text);

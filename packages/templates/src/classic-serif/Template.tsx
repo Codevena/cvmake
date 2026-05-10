@@ -110,9 +110,7 @@ export function ClassicSerifTemplate({ data, palette, locale, labels }: Template
             <h1 className="classic-serif__name">
               {data.personal.firstName} {data.personal.lastName}
             </h1>
-            {data.personal.title && (
-              <p className="classic-serif__title">{data.personal.title}</p>
-            )}
+            {data.personal.title && <p className="classic-serif__title">{data.personal.title}</p>}
           </header>
 
           {sections.map((section) => {
@@ -138,9 +136,7 @@ export function ClassicSerifTemplate({ data, palette, locale, labels }: Template
                           {formatDateRange(e.startDate, e.endDate, locale, labels.present)}
                         </div>
                       </div>
-                      {e.location && (
-                        <div className="classic-serif__exp-meta">{e.location}</div>
-                      )}
+                      {e.location && <div className="classic-serif__exp-meta">{e.location}</div>}
                       {e.bullets.length > 0 && (
                         <ul className="classic-serif__bullets">
                           {e.bullets.map((b, j) => (
@@ -188,9 +184,7 @@ export function ClassicSerifTemplate({ data, palette, locale, labels }: Template
               {cs.items.map((it, i) => (
                 <div className="classic-serif__exp" key={i}>
                   <div className="classic-serif__exp-title">{it.title}</div>
-                  {it.subtitle && (
-                    <div className="classic-serif__exp-meta">{it.subtitle}</div>
-                  )}
+                  {it.subtitle && <div className="classic-serif__exp-meta">{it.subtitle}</div>}
                   {it.description && <p>{it.description}</p>}
                   {it.bullets && (
                     <ul className="classic-serif__bullets">

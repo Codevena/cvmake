@@ -1,6 +1,6 @@
-@import '../shared/reset.css';
-@import '../shared/print.css';
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+@import "../shared/reset.css";
+@import "../shared/print.css";
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
 
 /* Dark theme: ensure background colors print correctly */
 body,
@@ -10,7 +10,8 @@ body,
 }
 
 /* Sidebar gradient on html/body so it repeats on every printed page */
-html, body {
+html,
+body {
   background: linear-gradient(to right, var(--surface) 200pt, var(--bg) 200pt);
   background-attachment: fixed;
   print-color-adjust: exact;
@@ -18,7 +19,7 @@ html, body {
 }
 
 .monochrome-dark {
-  font-family: 'Inter', 'Helvetica Neue', 'Arial', sans-serif;
+  font-family: "Inter", "Helvetica Neue", "Arial", sans-serif;
   font-size: 10pt;
   line-height: 1.55;
   color: var(--text);

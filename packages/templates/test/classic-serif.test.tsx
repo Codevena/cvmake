@@ -1,8 +1,8 @@
+import { getLabels } from '@codevena/forq-core';
+import { fullFixture, minimalFixture } from '@codevena/forq-schema/test/fixtures.js';
+import { renderToStaticMarkup } from 'react-dom/server';
 /** @vitest-environment node */
 import { describe, expect, it } from 'vitest';
-import { renderToStaticMarkup } from 'react-dom/server';
-import { fullFixture, minimalFixture } from '@codevena/forq-schema/test/fixtures.js';
-import { getLabels } from '@codevena/forq-core';
 import { classicSerif } from '../src/classic-serif/index.js';
 
 const palette = classicSerif.palettes[0]!;
