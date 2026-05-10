@@ -66,6 +66,9 @@ jobs:
       - name: install playwright chromium
         run: pnpm --filter @codevena/forq-web exec playwright install --with-deps chromium
 
+      - name: ensure puppeteer chrome installed
+        run: pnpm rebuild puppeteer
+
       - run: pnpm build
 
       - name: run e2e tests
