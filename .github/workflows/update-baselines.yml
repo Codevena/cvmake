@@ -34,6 +34,6 @@ jobs:
       - name: upload baselines
         uses: actions/upload-artifact@v4
         with:
-          name: visual-baselines-linux-${{ inputs.branch }}
+          name: visual-baselines-linux-${{ github.run_id }}
           path: packages/templates/__tests__/__visual__/**/*.page*.png
           retention-days: 7
