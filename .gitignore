@@ -51,3 +51,19 @@ public/photos/*
 # Personal / sensitive data — never commit (kept local only)
 data/letters/
 scripts/build-letter.mjs
+
+# Personal CV data — gitignored. Copy data/cvs/example.*.yaml to data/cvs/cv.*.yaml
+# and edit yours locally. Templates stay clean of forker data.
+data/cvs/*.yaml
+data/cvs/*.yml
+!data/cvs/example.*.yaml
+!data/cvs/example.*.yml
+data/cvs/photos/*
+!data/cvs/photos/example-*
+!data/cvs/photos/.gitkeep
+!data/cvs/photos/README.md
+
+# Session/review artifacts — local-only, never public
+NEXT_SESSION.md
+.review-logs/
+.review/
