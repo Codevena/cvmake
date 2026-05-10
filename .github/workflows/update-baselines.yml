@@ -28,7 +28,7 @@ jobs:
           path: ~/.cache/puppeteer
           key: ${{ runner.os }}-puppeteer-${{ hashFiles('**/pnpm-lock.yaml') }}
       - name: ensure puppeteer chrome installed
-        run: pnpm rebuild puppeteer
+        run: pnpm --filter @codevena/forq-templates exec puppeteer browsers install chrome
       - name: regenerate all visual baselines
         env:
           UPDATE_VISUAL: '1'
