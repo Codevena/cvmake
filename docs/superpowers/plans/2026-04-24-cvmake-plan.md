@@ -2017,7 +2017,7 @@ describe('dates', () => {
 
 describe('initials', () => {
   it('liefert zwei Buchstaben', () => {
-    expect(initials('Alex', 'Schmidt')).toBe('MW');
+    expect(initials('Alex', 'Schmidt')).toBe('AS');
   });
 });
 
@@ -2934,7 +2934,7 @@ describe('ClassicSerifTemplate', () => {
         labels={getLabels('de')}
       />,
     );
-    expect(html).toMatch(/classic-serif__initials[^>]*>MW/);
+    expect(html).toMatch(/classic-serif__initials[^>]*>AS/);
   });
 
   it('rendert EN-Labels bei locale=en', () => {
