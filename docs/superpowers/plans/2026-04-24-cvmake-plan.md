@@ -36,7 +36,7 @@
 | 7 | `@cvmake/ui` (PhotoCropper, ColorPicker, …) | — | ✅ Done — siehe `2026-04-25-forq-ui.md` |
 | 8 | `apps/web` (Editor, Preview, API-Routes) | — | ✅ Done — siehe `2026-04-25-forq-editor.md` (32 Tasks, 47 Commits, 178 unit + 5 e2e green, lint 139 ≤ 143 baseline, gepusht zu `origin/main` und `origin/feat/cvmake-mvp` am 2026-04-26) |
 | 8b | Phase-8-Backlog (10 deferred items D1–D10) | — | ⏸ Geplant via remote-Routine `trig_01DdJXYWNhhRpmqDzzzVWwvN` für 2026-05-10 (mechanische D1–D4, D8, D9 als Cleanup-PR) |
-| 9 | CI + E2E + Visual-Regression | — | ⬜ Offen — eigene Brainstorming/Plan-Session nötig |
+| 9 | CI + E2E + Visual-Regression | — | ✅ Done — siehe `2026-05-10-phase9-ci-visual-regression.md` (18 Plan-Tasks + 7 Fix-up-Commits, 30 Commits, 3-Job CI, 22 Visual-Snapshots × Linux-Baselines, alle Jobs grün, DoD Codex+Claude PASS, gepusht zu `origin/feat/cvmake-mvp` am 2026-05-10) |
 | 10 | README + Docs + Screenshots + Release | — | ⬜ Offen — siehe ⚠️ Critical Finding unten zu Personal-Data-Strategie BEVOR Phase 10 startet |
 
 > Die untenstehenden Per-Task-Step-Checkboxen (`- [ ]`) wurden während Phase 0–8 nicht zurückgekreuzt — der Status oben in dieser Tabelle ist die maßgebliche Quelle. Die Per-Task-Listen bleiben als Plan-Historie erhalten.
