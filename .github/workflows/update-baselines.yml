@@ -27,6 +27,8 @@ jobs:
         with:
           path: ~/.cache/puppeteer
           key: ${{ runner.os }}-puppeteer-${{ hashFiles('**/pnpm-lock.yaml') }}
+      - name: ensure puppeteer chrome installed
+        run: pnpm rebuild puppeteer
       - name: regenerate all visual baselines
         env:
           UPDATE_VISUAL: '1'
