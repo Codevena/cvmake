@@ -1,6 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;1,9..144,400;1,9..144,700&family=Inter:wght@400;500;600&display=swap');
-@import '../shared/reset.css';
-@import '../shared/print.css';
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;1,9..144,400;1,9..144,700&family=Inter:wght@400;500;600&display=swap");
+@import "../shared/reset.css";
+@import "../shared/print.css";
 
 /* Cream column painted via a position:fixed pseudo so it repeats on
    every page in Chromium's paginated PDF output, regardless of where
@@ -8,7 +8,7 @@
 
 /* ── Root layout ──────────────────────────────────────────────── */
 .creative-accent {
-  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
   font-size: 10pt;
   line-height: 1.5;
   color: var(--text);
@@ -65,7 +65,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Fraunces', Georgia, serif;
+  font-family: "Fraunces", Georgia, serif;
   font-weight: 700;
   font-size: 52pt;
   margin-left: -12pt;
@@ -82,7 +82,7 @@
 }
 
 .creative-accent__sidebar-heading {
-  font-family: 'Fraunces', Georgia, serif;
+  font-family: "Fraunces", Georgia, serif;
   font-size: 11pt;
   font-style: italic;
   font-weight: 700;
@@ -129,7 +129,7 @@
 }
 
 .creative-accent__name {
-  font-family: 'Fraunces', Georgia, serif;
+  font-family: "Fraunces", Georgia, serif;
   font-weight: 700;
   font-size: 32pt;
   line-height: 1.05;
@@ -139,7 +139,7 @@
 }
 
 .creative-accent__job-title {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 11pt;
   font-weight: 500;
   color: var(--accent);
@@ -153,7 +153,7 @@
 
 /* ── Section headings: Fraunces italic, accent color, underline ── */
 .creative-accent__section-heading {
-  font-family: 'Fraunces', Georgia, serif;
+  font-family: "Fraunces", Georgia, serif;
   font-size: 13pt;
   font-style: italic;
   font-weight: 700;
@@ -165,7 +165,7 @@
 
 /* ── Drop-cap on summary paragraph ───────────────────────────── */
 .creative-accent__summary-text::first-letter {
-  font-family: 'Fraunces', Georgia, serif;
+  font-family: "Fraunces", Georgia, serif;
   font-size: 3.2em;
   font-weight: 700;
   color: var(--accent);

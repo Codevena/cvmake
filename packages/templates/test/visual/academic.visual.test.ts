@@ -1,31 +1,25 @@
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
-import path from 'node:path';
-import { afterAll, describe, expect, it } from 'vitest';
-import { PNG } from 'pngjs';
-import pixelmatch from 'pixelmatch';
-import puppeteer from 'puppeteer';
-import {
-  renderCV,
-  wrapHtmlDocument,
-  shutdownPdfBrowser,
-} from '@codevena/forq-core';
-import { bootstrapTemplates, getTemplate } from '../../src/index.js';
-import { loadTemplateCss } from '../../src/css.js';
+import { renderCV, shutdownPdfBrowser, wrapHtmlDocument } from '@codevena/forq-core';
 import { fullFixture } from '@codevena/forq-schema/test/fixtures.js';
+import puppeteer from 'puppeteer';
+import { afterAll, describe, expect, it } from 'vitest';
+import { loadTemplateCss } from '../../src/css.js';
+import { bootstrapTemplates, getTemplate } from '../../src/index.js';
+import { THRESHOLD_RATIO, diffAgainstBaseline } from './_baseline-helpers.js';
 
-const BASELINE_DIR = path.resolve('__tests__/__visual__/academic');
-const ACTUAL_DIR = path.resolve('__tests__/__visual__/academic/.actual');
-const UPDATE = process.env.UPDATE_VISUAL === '1';
+const TEMPLATE_ID = 'academic';
 
 afterAll(() => shutdownPdfBrowser());
 
 async function renderPageOneAsPng(paletteId: string): Promise<Buffer> {
   bootstrapTemplates();
-  const template = getTemplate('academic');
-  if (!template) throw new Error('academic not registered');
-  const rendered = await renderCV({ data: fullFixture, template, paletteId });
-  const css = `${rendered.css}\n${loadTemplateCss('academic')}`;
+  const template = getTemplate(TEMPLATE_ID);
+  if (!template) throw new Error(`${TEMPLATE_ID} not registered`);
+  const rendered = await renderCV({
+    data: fullFixture,
+    template,
+    paletteId,
+  });
+  const css = `${rendered.css}\n${loadTemplateCss(TEMPLATE_ID)}`;
   const html = wrapHtmlDocument({ title: 'CV', html: rendered.html, css });
   const browser = await puppeteer.launch({
     headless: true,
@@ -42,31 +36,18 @@ async function renderPageOneAsPng(paletteId: string): Promise<Buffer> {
   }
 }
 
-describe('academic visual baseline', () => {
-  it('matched Baseline für academic-slate', async () => {
-    const png = await renderPageOneAsPng('academic-slate');
-    const baselinePath = path.join(BASELINE_DIR, 'academic-slate.page1.png');
-    await mkdir(ACTUAL_DIR, { recursive: true });
-    await writeFile(path.join(ACTUAL_DIR, 'academic-slate.page1.png'), png);
+describe(`${TEMPLATE_ID} visual baseline`, () => {
+  bootstrapTemplates();
+  const template = getTemplate(TEMPLATE_ID);
+  if (!template) throw new Error(`${TEMPLATE_ID} not registered`);
 
-    if (UPDATE || !existsSync(baselinePath)) {
-      await mkdir(BASELINE_DIR, { recursive: true });
-      await writeFile(baselinePath, png);
-      return;
-    }
-
-    const baseline = PNG.sync.read(await readFile(baselinePath));
-    const actual = PNG.sync.read(png);
-    const diff = new PNG({ width: baseline.width, height: baseline.height });
-    const mismatched = pixelmatch(
-      baseline.data,
-      actual.data,
-      diff.data,
-      baseline.width,
-      baseline.height,
-      { threshold: 0.1 },
-    );
-    const total = baseline.width * baseline.height;
-    expect(mismatched / total).toBeLessThan(0.001);
+  it.each(template.palettes.map((p) => p.id))('matches baseline für %s', async (paletteId) => {
+    const png = await renderPageOneAsPng(paletteId);
+    const { ratio } = await diffAgainstBaseline({
+      templateId: TEMPLATE_ID,
+      paletteId,
+      png,
+    });
+    expect(ratio).toBeLessThan(THRESHOLD_RATIO);
   });
 });

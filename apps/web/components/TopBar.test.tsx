@@ -20,12 +20,7 @@ describe('<TopBar />', () => {
       const form = useForm<CVData>({ defaultValues: DATA });
       return (
         <FormProvider {...form}>
-          <TopBar
-            slug="cv.de"
-            allSlugs={['cv.de', 'cv.en']}
-            saveState="clean"
-            onRetry={() => {}}
-          />
+          <TopBar slug="cv.de" allSlugs={['cv.de', 'cv.en']} saveState="clean" onRetry={() => {}} />
         </FormProvider>
       );
     }

@@ -1,14 +1,10 @@
-import type { ReactElement } from 'react';
 import type { TemplateProps } from '@codevena/forq-schema';
+import type { ReactElement } from 'react';
 import { formatDateRange } from '../utils/dates.js';
 import { resolveSectionOrder } from '../utils/sections.js';
 import { meta } from './meta.js';
 
-export function CorporateTemplate({
-  data,
-  locale,
-  labels,
-}: TemplateProps): ReactElement {
+export function CorporateTemplate({ data, locale, labels }: TemplateProps): ReactElement {
   const sections = resolveSectionOrder({
     override: data.rendering.sectionOrder,
     defaults: meta.defaultSectionOrder,
@@ -27,16 +23,10 @@ export function CorporateTemplate({
             <h1 className="corporate__name">
               {p.firstName} {p.lastName}
             </h1>
-            {p.title && (
-              <p className="corporate__title">{p.title}</p>
-            )}
+            {p.title && <p className="corporate__title">{p.title}</p>}
             <div className="corporate__contacts">
-              {contacts.email && (
-                <span className="corporate__contact-item">{contacts.email}</span>
-              )}
-              {contacts.phone && (
-                <span className="corporate__contact-item">{contacts.phone}</span>
-              )}
+              {contacts.email && <span className="corporate__contact-item">{contacts.email}</span>}
+              {contacts.phone && <span className="corporate__contact-item">{contacts.phone}</span>}
               {contacts.location && (
                 <span className="corporate__contact-item">{contacts.location}</span>
               )}
@@ -46,25 +36,17 @@ export function CorporateTemplate({
                 </span>
               )}
               {contacts.github && (
-                <span className="corporate__contact-item">
-                  github.com/{contacts.github}
-                </span>
+                <span className="corporate__contact-item">github.com/{contacts.github}</span>
               )}
               {contacts.linkedin && (
-                <span className="corporate__contact-item">
-                  linkedin.com/in/{contacts.linkedin}
-                </span>
+                <span className="corporate__contact-item">linkedin.com/in/{contacts.linkedin}</span>
               )}
             </div>
           </div>
 
           {/* Photo only — no initials circle per brief */}
           {p.photo && (
-            <img
-              className="corporate__photo"
-              src={p.photo}
-              alt={`${p.firstName} ${p.lastName}`}
-            />
+            <img className="corporate__photo" src={p.photo} alt={`${p.firstName} ${p.lastName}`} />
           )}
         </header>
 
@@ -90,13 +72,9 @@ export function CorporateTemplate({
                     </div>
                     <div className="corporate__row-body">
                       <div className="corporate__entry-primary">
-                        {e.title}
-                        {' '}
-                        <span className="corporate__entry-company">· {e.company}</span>
+                        {e.title} <span className="corporate__entry-company">· {e.company}</span>
                       </div>
-                      {e.location && (
-                        <div className="corporate__entry-location">{e.location}</div>
-                      )}
+                      {e.location && <div className="corporate__entry-location">{e.location}</div>}
                       {e.bullets.length > 0 && (
                         <ul className="corporate__bullets">
                           {e.bullets.map((b, j) => (
@@ -122,13 +100,10 @@ export function CorporateTemplate({
                     </div>
                     <div className="corporate__row-body">
                       <div className="corporate__entry-primary">
-                        {e.degree}
-                        {' '}
+                        {e.degree}{' '}
                         <span className="corporate__entry-company">· {e.institution}</span>
                       </div>
-                      {e.location && (
-                        <div className="corporate__entry-location">{e.location}</div>
-                      )}
+                      {e.location && <div className="corporate__entry-location">{e.location}</div>}
                       {e.bullets && e.bullets.length > 0 && (
                         <ul className="corporate__bullets">
                           {e.bullets.map((b, j) => (
@@ -177,9 +152,7 @@ export function CorporateTemplate({
                     <span className="corporate__language-item" key={l.name}>
                       {l.name}
                       {(l.label ?? l.level) && (
-                        <span className="corporate__language-level">
-                          {' '}— {l.label ?? l.level}
-                        </span>
+                        <span className="corporate__language-level"> — {l.label ?? l.level}</span>
                       )}
                     </span>
                   ))}
@@ -197,14 +170,10 @@ export function CorporateTemplate({
             <h2 className="corporate__section-heading">{cs.title}</h2>
             {cs.items.map((it, i) => (
               <div className="corporate__row" key={i}>
-                <div className="corporate__row-date">
-                  {it.date ?? ''}
-                </div>
+                <div className="corporate__row-date">{it.date ?? ''}</div>
                 <div className="corporate__row-body">
                   <div className="corporate__entry-primary">{it.title}</div>
-                  {it.subtitle && (
-                    <div className="corporate__entry-location">{it.subtitle}</div>
-                  )}
+                  {it.subtitle && <div className="corporate__entry-location">{it.subtitle}</div>}
                   {it.description && (
                     <p className="corporate__summary" style={{ marginTop: '3pt' }}>
                       {it.description}

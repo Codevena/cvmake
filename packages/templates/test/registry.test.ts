@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest';
-import { getTemplate, listTemplates, registerTemplate, clearRegistry } from '../src/registry.js';
 import type { TemplateDefinition } from '@codevena/forq-schema';
 import type { ReactElement } from 'react';
+import { describe, expect, it } from 'vitest';
+import { clearRegistry, getTemplate, listTemplates, registerTemplate } from '../src/registry.js';
 
 const stub: TemplateDefinition = {
   meta: {

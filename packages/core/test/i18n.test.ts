@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
 import { LABEL_KEYS } from '@codevena/forq-schema';
+import { describe, expect, it } from 'vitest';
 import { getLabels } from '../src/i18n.js';
 
 describe('i18n', () => {

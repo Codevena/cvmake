@@ -55,16 +55,7 @@ export const SkillsSchema = z
   })
   .strict();
 
-export const LanguageLevelSchema = z.enum([
-  'native',
-  'C2',
-  'C1',
-  'B2',
-  'B1',
-  'A2',
-  'A1',
-  'basic',
-]);
+export const LanguageLevelSchema = z.enum(['native', 'C2', 'C1', 'B2', 'B1', 'A2', 'A1', 'basic']);
 
 export const LanguageItemSchema = z
   .object({

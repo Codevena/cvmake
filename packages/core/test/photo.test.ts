@@ -1,7 +1,7 @@
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { describe, expect, it, afterEach, beforeEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { processPhoto } from '../src/photo.js';
 
 describe('processPhoto', () => {
