@@ -9,5 +9,7 @@ portraits. They depict no real person.
 - **Per US law (Naruto v. Slater 2018 precedent):** AI-generated images
   without human authorship are not copyrightable
 
-Files in this directory matching `markus.*` or other personal patterns
+Any other files in this directory (e.g. `<your-name>.jpg` portraits)
 are gitignored and belong to the maintainer's local working tree only.
+The `data/cvs/photos/*` rule blocks them by default; only the
+`example-*` portraits and this README are committed.
