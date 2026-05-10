@@ -95,3 +95,4 @@ jobs:
             apps/web/test-results/**
           if-no-files-found: ignore
           retention-days: 30
+          include-hidden-files: true
