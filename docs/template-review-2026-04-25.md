@@ -132,7 +132,7 @@ Clean and professional: round photo top-right, date-left/content-right, sans-ser
 None.
 
 #### Notes
-Strong dev-themed identity: terminal-green photo ring, monospace sidebar with `// contact`, `// skills`, `// languages` comment-style labels, array notation `[Next.js, React, TypeScript, ...]`, terminal-prompt header gimmick `> markus@codevena:~$ whoami`, hashtag company tags (`#codevena(eigenprojekt)`). Page 2 sidebar continues cream-tinted as on page 1. Approved.
+Strong dev-themed identity: terminal-green photo ring, monospace sidebar with `// contact`, `// skills`, `// languages` comment-style labels, array notation `[Next.js, React, TypeScript, ...]`, terminal-prompt header gimmick `> alex@codevena:~$ whoami`, hashtag company tags (`#codevena(eigenprojekt)`). Page 2 sidebar continues cream-tinted as on page 1. Approved.
 
 ## Decision options
 

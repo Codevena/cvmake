@@ -1,6 +1,6 @@
 # forq-ui — Design Spec (Phase 7)
 
-**Status:** Approved · **Created:** 2026-04-25 · **Owner:** Markus Wiesecke
+**Status:** Approved · **Created:** 2026-04-25 · **Owner:** Alex Schmidt
 
 ## 1. Summary
 

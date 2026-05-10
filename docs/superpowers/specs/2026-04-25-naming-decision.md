@@ -1,7 +1,7 @@
 # Naming Decision — `forq`
 
 **Date:** 2026-04-25
-**Status:** Approved (Markus, 2026-04-25)
+**Status:** Approved (Alex, 2026-04-25)
 **Replaces working title:** `cvMake`
 
 ## Decision
@@ -110,7 +110,7 @@ Using `forq-` as a prefix inside the `@codevena` scope (e.g. `@codevena/forq-cor
 
 ### Out of scope for this rename
 
-- No working-directory rename. The on-disk path stays `/Users/markus/Developer/cvMake` to avoid invalidating Claude memory paths and shell history references. The path is irrelevant to the brand once the repo is on GitHub.
+- No working-directory rename. The on-disk path stays `/Users/alex/Developer/cvMake` to avoid invalidating Claude memory paths and shell history references. The path is irrelevant to the brand once the repo is on GitHub.
 - No npm publishing in this step. Packages stay private until Phase 11 (README + screenshots + first public release).
 - No branch rename (`feat/cvmake-mvp`). Defer to whenever we open the first PR against `main`.
 - No CI changes — there is no CI yet.

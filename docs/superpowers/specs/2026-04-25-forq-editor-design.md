@@ -1,6 +1,6 @@
 # forq Editor (Phase 8) — Design Spec
 
-**Status:** Draft · **Created:** 2026-04-25 · **Owner:** Markus Wiesecke
+**Status:** Draft · **Created:** 2026-04-25 · **Owner:** Alex Schmidt
 **Supersedes (partially):** §6.1 of `2026-04-24-cvmake-design.md` (Web Editor Flow)
 **Depends on:** Phase 7 (`@codevena/forq-ui`), `@codevena/forq-core`, `@codevena/forq-templates`, `@codevena/forq-schema`
 
@@ -118,7 +118,7 @@ RSC (page.tsx)
 
 **`GET /api/cv` → 200**
 ```json
-{ "items": [{ "slug": "cv.de", "locale": "de", "displayName": "Markus Wiesecke (de)" }] }
+{ "items": [{ "slug": "cv.de", "locale": "de", "displayName": "Alex Schmidt (de)" }] }
 ```
 On per-file load failure: `displayName` falls back to `slug`. List never fails as a whole; broken files are still listed.
 

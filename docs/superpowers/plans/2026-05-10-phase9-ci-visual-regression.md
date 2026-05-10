@@ -70,7 +70,7 @@ Run:
 git status
 ```
 
-Expected: only `data/cvs/cv.de.yaml`, `data/cvs/photos/markus.jpg`, `data/cvs/photos/markus.webp` modified/untracked. These are the deliberately-uncommitted personal data files (Pfad B unresolved). Don't touch them.
+Expected: only `data/cvs/cv.de.yaml`, `data/cvs/photos/alex.jpg`, `data/cvs/photos/alex.webp` modified/untracked. These are the deliberately-uncommitted personal data files (Pfad B unresolved). Don't touch them.
 
 - [ ] **Step 0.2: Verify on `feat/cvmake-mvp`**
 
@@ -1575,7 +1575,7 @@ rm -rf .review/
 
 **Files:**
 - Modify: `docs/superpowers/plans/2026-04-24-cvmake-plan.md`
-- Possibly: `/Users/markus/.claude/projects/-Users-markus-Developer-cvMake/memory/MEMORY.md` and/or a new memory file
+- Possibly: `/Users/alex/.claude/projects/-Users-alex-Developer-cvMake/memory/MEMORY.md` and/or a new memory file
 
 - [ ] **Step 17.1: Update Phase 9 status in master plan**
 

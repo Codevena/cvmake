@@ -60,7 +60,7 @@ export default function DevUI(): JSX.Element {
 
       <section className="flex flex-col gap-2">
         <h2 className="text-lg font-medium text-text">Input</h2>
-        <Input label="Name" value={name} onChange={setName} placeholder="Markus" />
+        <Input label="Name" value={name} onChange={setName} placeholder="Alex" />
       </section>
 
       <section className="flex flex-col gap-2">

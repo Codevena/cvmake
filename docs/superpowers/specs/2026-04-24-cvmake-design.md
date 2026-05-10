@@ -1,6 +1,6 @@
 # cvMake — Design Spec
 
-**Status:** Superseded · **Created:** 2026-04-24 · **Owner:** Markus Wiesecke
+**Status:** Superseded · **Created:** 2026-04-24 · **Owner:** Alex Schmidt
 
 > **Project renamed `cvMake` → `forq` on 2026-04-25.** The architecture and decisions in this spec still apply; only the name and package paths changed (`@cvmake/*` → `@codevena/forq-*`). See [`docs/superpowers/specs/2026-04-25-naming-decision.md`](./2026-04-25-naming-decision.md) for the rename rationale.
 
@@ -8,7 +8,7 @@
 
 cvMake is an open-source CV generator solving a dual purpose:
 
-1. **Personal tool** — Markus's own CV needs a scalable, editable, version-controlled home. His old PDF has great design but editing is painful. His current CV has better content but worse design.
+1. **Personal tool** — Alex's own CV needs a scalable, editable, version-controlled home. His old PDF has great design but editing is painful. His current CV has better content but worse design.
 2. **GitHub showcase** — a polished, "build in public" repository that other developers can fork, swap their data, and generate a professional CV.
 
 Architecture balances both: a **YAML source of truth** (Git-versioned, forker-friendly, CLI-buildable) combined with a **Next.js web UI** (editor, live preview, photo crop, PDF export). Eight distinct templates ship in MVP, with a plugin-style registry making the system scale to unlimited templates.
@@ -147,7 +147,7 @@ export const CVDataSchema = z.object({
     firstName: z.string(),
     lastName: z.string(),
     title: z.string().optional(),
-    photo: z.string().optional(),                 // relative path, e.g. "photos/markus.jpg"
+    photo: z.string().optional(),                 // relative path, e.g. "photos/alex.jpg"
     birthDate: z.string().optional(),             // ISO "1987-01-13"
     maritalStatus: z.string().optional(),
     drivingLicense: z.string().optional(),
@@ -335,7 +335,7 @@ Additional CLI commands:
 - Palette switch (CSS custom properties in output).
 - Photo off (initials fallback or skip depending on template).
 
-Shared fixtures in `packages/schema/test/fixtures.ts`: `fullFixture`, `minimalFixture`, `markusFixture` (real CV data), `longContentFixture`.
+Shared fixtures in `packages/schema/test/fixtures.ts`: `fullFixture`, `minimalFixture`, `alexFixture` (real CV data), `longContentFixture`.
 
 **PDF integration tests (`apps/cli/__tests__/` + `apps/web/__tests__/`)** — critical because HTML ≠ PDF:
 - CLI build smoke test per template: exit code, file size > 10KB, `pdf-parse` text contains expected strings.
@@ -373,7 +373,7 @@ Turborepo caching ensures unchanged packages skip re-testing.
 
 - **No mocks for YAML or sharp** — real fixture files are cheaper and more honest than mocks.
 - **Puppeteer CI flags** (`--no-sandbox`) abstracted behind a test utility.
-- **`markusFixture` as reality check** — the real CV in `data/cvs/cv.de.yaml` is itself a test fixture.
+- **`alexFixture` as reality check** — the real CV in `data/cvs/cv.de.yaml` is itself a test fixture.
 - **Per-template test + baseline is part of "template done"** — a template is not merged until it has green unit tests + a committed visual baseline.
 
 ## 9. Template Implementation Approach
@@ -404,7 +404,7 @@ Each agent delivers:
 ## 10. Out of Scope / Future Work
 
 - LinkedIn / resume.json / JSON Resume import/export.
-- AI-assisted bullet rewriting (OpenAI / OpenRouter integration) — Markus's stack suggests this is a plausible v2 addon.
+- AI-assisted bullet rewriting (OpenAI / OpenRouter integration) — Alex's stack suggests this is a plausible v2 addon.
 - Multi-profile inheritance (`base.yaml` + overrides) — decided against in brainstorming (Git branches serve the same purpose, more visibly).
 - ATS scoring, keyword highlighting.
 - Theme builder UI (creating new palettes in the Web UI).
@@ -421,7 +421,7 @@ Each agent delivers:
 6. **Parallel template implementation** — 8 agents, one per template, shipped with tests + baselines.
 7. **`apps/cli`** — commander setup, build/validate/list-templates commands.
 8. **`apps/web`** — editor layout, preview iframe, API routes (load/save/upload/export).
-9. **Markus's real content** — populate `data/cvs/cv.de.yaml` + `cv.en.yaml` with actual data.
+9. **Alex's real content** — populate `data/cvs/cv.de.yaml` + `cv.en.yaml` with actual data.
 10. **CI + E2E + visual regression** — GitHub Actions, Playwright, baselines.
 11. **Docs + README** — README with screenshots of all 8 templates, fork-and-use guide, MIT license.
 

@@ -30,7 +30,7 @@
 | 1 | `@cvmake/schema` | — | ✅ Done |
 | 2 | `@cvmake/core` (Loader, i18n, Photo, Renderer, PDF) | — | ✅ Done |
 | 3 | Templates-Foundation (Registry, Shared-CSS, Fonts) | — | ✅ Done |
-| 4 | **End-to-End-Proof: Classic Serif** + CLI-Minimal + Markus-Content | — | ✅ Done |
+| 4 | **End-to-End-Proof: Classic Serif** + CLI-Minimal + Alex-Content | — | ✅ Done |
 | 5 | CLI vollständig (build/validate/list-templates) | — | ✅ Done |
 | 6 | **7 Templates parallel** (Agent pro Template) | 7 Agents | ✅ Done |
 | 7 | `@cvmake/ui` (PhotoCropper, ColorPicker, …) | — | ✅ Done — siehe `2026-04-25-forq-ui.md` |
@@ -45,7 +45,7 @@
 
 ## ⚠️ Critical Finding (2026-04-26): Personal Data in Git History
 
-**Befund:** Die Dateien `data/cvs/cv.de.yaml`, `data/cvs/cv.en.yaml` und `data/cvs/photos/markus.jpg` sind seit Phase 0 in der Git-History committed und enthalten **echte persönliche Daten** von Markus:
+**Befund:** Die Dateien `data/cvs/cv.de.yaml`, `data/cvs/cv.en.yaml` und `data/cvs/photos/alex.jpg` sind seit Phase 0 in der Git-History committed und enthalten **echte persönliche Daten** von Alex:
 - Vor- und Nachname, Geburtsdatum, Familienstand, Führerscheinklasse
 - Telefonnummer, E-Mail-Adresse, GitHub/LinkedIn-Handles, Wohnort
 - Vollständige Arbeits- und Ausbildungshistorie
@@ -61,11 +61,11 @@ Zusätzlich liegt im lokalen Working-Tree (jetzt via `.gitignore` ausgeschlossen
 
 **Optionen vor Public-Going (Phase 10 Voraussetzung):**
 
-A) **Git-History rewrite** mit `git filter-repo` (oder BFG Repo-Cleaner): alle Versionen von `cv.de.yaml`, `cv.en.yaml`, `markus.jpg`, `markus.webp` aus der gesamten History entfernen, durch fictional Sample-Daten ersetzen, Force-push. Risiko: bricht alle bestehenden Forks/Clones, alle Commit-SHAs ändern sich.
+A) **Git-History rewrite** mit `git filter-repo` (oder BFG Repo-Cleaner): alle Versionen von `cv.de.yaml`, `cv.en.yaml`, `alex.jpg`, `alex.webp` aus der gesamten History entfernen, durch fictional Sample-Daten ersetzen, Force-push. Risiko: bricht alle bestehenden Forks/Clones, alle Commit-SHAs ändern sich.
 
-B) **Separates OSS-Repo** anlegen, Code ohne `data/cvs/`-Inhalte rüberkopieren, fictional Sample-Daten committen, ab da öffentlich entwickeln. Das `forq`-Repo bleibt privat als Markus' eigenes Setup. Saubere Trennung, aber Aufwand für initiale Migration und parallele Pflege.
+B) **Separates OSS-Repo** anlegen, Code ohne `data/cvs/`-Inhalte rüberkopieren, fictional Sample-Daten committen, ab da öffentlich entwickeln. Das `forq`-Repo bleibt privat als Alex' eigenes Setup. Saubere Trennung, aber Aufwand für initiale Migration und parallele Pflege.
 
-C) **Repo bleibt long-term private** — der OSS-Showcase-Aspekt entfällt. Markus nutzt es nur für sich. Einfachste Lösung, aber Projektziel "build in public" geht verloren.
+C) **Repo bleibt long-term private** — der OSS-Showcase-Aspekt entfällt. Alex nutzt es nur für sich. Einfachste Lösung, aber Projektziel "build in public" geht verloren.
 
 D) **Hybrid:** `data/cvs/*.yaml` aus aktivem Tracking entfernen via `.gitignore` + `git rm --cached`, fictional Sample-Daten als `data/cvs/example.de.yaml` committen. History bleibt wie sie ist (Daten in alten Commits). Akzeptabel wenn Public-Audience sich nicht durch `git log -p` gräbt — Security-by-Obscurity. Funktional für Public-Going aber nicht sauber.
 
@@ -746,8 +746,8 @@ import type { CVData } from '../src/cv.js';
 export const minimalFixture: CVData = {
   meta: { locale: 'de' },
   personal: {
-    firstName: 'Markus',
-    lastName: 'Wiesecke',
+    firstName: 'Alex',
+    lastName: 'Schmidt',
     contacts: {},
   },
   experience: [],
@@ -758,18 +758,18 @@ export const minimalFixture: CVData = {
 export const fullFixture: CVData = {
   meta: { locale: 'de', updatedAt: '2026-04-24' },
   personal: {
-    firstName: 'Markus',
-    lastName: 'Wiesecke',
+    firstName: 'Alex',
+    lastName: 'Schmidt',
     title: 'Fullstack Developer',
-    photo: 'photos/markus.jpg',
+    photo: 'photos/alex.jpg',
     birthDate: '1987-01-13',
     contacts: {
       email: 'hello@codevena.dev',
-      phone: '+49 175 9025586',
+      phone: '+49 30 0000000',
       website: 'https://codevena.dev',
       github: 'codevena',
-      linkedin: 'markus-wiesecke',
-      location: 'Wuppertal, DE',
+      linkedin: 'alex-schmidt',
+      location: 'Berlin, DE',
     },
   },
   summary: 'Fullstack Developer mit Fokus auf Next.js und TypeScript.',
@@ -777,7 +777,7 @@ export const fullFixture: CVData = {
     {
       title: 'Fullstack Developer',
       company: 'Codevena',
-      location: 'Wuppertal',
+      location: 'Berlin',
       startDate: '2020-01',
       bullets: ['Next.js 16 SaaS entwickelt', 'Hetzner + Coolify Deployment'],
       tags: ['Next.js', 'TypeScript', 'PostgreSQL'],
@@ -1293,8 +1293,8 @@ git commit -m "feat(core): add DE/EN label dictionaries with parity test"
 meta:
   locale: de
 personal:
-  firstName: Markus
-  lastName: Wiesecke
+  firstName: Alex
+  lastName: Schmidt
   contacts:
     email: hello@codevena.dev
 experience: []
@@ -1308,7 +1308,7 @@ rendering:
 meta:
   locale: de
 personal:
-  firstName: Markus
+  firstName: Alex
   contacts: {}
 experience: []
 education: []
@@ -1337,7 +1337,7 @@ const fixture = (name: string) => path.join(__dirname, 'fixtures', name);
 describe('loadCV', () => {
   it('lädt und validiert gültiges YAML', async () => {
     const cv = await loadCV(fixture('valid.de.yaml'));
-    expect(cv.personal.firstName).toBe('Markus');
+    expect(cv.personal.firstName).toBe('Alex');
     expect(cv.meta.locale).toBe('de');
   });
 
@@ -1490,9 +1490,9 @@ describe('processPhoto', () => {
 
   it('erzeugt .webp + .jpg Variante im Zielordner', async () => {
     const input = path.join(import.meta.dirname, 'fixtures', 'photo-input.jpg');
-    const result = await processPhoto({ inputPath: input, outputDir: outDir, slug: 'markus' });
-    expect(result.webp).toMatch(/markus\.webp$/);
-    expect(result.jpg).toMatch(/markus\.jpg$/);
+    const result = await processPhoto({ inputPath: input, outputDir: outDir, slug: 'alex' });
+    expect(result.webp).toMatch(/alex\.webp$/);
+    expect(result.jpg).toMatch(/alex\.jpg$/);
     expect((await readFile(result.webp)).byteLength).toBeGreaterThan(100);
     expect((await readFile(result.jpg)).byteLength).toBeGreaterThan(100);
   });
@@ -1649,7 +1649,7 @@ const fakeTemplate: TemplateDefinition = {
 describe('renderCV', () => {
   it('rendert HTML mit Locale-Label', () => {
     const out = renderCV({ data: minimalFixture, template: fakeTemplate });
-    expect(out.html).toContain('<h1>Markus Wiesecke</h1>');
+    expect(out.html).toContain('<h1>Alex Schmidt</h1>');
     expect(out.html).toContain('Berufserfahrung');
     expect(out.locale).toBe('de');
   });
@@ -2017,7 +2017,7 @@ describe('dates', () => {
 
 describe('initials', () => {
   it('liefert zwei Buchstaben', () => {
-    expect(initials('Markus', 'Wiesecke')).toBe('MW');
+    expect(initials('Alex', 'Schmidt')).toBe('MW');
   });
 });
 
@@ -2294,24 +2294,24 @@ git commit -m "feat(templates): add build-time template validator"
 
 ## Phase 4 — End-to-End-Proof: Classic Serif
 
-Ziel: **Ein** Template komplett durchbauen (Loader → Renderer → PDF → CLI-Build → echtes PDF aus Markus' Content). Das beweist die Architektur, bevor Phase 6 die anderen 7 Templates parallel ausrollt.
+Ziel: **Ein** Template komplett durchbauen (Loader → Renderer → PDF → CLI-Build → echtes PDF aus Alex' Content). Das beweist die Architektur, bevor Phase 6 die anderen 7 Templates parallel ausrollt.
 
-Diese Phase enthält auch das Aufsetzen des CLI-Minimalkommandos (`cvmake build`), damit das PDF reproduzierbar aus Markus' YAML erzeugt werden kann.
+Diese Phase enthält auch das Aufsetzen des CLI-Minimalkommandos (`cvmake build`), damit das PDF reproduzierbar aus Alex' YAML erzeugt werden kann.
 
-### Task 4.1: Markus-Content aus PDFs extrahieren
+### Task 4.1: Alex-Content aus PDFs extrahieren
 
 **Files:**
 - Create: `data/cvs/cv.de.yaml`
 - Create: `data/cvs/cv.en.yaml`
-- Create: `data/cvs/photos/markus.jpg` (aus altem PDF extrahiert)
+- Create: `data/cvs/photos/alex.jpg` (aus altem PDF extrahiert)
 
 - [ ] **Step 1: Alten und aktuellen CV als Text extrahieren**
 
 Run:
 ```bash
 pnpm add -D -w pdf-parse
-node -e "import('pdf-parse').then(async({default:p})=>{const fs=await import('node:fs');const b=fs.readFileSync('/Users/markus/Desktop/Markus_Wiesecke_CV_2025-06-27.pdf');const r=await p(b);process.stdout.write(r.text);})" > /tmp/cv-old.txt
-node -e "import('pdf-parse').then(async({default:p})=>{const fs=await import('node:fs');const b=fs.readFileSync('/Users/markus/Desktop/Markus_Wiesecke_CV_aktuell.pdf');const r=await p(b);process.stdout.write(r.text);})" > /tmp/cv-new.txt
+node -e "import('pdf-parse').then(async({default:p})=>{const fs=await import('node:fs');const b=fs.readFileSync('/Users/alex/Desktop/Alex_Schmidt_CV_2025-06-27.pdf');const r=await p(b);process.stdout.write(r.text);})" > /tmp/cv-old.txt
+node -e "import('pdf-parse').then(async({default:p})=>{const fs=await import('node:fs');const b=fs.readFileSync('/Users/alex/Desktop/Alex_Schmidt_CV_aktuell.pdf');const r=await p(b);process.stdout.write(r.text);})" > /tmp/cv-new.txt
 ```
 
 - [ ] **Step 2: Foto aus dem alten PDF als JPG extrahieren**
@@ -2320,13 +2320,13 @@ Run:
 ```bash
 # pdfimages ist Teil von poppler
 brew list poppler >/dev/null 2>&1 || brew install poppler
-pdfimages -j /Users/markus/Desktop/Markus_Wiesecke_CV_2025-06-27.pdf /tmp/cv-img
+pdfimages -j /Users/alex/Desktop/Alex_Schmidt_CV_2025-06-27.pdf /tmp/cv-img
 ls /tmp/cv-img-*.jpg
 # → manuell beste Variante aussuchen
-cp /tmp/cv-img-000.jpg data/cvs/photos/markus.jpg
+cp /tmp/cv-img-000.jpg data/cvs/photos/alex.jpg
 ```
 
-(Falls pdfimages kein Foto findet, Markus lädt später ein aktuelleres Bild über die Web-UI.)
+(Falls pdfimages kein Foto findet, Alex lädt später ein aktuelleres Bild über die Web-UI.)
 
 - [ ] **Step 3: `data/cvs/cv.de.yaml` schreiben**
 
@@ -2336,18 +2336,18 @@ meta:
   locale: de
   updatedAt: '2026-04-24'
 personal:
-  firstName: Markus
-  lastName: Wiesecke
+  firstName: Alex
+  lastName: Schmidt
   title: Fullstack Developer / SaaS Builder / KI-Enthusiast
-  photo: photos/markus.jpg
+  photo: photos/alex.jpg
   birthDate: '1987-01-13'
   contacts:
     email: hello@codevena.dev
-    phone: '+49 175 9025586'
+    phone: '+49 30 0000000'
     website: https://codevena.dev
     github: codevena
-    linkedin: markus-wiesecke
-    location: Wuppertal, DE
+    linkedin: alex-schmidt
+    location: Berlin, DE
 summary: >-
   Autodidaktischer Fullstack Developer mit Fokus auf Next.js, TypeScript und
   PostgreSQL. Ich baue eigene SaaS-Produkte von der Architektur bis zum
@@ -2355,7 +2355,7 @@ summary: >-
 experience:
   - title: Fullstack Developer (Selbstständig)
     company: Codevena
-    location: Wuppertal
+    location: Berlin
     startDate: '2020-01'
     bullets:
       - Eigene SaaS-Produkte (FlashBuddy, Dealbarg, Ludotek, AI Builds) von Architektur bis Deployment
@@ -2383,7 +2383,7 @@ rendering:
   palette: classic-grey
 ```
 
-(Genaue Inhalte gleicht Markus im Review-Checkpoint ab.)
+(Genaue Inhalte gleicht Alex im Review-Checkpoint ab.)
 
 - [ ] **Step 4: `data/cvs/cv.en.yaml` als EN-Variante schreiben**
 
@@ -2402,7 +2402,7 @@ Expected: Validiertes CVData-Objekt auf stdout.
 
 ```bash
 git add data/cvs
-git commit -m "content: add markus cv.de.yaml + cv.en.yaml + photo"
+git commit -m "content: add alex cv.de.yaml + cv.en.yaml + photo"
 ```
 
 ### Task 4.2: Classic-Serif-Template — Struktur + Meta
@@ -2920,7 +2920,7 @@ describe('ClassicSerifTemplate', () => {
         labels={getLabels('de')}
       />,
     );
-    expect(html).toContain('Markus Wiesecke');
+    expect(html).toContain('Alex Schmidt');
     expect(html).toContain('Berufserfahrung');
     expect(html).toContain('Codevena');
   });
@@ -3076,9 +3076,9 @@ ls -lh out/cv.de.pdf
 ```
 Expected: `out/cv.de.pdf` existiert, > 20 KB, öffnet in Preview.
 
-- [ ] **Step 5: Markus öffnet das PDF und bewertet**
+- [ ] **Step 5: Alex öffnet das PDF und bewertet**
 
-Review-Checkpoint: Markus schaut sich das PDF visuell an. Diskussion über Proportionen, Typografie, Spacing. Agent notiert Feedback. **Wenn Feedback vorliegt: zurück zu Task 4.2, Styles anpassen, erneut bauen, erneut zeigen.** Wiederholen bis Markus grünes Licht gibt.
+Review-Checkpoint: Alex schaut sich das PDF visuell an. Diskussion über Proportionen, Typografie, Spacing. Agent notiert Feedback. **Wenn Feedback vorliegt: zurück zu Task 4.2, Styles anpassen, erneut bauen, erneut zeigen.** Wiederholen bis Alex grünes Licht gibt.
 
 - [ ] **Step 6: Commit**
 
@@ -3208,7 +3208,7 @@ git add packages/templates/vitest.visual.config.ts packages/templates/test/visua
 git commit -m "test(templates/classic-serif): add visual baseline regression"
 ```
 
-**Phase-4 Review-Checkpoint:** "Phase 4 fertig. Classic Serif komplett: Template, Snapshot-Tests, Visual-Baseline, PDF aus Markus-YAML gebaut. Architektur bewiesen. Freigabe für Phase 5 (CLI vollständig)?"
+**Phase-4 Review-Checkpoint:** "Phase 4 fertig. Classic Serif komplett: Template, Snapshot-Tests, Visual-Baseline, PDF aus Alex-YAML gebaut. Architektur bewiesen. Freigabe für Phase 5 (CLI vollständig)?"
 
 ---
 
@@ -3453,7 +3453,7 @@ describe('runBuild integration', () => {
     });
     const buf = await readFile(pdfPath);
     const parsed = await pdfParse(buf);
-    expect(parsed.text).toContain('Markus Wiesecke');
+    expect(parsed.text).toContain('Alex Schmidt');
     expect(parsed.text).toContain('Berufserfahrung');
     await rm(out, { recursive: true });
   });
@@ -3476,7 +3476,7 @@ git commit -m "test(cli): add pdf build integration test"
 
 ## Phase 6 — Parallele Template-Implementierung (7 Agents)
 
-> **Status (2026-04-25):** Phase 6 fertig — alle 8 Templates leben (`classic-serif`, `modern-minimal`, `creative-accent`, `academic`, `monochrome-dark`, `editorial`, `corporate`, `tech-dev`). Snapshot-Tests 46/46, Visual-Baselines 8/8, Markus' echtes `cv.de.yaml` produziert 8 PDFs. Page-2-Top-Margin-Bug per `page.evaluate()`-Spacer-Injection in `packages/core/src/pdf.ts` adressiert (commit `e98aad5`); Puppeteer-Margin bleibt bei 0 → full-bleed Sidebar-Gradient erhalten. Bekannte Restprobleme (für Phase 6.5 / Polish-Runde):
+> **Status (2026-04-25):** Phase 6 fertig — alle 8 Templates leben (`classic-serif`, `modern-minimal`, `creative-accent`, `academic`, `monochrome-dark`, `editorial`, `corporate`, `tech-dev`). Snapshot-Tests 46/46, Visual-Baselines 8/8, Alex' echtes `cv.de.yaml` produziert 8 PDFs. Page-2-Top-Margin-Bug per `page.evaluate()`-Spacer-Injection in `packages/core/src/pdf.ts` adressiert (commit `e98aad5`); Puppeteer-Margin bleibt bei 0 → full-bleed Sidebar-Gradient erhalten. Bekannte Restprobleme (für Phase 6.5 / Polish-Runde):
 > - **classic-serif**: page 2 yMin = 1.14 — `break-before:page` auf Grid-Items wird von Chromium nicht zuverlässig respektiert.
 > - **creative-accent (4 pages)**: page 3 yMin = 0.75 — der Spacer-Detector verpasst den Übergang von Seite 2 → 3.
 > - **modern-minimal**: page 2 yMin = 8.0 — partielle Wirkung, ~8pt statt 16pt Top-Spacing.
@@ -3497,7 +3497,7 @@ Ziel: 7 parallele Agents, jeder mit folgendem Standard-Brief-Kopf + template-spe
 Du bist Design-Agent für das cvMake-Template "<TEMPLATE-ID>".
 
 REPO-CONTEXT:
-- Working Directory: /Users/markus/Developer/cvMake
+- Working Directory: /Users/alex/Developer/cvMake
 - Spec: docs/superpowers/specs/2026-04-24-cvmake-design.md
 - Plan: docs/superpowers/plans/2026-04-24-cvmake-plan.md (diese Datei)
 - Reference-Template: packages/templates/src/classic-serif/ (Struktur als Blueprint, NICHT Style kopieren)
@@ -3521,14 +3521,14 @@ TEST-RULES:
 
 INTEGRATION:
 - Registry-Eintrag in bootstrap.ts ergänzen.
-- Einen Build via CLI für data/cvs/cv.de.yaml mit deiner Template-ID ausführen (`node apps/cli/dist/index.js build data/cvs/cv.de.yaml -t <id> -o out/cv.de.<id>.pdf`) — PDF muss entstehen, > 20 KB, Markus' Name enthalten.
+- Einen Build via CLI für data/cvs/cv.de.yaml mit deiner Template-ID ausführen (`node apps/cli/dist/index.js build data/cvs/cv.de.yaml -t <id> -o out/cv.de.<id>.pdf`) — PDF muss entstehen, > 20 KB, Alex' Name enthalten.
 
 COMMIT:
 - Ein Commit "feat(templates/<id>): add <Name> template with <N> palettes, visual baseline"
 - KEINE "Co-Authored-By Claude" Zeile.
 
 QUALITÄT:
-- Dies ist KEIN Quick-and-Dirty-Template. Markus verlangt Design-Qualität ≥ eines professionellen Designers.
+- Dies ist KEIN Quick-and-Dirty-Template. Alex verlangt Design-Qualität ≥ eines professionellen Designers.
 - Typografie: echte Font-Stacks, klare Hierarchie, konsistente Vertical-Rhythm.
 - Keine generischen Bootstrap-Placebos. Jedes Template muss visuell klar als eigenständige Richtung erkennbar sein.
 
@@ -3651,7 +3651,7 @@ TEMPLATE-SPEZIFISCHE RICHTUNG:
 **Style-Richtung:**
 - Monospace-Akzente: Stack-Namen in `JetBrains Mono` / `Fira Code`.
 - Haupttypo: `Inter`.
-- Header-Bereich als "Terminal": `> markus@codevena:~$ whoami` Style (subtil, nicht zu cringe).
+- Header-Bereich als "Terminal": `> alex@codevena:~$ whoami` Style (subtil, nicht zu cringe).
 - Layout: zweispaltig mit linker Sidebar (Skills, Contact, Languages in Mono) + Hauptspalte mit Experience.
 - Experience: Unternehmen als `#hashtag`-Tags, Stack als `[` Array `]`-Syntax.
 - Foto: quadratisch mit 2pt-Rand, Pixel-Look (kein border-radius).
@@ -3698,9 +3698,9 @@ done
 ls -lh out/
 ```
 
-- [ ] **Step 4: Review mit Markus — 8 PDFs nebeneinander**
+- [ ] **Step 4: Review mit Alex — 8 PDFs nebeneinander**
 
-Markus schaut sich alle 8 PDFs an. Feedback-Runde pro Template. Bei Feedback → jeweils einen neuen Fix-Agent dispatchen (Single-Template-Fix).
+Alex schaut sich alle 8 PDFs an. Feedback-Runde pro Template. Bei Feedback → jeweils einen neuen Fix-Agent dispatchen (Single-Template-Fix).
 
 - [ ] **Step 5: Commit der Preview-Assets + Fixes**
 
@@ -4235,7 +4235,7 @@ git commit -m "feat(ui): add PhotoCropper + index exports"
 
 ## Phase 8 — `apps/web` (Next.js 16 Editor)
 
-Ziel: Lauffähige Next.js-App mit Editor, Live-Preview (iframe-Portal), API-Routes für Load/Save/Upload/Export, Tailwind-Editor-Styling, Markus-Editing-Erfahrung.
+Ziel: Lauffähige Next.js-App mit Editor, Live-Preview (iframe-Portal), API-Routes für Load/Save/Upload/Export, Tailwind-Editor-Styling, Alex-Editing-Erfahrung.
 
 ### Task 8.1: Next.js-Skelett + Tailwind
 
@@ -4865,7 +4865,7 @@ export default async function Home() {
 - [ ] **Step 5: Dev-Smoke-Test**
 
 Run: `pnpm --filter @cvmake/web dev`
-Expected: Editor lädt Markus' Content, Live-Preview rechts, `PDF exportieren` lädt PDF herunter.
+Expected: Editor lädt Alex' Content, Live-Preview rechts, `PDF exportieren` lädt PDF herunter.
 
 - [ ] **Step 6: Commit**
 
@@ -5149,7 +5149,7 @@ import { expect, test } from '@playwright/test';
 
 test('editor lädt, ändert Namen, speichert', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByLabel('Vorname')).toHaveValue('Markus');
+  await expect(page.getByLabel('Vorname')).toHaveValue('Alex');
   await page.getByLabel('Vorname').fill('Max');
   // warten auf auto-save (2s debounce)
   await page.waitForTimeout(2500);
@@ -5157,7 +5157,7 @@ test('editor lädt, ändert Namen, speichert', async ({ page }) => {
   await page.reload();
   await expect(page.getByLabel('Vorname')).toHaveValue('Max');
   // Cleanup
-  await page.getByLabel('Vorname').fill('Markus');
+  await page.getByLabel('Vorname').fill('Alex');
   await page.waitForTimeout(2500);
 });
 ```
@@ -5276,7 +5276,7 @@ Ziel: GitHub-taugliche Präsentation — `README.md` mit allen 8 Template-Screen
 ```
 MIT License
 
-Copyright (c) 2026 Markus Wiesecke
+Copyright (c) 2026 Alex Schmidt
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 …
@@ -5401,7 +5401,7 @@ git commit -m "docs: add contributing guide + template authoring walkthrough"
 
 ### Task 10.5: v0.1.0-Tag (optional, nach Rückfrage)
 
-- [ ] **Step 1: Rückfrage an Markus**
+- [ ] **Step 1: Rückfrage an Alex**
 
 "Soll ich einen `v0.1.0`-Tag setzen und das GitHub-Release vorbereiten?"
 
@@ -5424,7 +5424,7 @@ Nach Phase 10:
 - `pnpm test:unit && pnpm test:integration && pnpm test:visual && pnpm --filter @cvmake/web exec playwright test` grün.
 - 8 PDFs aus `data/cvs/cv.de.yaml` und `cv.en.yaml` in `out/` reproduzierbar.
 - README mit Screenshots aller 8 Templates auf GitHub präsentabel.
-- Keine Push-Operationen ohne Markus' explizite Freigabe.
+- Keine Push-Operationen ohne Alex' explizite Freigabe.
 
 ## Offene Fragen / Risiken
 
