@@ -1,8 +1,8 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import { ValidationError, YAMLParseError } from '../src/errors.js';
 import { loadCV } from '../src/loader.js';
-import { YAMLParseError, ValidationError } from '../src/errors.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const fixture = (name: string) => path.join(__dirname, 'fixtures', name);

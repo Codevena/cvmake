@@ -26,10 +26,7 @@ export interface GeneratePDFOptions {
   fontTimeoutMs?: number | undefined;
 }
 
-export async function generatePDF(
-  html: string,
-  opts: GeneratePDFOptions = {},
-): Promise<Buffer> {
+export async function generatePDF(html: string, opts: GeneratePDFOptions = {}): Promise<Buffer> {
   const browser = await getBrowser();
   const page = await browser.newPage();
   try {
@@ -68,10 +65,8 @@ export async function generatePDF(
       // each grid track independently and a spacer in `<main>` does NOT
       // push down sidebar content that overflows onto page 2.
       const bodyTop = document.body.getBoundingClientRect().top;
-      const yTop = (el: Element): number =>
-        el.getBoundingClientRect().top - bodyTop;
-      const yBottom = (el: Element): number =>
-        el.getBoundingClientRect().bottom - bodyTop;
+      const yTop = (el: Element): number => el.getBoundingClientRect().top - bodyTop;
+      const yBottom = (el: Element): number => el.getBoundingClientRect().bottom - bodyTop;
 
       const findContainers = (): HTMLElement[] => {
         const mainTag = document.querySelector('main');

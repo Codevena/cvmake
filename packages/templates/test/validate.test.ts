@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest';
-import type { ReactElement } from 'react';
-import { validateTemplate } from '../src/validate.js';
 import type { TemplateDefinition } from '@codevena/forq-schema';
+import type { ReactElement } from 'react';
+import { describe, expect, it } from 'vitest';
+import { validateTemplate } from '../src/validate.js';
 
 const base: TemplateDefinition = {
   meta: {
@@ -38,8 +38,8 @@ describe('validateTemplate', () => {
   });
   it('verbietet doppelte Palette-IDs', () => {
     const first = base.palettes[0]!;
-    expect(() =>
-      validateTemplate({ ...base, palettes: [first, first] }),
-    ).toThrow(/duplicate palette id/);
+    expect(() => validateTemplate({ ...base, palettes: [first, first] })).toThrow(
+      /duplicate palette id/,
+    );
   });
 });

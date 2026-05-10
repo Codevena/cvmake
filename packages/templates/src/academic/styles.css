@@ -1,10 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400;1,600&display=swap');
-@import '../shared/reset.css';
-@import '../shared/print.css';
+@import url("https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400;1,600&display=swap");
+@import "../shared/reset.css";
+@import "../shared/print.css";
 
 /* ── Root layout ─────────────────────────────────────── */
 .academic {
-  font-family: 'Crimson Pro', 'Georgia', 'Times New Roman', serif;
+  font-family: "Crimson Pro", "Georgia", "Times New Roman", serif;
   font-size: 10pt;
   line-height: 1.5;
   color: var(--text);
@@ -45,7 +45,7 @@
 }
 
 .academic__contacts-item + .academic__contacts-item::before {
-  content: ' · ';
+  content: " · ";
   color: var(--text-muted);
 }
 

@@ -1,5 +1,5 @@
+import { ValidationError, YAMLParseError, loadCV } from '@codevena/forq-core';
 import pc from 'picocolors';
-import { loadCV, ValidationError, YAMLParseError } from '@codevena/forq-core';
 
 export async function runValidate(yamlPath: string): Promise<number> {
   try {

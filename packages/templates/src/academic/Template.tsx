@@ -23,7 +23,8 @@ export function AcademicTemplate({ data, locale, labels }: TemplateProps) {
   if (personal.contacts.location) contactItems.push(personal.contacts.location);
   if (personal.contacts.website) contactItems.push(personal.contacts.website);
   if (personal.contacts.github) contactItems.push(`github.com/${personal.contacts.github}`);
-  if (personal.contacts.linkedin) contactItems.push(`linkedin.com/in/${personal.contacts.linkedin}`);
+  if (personal.contacts.linkedin)
+    contactItems.push(`linkedin.com/in/${personal.contacts.linkedin}`);
 
   return (
     <article className="academic">
@@ -71,9 +72,7 @@ export function AcademicTemplate({ data, locale, labels }: TemplateProps) {
                         {' — '}
                         <span className="academic__entry-org">{e.company}</span>
                       </div>
-                      {e.location && (
-                        <div className="academic__entry-location">{e.location}</div>
-                      )}
+                      {e.location && <div className="academic__entry-location">{e.location}</div>}
                       {e.bullets.length > 0 && (
                         <ul className="academic__entry-bullets">
                           {e.bullets.map((b, j) => (
@@ -117,7 +116,11 @@ export function AcademicTemplate({ data, locale, labels }: TemplateProps) {
             );
           }
 
-          if (section === 'skills' && data.skills && (data.skills.categorized || data.skills.stack)) {
+          if (
+            section === 'skills' &&
+            data.skills &&
+            (data.skills.categorized || data.skills.stack)
+          ) {
             return (
               <section className="academic__section" key="skills">
                 <h2 className="academic__section-title">{labels.skills}</h2>
@@ -131,7 +134,9 @@ export function AcademicTemplate({ data, locale, labels }: TemplateProps) {
                   : data.skills.stack && (
                       <div className="academic__skills-group">
                         <span className="academic__skills-label" />
-                        <span className="academic__skills-items">{data.skills.stack.join(', ')}</span>
+                        <span className="academic__skills-items">
+                          {data.skills.stack.join(', ')}
+                        </span>
                       </div>
                     )}
               </section>
@@ -143,9 +148,7 @@ export function AcademicTemplate({ data, locale, labels }: TemplateProps) {
               <section className="academic__section" key="languages">
                 <h2 className="academic__section-title">{labels.languages}</h2>
                 <p className="academic__languages">
-                  {data.languages
-                    .map((l) => `${l.name} (${l.label ?? l.level})`)
-                    .join(', ')}
+                  {data.languages.map((l) => `${l.name} (${l.label ?? l.level})`).join(', ')}
                 </p>
               </section>
             );

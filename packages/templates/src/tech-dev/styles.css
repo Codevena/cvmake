@@ -1,16 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
-@import '../shared/reset.css';
-@import '../shared/print.css';
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap");
+@import "../shared/reset.css";
+@import "../shared/print.css";
 
 /* Sidebar gradient on html/body so it repeats on every printed page */
-html, body {
+html,
+body {
   background: linear-gradient(to right, var(--surface) 200pt, var(--bg) 200pt);
   background-attachment: fixed;
 }
 
 /* ── Root ──────────────────────────────────────────────────── */
 .tech-dev {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: "Inter", system-ui, sans-serif;
   font-size: 10pt;
   line-height: 1.5;
   color: var(--text);
@@ -25,7 +26,7 @@ html, body {
 /* ── Sidebar ────────────────────────────────────────────────── */
 .tech-dev__sidebar {
   padding: 16pt 10mm 0;
-  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-family: "JetBrains Mono", "Courier New", monospace;
   font-size: 9pt;
   color: var(--text);
   /* background handled by root gradient */
@@ -53,7 +54,7 @@ html, body {
   align-items: center;
   justify-content: center;
   font-size: 32pt;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   font-weight: 500;
   margin: 0 auto 16pt;
   border: 2pt solid var(--accent);
@@ -65,7 +66,7 @@ html, body {
 }
 
 .tech-dev__sidebar-section h2 {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   font-size: 10pt;
   font-weight: 500;
   color: var(--accent);
@@ -135,7 +136,7 @@ html, body {
 
 /* Terminal prompt line */
 .tech-dev__terminal-prompt {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   font-size: 9pt;
   color: var(--text-muted);
   margin-bottom: 6pt;
@@ -146,7 +147,7 @@ html, body {
 
 /* Name: Inter 600, 22pt */
 .tech-dev__name {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 22pt;
   font-weight: 600;
   line-height: 1.1;
@@ -168,7 +169,7 @@ html, body {
 }
 
 .tech-dev__section-heading {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   font-size: 10pt;
   font-weight: 500;
   color: var(--accent);
@@ -206,7 +207,7 @@ html, body {
 
 /* #company in accent monospace 8pt */
 .tech-dev__entry-company-tag {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   font-size: 8pt;
   color: var(--accent);
   font-weight: 400;
@@ -222,7 +223,7 @@ html, body {
 
 /* Date range: right-aligned, monospace */
 .tech-dev__entry-date {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   font-size: 8pt;
   color: var(--text-muted);
   white-space: nowrap;
@@ -251,16 +252,16 @@ html, body {
 }
 
 .tech-dev__bullets li::before {
-  content: '›';
+  content: "›";
   position: absolute;
   left: 0;
   color: var(--accent);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
 }
 
 /* Tags after bullets: [Next.js, TypeScript] in monospace accent */
 .tech-dev__entry-tags {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   font-size: 8pt;
   color: var(--accent);
   margin-top: 4pt;

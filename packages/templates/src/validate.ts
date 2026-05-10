@@ -1,4 +1,8 @@
-import { ColorPaletteSchema, TemplateMetaSchema, type TemplateDefinition } from '@codevena/forq-schema';
+import {
+  ColorPaletteSchema,
+  type TemplateDefinition,
+  TemplateMetaSchema,
+} from '@codevena/forq-schema';
 
 export function validateTemplate(def: TemplateDefinition): void {
   TemplateMetaSchema.parse(def.meta);

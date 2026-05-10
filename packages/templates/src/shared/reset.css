@@ -1,16 +1,46 @@
-*, *::before, *::after { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
 body {
   color: var(--text);
   background: var(--bg);
   font-kerning: normal;
-  font-feature-settings: 'liga' 1, 'kern' 1;
+  font-feature-settings: "liga" 1, "kern" 1;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
-img { max-width: 100%; display: block; }
-ul { margin: 0; padding: 0; list-style: none; }
-a { color: inherit; text-decoration: none; }
-h1, h2, h3, h4, h5, h6, p { margin: 0; }
-.cv-page { break-after: page; }
-.cv-no-break { break-inside: avoid; }
+img {
+  max-width: 100%;
+  display: block;
+}
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0;
+}
+.cv-page {
+  break-after: page;
+}
+.cv-no-break {
+  break-inside: avoid;
+}

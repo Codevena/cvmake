@@ -1,5 +1,5 @@
-import pc from 'picocolors';
 import { bootstrapTemplates, listTemplates } from '@codevena/forq-templates';
+import pc from 'picocolors';
 
 export function runListTemplates(): number {
   bootstrapTemplates();
@@ -7,10 +7,10 @@ export function runListTemplates(): number {
   for (const t of templates) {
     console.warn(pc.bold(`${t.meta.id}`), pc.gray(`(${t.meta.name})`));
     console.warn(`  ${t.meta.description}`);
+    console.warn(`  palettes: ${t.palettes.map((p) => p.id).join(', ')}`);
     console.warn(
-      `  palettes: ${t.palettes.map((p) => p.id).join(', ')}`,
+      `  photo: ${t.meta.supportsPhoto ? 'yes' : 'no'} (fallback: ${t.meta.photoFallback})`,
     );
-    console.warn(`  photo: ${t.meta.supportsPhoto ? 'yes' : 'no'} (fallback: ${t.meta.photoFallback})`);
   }
   return 0;
 }

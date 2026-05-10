@@ -1,10 +1,31 @@
-@page { size: A4; margin: 28mm 0 18mm 0; }
-@media print {
-  body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+@page {
+  size: A4;
+  margin: 28mm 0 18mm 0;
 }
-html, body { margin: 0; padding: 0; }
+@media print {
+  body {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
 
 /* Page-break rules for paged media (PDF) */
-h1, h2, h3 { break-after: avoid; }
-li, dt, dd { break-inside: avoid; }
-p { orphans: 3; widows: 3; }
+h1,
+h2,
+h3 {
+  break-after: avoid;
+}
+li,
+dt,
+dd {
+  break-inside: avoid;
+}
+p {
+  orphans: 3;
+  widows: 3;
+}
