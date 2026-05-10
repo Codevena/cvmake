@@ -30,7 +30,7 @@ export function SaveIndicator({ state, errorMessage, onRetry, lastSavedAt }: Pro
     >
       {state === 'clean' && lastSavedAt && <span>✓ Gespeichert {relativeTime(lastSavedAt)}</span>}
       {state === 'clean' && !lastSavedAt && <span>✓ Keine Änderungen</span>}
-      {state === 'dirty' && <span>• Ungespeicherte Änderungen</span>}
+      {state === 'dirty' && <span>• Ungespeicherte Änderungen (auto-save in 2s)</span>}
       {state === 'saving' && <span>⟳ Speichere…</span>}
       {state === 'saved' && <span>✓ Gespeichert</span>}
       {state === 'error' && (

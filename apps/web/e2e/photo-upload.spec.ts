@@ -39,5 +39,12 @@ test.describe('photo upload', () => {
     expect(jpgStat.size).toBeGreaterThan(1000);
     const webpStat = await stat(PHOTO_WEBP);
     expect(webpStat.size).toBeGreaterThan(1000);
+
+    // Preview iframe should now render the uploaded photo
+    const iframe = page.frameLocator('iframe[title="CV Preview"]');
+    await expect(iframe.locator('img[src*="cv.test.de"]')).toHaveAttribute(
+      'src',
+      '/photos/cv.test.de.jpg',
+    );
   });
 });

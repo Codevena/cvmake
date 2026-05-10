@@ -40,12 +40,22 @@ export async function processPhoto(opts: ProcessPhotoOptions): Promise<Processed
   const buffer = await readFile(inputPath);
   let pipeline = sharp(buffer).rotate();
   if (opts.crop) {
-    pipeline = pipeline.extract({
-      left: Math.round(opts.crop.left),
-      top: Math.round(opts.crop.top),
-      width: Math.round(opts.crop.width),
-      height: Math.round(opts.crop.height),
-    });
+    // After EXIF rotation, width/height may be swapped (90°/270° orientations).
+    // Re-fetch post-rotate dimensions so we can give a clear error before sharp's
+    // generic "bad extract area" fires.
+    const rotMeta = await sharp(buffer).rotate().metadata();
+    const imgW = rotMeta.width ?? 0;
+    const imgH = rotMeta.height ?? 0;
+    const left = Math.round(opts.crop.left);
+    const top = Math.round(opts.crop.top);
+    const width = Math.round(opts.crop.width);
+    const height = Math.round(opts.crop.height);
+    if (left < 0 || top < 0 || left + width > imgW || top + height > imgH) {
+      throw new Error(
+        `crop out of bounds: [${left},${top}]+${width}×${height} exceeds ${imgW}×${imgH} post-rotate`,
+      );
+    }
+    pipeline = pipeline.extract({ left, top, width, height });
   }
   pipeline = pipeline.resize({
     width: targetSize,
