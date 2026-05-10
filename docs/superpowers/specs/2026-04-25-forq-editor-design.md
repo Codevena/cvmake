@@ -147,7 +147,7 @@ Response 422 (Zod fail):
 ```json
 { "kind": "validation", "issues": [{ "path": ["personal","email"], "message": "Invalid email" }] }
 ```
-- Atomic write: `fs.writeFile('${slug}.yaml.tmp', dump)` → `fs.rm(target, {force:true})` → `fs.rename(tmp, target)`.
+- Atomic write: `fs.writeFile('${slug}.yaml.tmp', dump)` → `fs.rename(tmp, target)` (POSIX `rename(2)` is atomic and overwrites in place — no intermediate `rm(target)` step needed).
 - Server stamps `data.meta.updatedAt = new Date().toISOString().slice(0,10)` before dump.
 
 **`POST /api/upload` → 200 | 400 | 413**
