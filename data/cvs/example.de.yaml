@@ -1,0 +1,108 @@
+meta:
+  locale: de
+  updatedAt: '2026-05-10'
+
+personal:
+  firstName: Lena
+  lastName: Bauer
+  title: 'Senior Data Scientist · MLOps · Open-Source-Beitragerin'
+  photo: photos/example-lena.webp
+  birthDate: '1989-03-14'
+  contacts:
+    email: lena.bauer@example.com
+    phone: '+49 30 0000000'
+    website: https://lenabauer.example.com
+    github: lena-bauer
+    linkedin: lena-bauer
+    location: 'Berlin, DE'
+
+summary: >-
+  Senior Data Scientist mit acht Jahren Erfahrung in produktiv eingesetzten
+  ML-Systemen. Schwerpunkt: NLP, Recommendation-Systems und MLOps. Ich überführe
+  Forschungsprototypen in skalierbare Produkte und betreue sie über den
+  gesamten Lebenszyklus.
+
+experience:
+  - title: 'Senior Data Scientist'
+    company: 'Bayer Pharmaceuticals'
+    location: 'Berlin'
+    startDate: '2024-01'
+    bullets:
+      - 'Drug-Discovery-Pipeline mit PyTorch und Hugging-Face-Transformers, Reduktion der Lead-Identification-Zeit um 40 Prozent'
+      - 'Aufbau eines internen MLOps-Stacks (Kubernetes, MLflow, Feast, Argo Workflows) mit produktivem Multi-Tenant-Betrieb'
+      - 'Mentoring von 3 Junior Data Scientists, wöchentliche Code-Reviews und Pair-Programming-Sessions'
+    tags: [PyTorch, Kubernetes, MLflow, Feast, Argo, Python]
+
+  - title: 'Data Scientist'
+    company: 'Zalando Research'
+    location: 'Berlin'
+    startDate: '2021-04'
+    endDate: '2023-12'
+    bullets:
+      - 'Recommendation-System für Personalisierung im Outfit-Konfigurator (10M+ tägliche Nutzer)'
+      - 'A/B-Testing-Framework mit statistisch signifikanten +12 Prozent Engagement im Test-Cohort'
+      - 'NLP-Pipeline für Produktbeschreibungen mit BERT-basierten Embeddings, Multi-Sprachen-Support'
+    tags: [BERT, Recommendation, A/B-Testing, Spark, Airflow]
+
+  - title: 'ML Engineer'
+    company: 'Trivago'
+    location: 'Düsseldorf'
+    startDate: '2018-08'
+    endDate: '2021-03'
+    bullets:
+      - 'Search-Ranking-Modelle für Hotelvergleich basierend auf Gradient-Boosted-Trees und Learning-to-Rank'
+      - 'Migration der Feature-Engineering-Pipeline von Hadoop auf Spark, 3-fache Performance-Verbesserung'
+      - 'Beitrag zu LightGBM (Open-Source) — 4 merged Pull Requests im Bereich GPU-Acceleration'
+    tags: [LightGBM, Spark, Scala, Hadoop]
+
+education:
+  - degree: 'Promotion (Dr. rer. nat.) — Computational Linguistics'
+    institution: 'TU Berlin'
+    location: 'Berlin'
+    startDate: '2014-10'
+    endDate: '2018-06'
+
+  - degree: 'M.Sc. Computer Science'
+    institution: 'KIT Karlsruhe'
+    location: 'Karlsruhe'
+    startDate: '2012-10'
+    endDate: '2014-09'
+
+  - degree: 'B.Sc. Mathematik'
+    institution: 'Universität Heidelberg'
+    location: 'Heidelberg'
+    startDate: '2009-10'
+    endDate: '2012-09'
+
+skills:
+  categorized:
+    'ML/AI':
+      - PyTorch
+      - Transformers
+      - scikit-learn
+      - LightGBM
+      - LangChain
+    Data:
+      - Python
+      - Spark
+      - Airflow
+      - dbt
+      - Feast
+    DevOps:
+      - Kubernetes
+      - MLflow
+      - Argo Workflows
+      - Terraform
+      - GitHub Actions
+    Cloud:
+      - AWS (SageMaker, S3, Lambda)
+      - GCP (Vertex AI, BigQuery)
+
+languages:
+  - { name: Deutsch, level: native }
+  - { name: Englisch, level: C1 }
+  - { name: Spanisch, level: B1 }
+
+rendering:
+  template: tech-dev
+  palette: tech-ocean

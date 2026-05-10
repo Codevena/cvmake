@@ -1,0 +1,108 @@
+meta:
+  locale: en
+  updatedAt: '2026-05-10'
+
+personal:
+  firstName: Adam
+  lastName: Reyes
+  title: 'Product Designer · UX Research · Visual Systems'
+  photo: photos/example-adam.webp
+  birthDate: '1991-08-22'
+  contacts:
+    email: adam.reyes@example.com
+    phone: '+351 21 000 0000'
+    website: https://adamreyes.example.com
+    github: adam-reyes
+    linkedin: adam-reyes
+    location: 'Lisbon, PT (remote)'
+
+summary: >-
+  Product Designer with six years of experience shipping consumer and B2B
+  products end-to-end. I bridge research, visual systems, and design ops,
+  shipping pragmatic interfaces that scale with the team.
+
+experience:
+  - title: 'Senior Product Designer'
+    company: 'Deliveroo'
+    location: 'London (remote)'
+    startDate: '2023-06'
+    bullets:
+      - 'Owned consumer-facing checkout redesign across web and iOS, +8 percent conversion in core European markets'
+      - 'Established the design system foundations adopted by 4 product squads (tokens, components, motion principles)'
+      - 'Mentored 2 mid-level designers, ran weekly critique sessions and design QA reviews'
+    tags: [Figma, Design Systems, Checkout, A/B-Testing]
+
+  - title: 'Product Designer'
+    company: 'Klarna'
+    location: 'Stockholm'
+    startDate: '2021-09'
+    endDate: '2023-05'
+    bullets:
+      - 'Merchant-facing onboarding flow redesign, reduced support tickets by 23 percent in first quarter post-launch'
+      - 'Visual identity refresh for the loyalty product (5M monthly users), unified brand expression across surfaces'
+      - 'Cross-functional collaboration with engineering on motion-system implementation in React Native'
+    tags: [Figma, Onboarding, Brand, Motion]
+
+  - title: 'UX Researcher'
+    company: 'Spotify'
+    location: 'Stockholm'
+    startDate: '2020-08'
+    endDate: '2021-08'
+    bullets:
+      - 'Mixed-methods research on podcast discoverability — surveys, semi-structured interviews, two-week diary studies'
+      - 'Synthesized findings into actionable design recommendations adopted by 3 product teams'
+      - 'Built and maintained internal research repository with 40+ studies for cross-team reference'
+    tags: [User Research, Mixed Methods, Diary Studies]
+
+  - title: 'Visual Designer'
+    company: 'HubSpot'
+    location: 'Dublin'
+    startDate: '2018-04'
+    endDate: '2020-07'
+    bullets:
+      - 'Marketing site visual design, A/B tested 30+ landing-page variants with measurable conversion lifts'
+      - 'Designed and shipped a brand illustration system (50+ assets) used across product and marketing'
+    tags: [Illustration, Web Design, Brand]
+
+education:
+  - degree: 'BA Visual Communication'
+    institution: 'Royal College of Art'
+    location: 'London'
+    startDate: '2014-09'
+    endDate: '2017-06'
+
+  - degree: 'UX Bootcamp'
+    institution: 'CareerFoundry'
+    location: 'Online'
+    startDate: '2019-01'
+    endDate: '2019-08'
+
+skills:
+  categorized:
+    Design:
+      - Figma
+      - Framer
+      - Principle
+      - After Effects
+    Research:
+      - User interviews
+      - Diary studies
+      - Surveys
+      - Usability testing
+    Code:
+      - HTML/CSS
+      - React (basics)
+      - Storybook
+    Operations:
+      - Design tokens
+      - Documentation
+      - Critique facilitation
+
+languages:
+  - { name: English, level: native }
+  - { name: Portuguese, level: C1 }
+  - { name: Spanish, level: B2 }
+
+rendering:
+  template: editorial
+  palette: editorial-cream
