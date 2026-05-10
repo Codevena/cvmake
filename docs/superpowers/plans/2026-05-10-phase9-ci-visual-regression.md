@@ -1233,7 +1233,7 @@ jobs:
       - name: upload baselines
         uses: actions/upload-artifact@v4
         with:
-          name: visual-baselines-linux-${{ inputs.branch }}
+          name: visual-baselines-linux-${{ github.run_id }}
           path: packages/templates/__tests__/__visual__/**/*.page*.png
           retention-days: 7
 ```
@@ -1339,7 +1339,7 @@ Expected: `success`.
 
 Run:
 ```bash
-gh run download "$RUN_ID" --name "visual-baselines-linux-feat/cvmake-mvp" --dir /tmp/linux-baselines
+gh run download "$RUN_ID" --name "visual-baselines-linux-${RUN_ID}" --dir /tmp/linux-baselines
 ls /tmp/linux-baselines/packages/templates/__tests__/__visual__/
 ```
 
