@@ -3,8 +3,8 @@ import type { CVData } from '../src/cv.js';
 export const minimalFixture: CVData = {
   meta: { locale: 'de' },
   personal: {
-    firstName: 'Markus',
-    lastName: 'Wiesecke',
+    firstName: 'Lena',
+    lastName: 'Bauer',
     contacts: {},
   },
   experience: [],
@@ -15,18 +15,18 @@ export const minimalFixture: CVData = {
 export const fullFixture: CVData = {
   meta: { locale: 'de', updatedAt: '2026-04-24' },
   personal: {
-    firstName: 'Markus',
-    lastName: 'Wiesecke',
+    firstName: 'Lena',
+    lastName: 'Bauer',
     title: 'Fullstack Developer',
-    photo: 'photos/markus.jpg',
+    photo: 'photos/example-lena.webp',
     birthDate: '1987-01-13',
     contacts: {
       email: 'hello@codevena.dev',
-      phone: '+49 175 9025586',
+      phone: '+49 30 0000000',
       website: 'https://codevena.dev',
       github: 'codevena',
-      linkedin: 'markus-wiesecke',
-      location: 'Wuppertal, DE',
+      linkedin: 'lena-bauer',
+      location: 'Berlin, DE',
     },
   },
   summary: 'Fullstack Developer mit Fokus auf Next.js und TypeScript.',
@@ -34,7 +34,7 @@ export const fullFixture: CVData = {
     {
       title: 'Fullstack Developer',
       company: 'Codevena',
-      location: 'Wuppertal',
+      location: 'Berlin',
       startDate: '2020-01',
       bullets: ['Next.js 16 SaaS entwickelt', 'Hetzner + Coolify Deployment'],
       tags: ['Next.js', 'TypeScript', 'PostgreSQL'],

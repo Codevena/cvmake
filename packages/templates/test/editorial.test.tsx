@@ -17,7 +17,7 @@ describe('EditorialTemplate', () => {
         labels={getLabels('de')}
       />,
     );
-    expect(html).toContain('Markus Wiesecke');
+    expect(html).toContain('Lena Bauer');
     expect(html).toContain('Berufserfahrung');
     expect(html).toContain('Codevena');
   });

@@ -29,7 +29,7 @@ describe('<PersonalSection />', () => {
   it('rendert Name-Felder und propagiert Änderungen', () => {
     render(<Wrapper initial={DATA} />);
     const first = screen.getByLabelText(/Vorname/i) as HTMLInputElement;
-    fireEvent.change(first, { target: { value: 'Markus' } });
-    expect((screen.getByLabelText(/Vorname/i) as HTMLInputElement).value).toBe('Markus');
+    fireEvent.change(first, { target: { value: 'Lena' } });
+    expect((screen.getByLabelText(/Vorname/i) as HTMLInputElement).value).toBe('Lena');
   });
 });

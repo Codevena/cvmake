@@ -17,7 +17,7 @@ describe('ModernMinimalTemplate', () => {
         labels={getLabels('de')}
       />,
     );
-    expect(html).toContain('Markus Wiesecke');
+    expect(html).toContain('Lena Bauer');
     expect(html).toContain('Codevena');
     expect(html).toContain('Berufserfahrung');
   });
@@ -31,7 +31,7 @@ describe('ModernMinimalTemplate', () => {
         labels={getLabels('de')}
       />,
     );
-    expect(html).toMatch(/modern-minimal__initials[^>]*>MW/);
+    expect(html).toMatch(/modern-minimal__initials[^>]*>LB/);
   });
 
   it('rendert EN-Labels bei locale=en', () => {

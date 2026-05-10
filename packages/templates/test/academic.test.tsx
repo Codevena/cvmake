@@ -17,7 +17,7 @@ describe('AcademicTemplate', () => {
         labels={getLabels('de')}
       />,
     );
-    expect(html).toContain('Markus Wiesecke');
+    expect(html).toContain('Lena Bauer');
     expect(html).toContain('Berufserfahrung');
     expect(html).toContain('Codevena');
     expect(html).toContain('academic__section-title');
@@ -32,7 +32,7 @@ describe('AcademicTemplate', () => {
         labels={getLabels('de')}
       />,
     );
-    expect(html).toContain('Markus Wiesecke');
+    expect(html).toContain('Lena Bauer');
     // No photo rendering — supportsPhoto=false, no initials div either
     expect(html).not.toContain('academic__photo');
     expect(html).not.toContain('academic__initials');

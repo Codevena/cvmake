@@ -10,7 +10,7 @@ const fixture = (name: string) => path.join(__dirname, 'fixtures', name);
 describe('loadCV', () => {
   it('lädt und validiert gültiges YAML', async () => {
     const cv = await loadCV(fixture('valid.de.yaml'));
-    expect(cv.personal.firstName).toBe('Markus');
+    expect(cv.personal.firstName).toBe('Lena');
     expect(cv.meta.locale).toBe('de');
   });
 

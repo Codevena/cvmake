@@ -15,7 +15,7 @@ describe('runBuild integration', () => {
     const out = await mkdtemp(path.join(tmpdir(), 'forq-cli-'));
     const pdfPath = path.join(out, 'cv.pdf');
     await runBuild({
-      yaml: path.resolve('../../data/cvs/cv.de.yaml'),
+      yaml: path.resolve('../../data/cvs/example.de.yaml'),
       output: pdfPath,
     });
 
@@ -33,7 +33,7 @@ describe('runBuild integration', () => {
       type PdfParseFn = (buf: Buffer) => Promise<{ text: string }>;
       const pdfParse = require('pdf-parse') as PdfParseFn;
       const parsed = await pdfParse(buf);
-      expect(parsed.text).toContain('Markus Wiesecke');
+      expect(parsed.text).toContain('Lena Bauer');
       expect(parsed.text).toContain('Berufserfahrung');
     } catch {
       // pdf-parse may have CJS/ESM side-effect issues in test context;
