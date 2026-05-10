@@ -22,5 +22,11 @@ test.describe('template switch', () => {
     await page.waitForTimeout(500);
     const newTplCss = await iframe.locator('#template-css').textContent();
     expect(newTplCss).not.toBe(oldTplCss);
+
+    // Palette resets to first palette of the new template (Modern Minimal → Minimal Ink)
+    await expect(page.getByRole('radio', { name: 'Minimal Ink' })).toHaveAttribute(
+      'aria-checked',
+      'true',
+    );
   });
 });
