@@ -17,7 +17,7 @@ describe('ClassicSerifTemplate', () => {
         labels={getLabels('de')}
       />,
     );
-    expect(html).toContain('Alex Schmidt');
+    expect(html).toContain('Lena Bauer');
     expect(html).toContain('Berufserfahrung');
     expect(html).toContain('Codevena');
   });
@@ -31,7 +31,7 @@ describe('ClassicSerifTemplate', () => {
         labels={getLabels('de')}
       />,
     );
-    expect(html).toMatch(/classic-serif__initials[^>]*>MW/);
+    expect(html).toMatch(/classic-serif__initials[^>]*>LB/);
   });
 
   it('rendert EN-Labels bei locale=en', () => {

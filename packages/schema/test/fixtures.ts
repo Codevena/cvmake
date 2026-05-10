@@ -3,8 +3,8 @@ import type { CVData } from '../src/cv.js';
 export const minimalFixture: CVData = {
   meta: { locale: 'de' },
   personal: {
-    firstName: 'Alex',
-    lastName: 'Schmidt',
+    firstName: 'Lena',
+    lastName: 'Bauer',
     contacts: {},
   },
   experience: [],
@@ -15,17 +15,17 @@ export const minimalFixture: CVData = {
 export const fullFixture: CVData = {
   meta: { locale: 'de', updatedAt: '2026-04-24' },
   personal: {
-    firstName: 'Alex',
-    lastName: 'Schmidt',
+    firstName: 'Lena',
+    lastName: 'Bauer',
     title: 'Fullstack Developer',
-    photo: 'photos/alex.jpg',
+    photo: 'photos/example-lena.webp',
     birthDate: '1987-01-13',
     contacts: {
       email: 'hello@codevena.dev',
       phone: '+49 30 0000000',
       website: 'https://codevena.dev',
       github: 'codevena',
-      linkedin: 'alex-schmidt',
+      linkedin: 'lena-bauer',
       location: 'Berlin, DE',
     },
   },

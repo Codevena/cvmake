@@ -17,7 +17,7 @@ describe('dates', () => {
 
 describe('initials', () => {
   it('liefert zwei Buchstaben', () => {
-    expect(initials('Alex', 'Schmidt')).toBe('MW');
+    expect(initials('Lena', 'Bauer')).toBe('LB');
   });
 });
 

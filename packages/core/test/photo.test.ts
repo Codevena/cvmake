@@ -13,9 +13,9 @@ describe('processPhoto', () => {
 
   it('erzeugt .webp + .jpg Variante im Zielordner', async () => {
     const input = path.join(import.meta.dirname, 'fixtures', 'photo-input.jpg');
-    const result = await processPhoto({ inputPath: input, outputDir: outDir, slug: 'alex' });
-    expect(result.webp).toMatch(/alex\.webp$/);
-    expect(result.jpg).toMatch(/alex\.jpg$/);
+    const result = await processPhoto({ inputPath: input, outputDir: outDir, slug: 'lena' });
+    expect(result.webp).toMatch(/lena\.webp$/);
+    expect(result.jpg).toMatch(/lena\.jpg$/);
     expect((await readFile(result.webp)).byteLength).toBeGreaterThan(100);
     expect((await readFile(result.jpg)).byteLength).toBeGreaterThan(100);
   });

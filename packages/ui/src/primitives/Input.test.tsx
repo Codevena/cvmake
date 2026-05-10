@@ -5,8 +5,8 @@ import { Input } from './Input.js';
 
 describe('<Input>', () => {
   it('renders label and value', () => {
-    render(<Input label="Name" value="Alex" onChange={() => {}} />);
-    expect(screen.getByLabelText('Name')).toHaveValue('Alex');
+    render(<Input label="Name" value="Lena" onChange={() => {}} />);
+    expect(screen.getByLabelText('Name')).toHaveValue('Lena');
   });
 
   it('calls onChange with next value', async () => {

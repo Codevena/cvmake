@@ -17,7 +17,7 @@ describe('TechDevTemplate', () => {
         labels={getLabels('de')}
       />,
     );
-    expect(html).toContain('Alex Schmidt');
+    expect(html).toContain('Lena Bauer');
     // Section headings are lowercased with "// " prefix (tech-dev style)
     expect(html).toContain('// berufserfahrung');
     // Company is rendered as hashtag in lowercase
@@ -33,7 +33,7 @@ describe('TechDevTemplate', () => {
         labels={getLabels('de')}
       />,
     );
-    expect(html).toMatch(/tech-dev__initials[^>]*>MW/);
+    expect(html).toMatch(/tech-dev__initials[^>]*>LB/);
   });
 
   it('rendert EN-Labels bei locale=en', () => {

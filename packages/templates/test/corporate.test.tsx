@@ -17,7 +17,7 @@ describe('CorporateTemplate', () => {
         labels={getLabels('de')}
       />,
     );
-    expect(html).toContain('Alex Schmidt');
+    expect(html).toContain('Lena Bauer');
     expect(html).toContain('Berufserfahrung');
     expect(html).toContain('Codevena');
   });
