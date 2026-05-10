@@ -1,0 +1,39 @@
+name: Update Visual Baselines
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to generate baselines for'
+        required: true
+        default: 'feat/cvmake-mvp'
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+      - uses: pnpm/action-setup@v4
+        with: { version: 9.12.0 }
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.11.1
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @codevena/forq-templates build
+      - name: cache puppeteer browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/puppeteer
+          key: ${{ runner.os }}-puppeteer-${{ hashFiles('**/pnpm-lock.yaml') }}
+      - name: regenerate all visual baselines
+        env:
+          UPDATE_VISUAL: '1'
+        run: pnpm --filter @codevena/forq-templates test:visual
+      - name: upload baselines
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-baselines-linux-${{ inputs.branch }}
+          path: packages/templates/__tests__/__visual__/**/*.page*.png
+          retention-days: 7
