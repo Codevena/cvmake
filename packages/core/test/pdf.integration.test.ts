@@ -1,6 +1,6 @@
-import { describe, expect, it, afterAll } from 'vitest';
-import { generatePDF, shutdownPdfBrowser } from '../src/pdf.js';
+import { afterAll, describe, expect, it } from 'vitest';
 import { wrapHtmlDocument } from '../src/html-document.js';
+import { generatePDF, shutdownPdfBrowser } from '../src/pdf.js';
 
 afterAll(() => shutdownPdfBrowser());
 

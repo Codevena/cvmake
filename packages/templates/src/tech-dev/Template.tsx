@@ -16,7 +16,8 @@ export function TechDevTemplate({ data, palette: _palette, locale, labels }: Tem
 
   // Build terminal prompt: "> firstname@company:~$ whoami"
   const promptUser = p.firstName.toLowerCase();
-  const promptHost = contacts.github ?? contacts.website?.replace(/^https?:\/\//, '').split('/')[0] ?? 'dev';
+  const promptHost =
+    contacts.github ?? contacts.website?.replace(/^https?:\/\//, '').split('/')[0] ?? 'dev';
   const terminalPrompt = `> ${promptUser}@${promptHost}:~$ whoami`;
 
   return (
@@ -26,11 +27,7 @@ export function TechDevTemplate({ data, palette: _palette, locale, labels }: Tem
         <aside className="tech-dev__sidebar">
           {/* Photo or initials */}
           {p.photo ? (
-            <img
-              className="tech-dev__photo"
-              src={p.photo}
-              alt={`${p.firstName} ${p.lastName}`}
-            />
+            <img className="tech-dev__photo" src={p.photo} alt={`${p.firstName} ${p.lastName}`} />
           ) : (
             <div className="tech-dev__initials" aria-hidden="true">
               {initials(p.firstName, p.lastName)}
@@ -90,9 +87,7 @@ export function TechDevTemplate({ data, palette: _palette, locale, labels }: Tem
                 ? Object.entries(data.skills.categorized).map(([group, items]) => (
                     <div className="tech-dev__skills-group" key={group}>
                       <span className="tech-dev__skills-group-name">{group}</span>
-                      <span className="tech-dev__skills-array">
-                        [{items.join(', ')}]
-                      </span>
+                      <span className="tech-dev__skills-array">[{items.join(', ')}]</span>
                     </div>
                   ))
                 : data.skills.stack && (
@@ -132,9 +127,7 @@ export function TechDevTemplate({ data, palette: _palette, locale, labels }: Tem
             <h1 className="tech-dev__name">
               {p.firstName} {p.lastName}
             </h1>
-            {p.title && (
-              <p className="tech-dev__title">{p.title}</p>
-            )}
+            {p.title && <p className="tech-dev__title">{p.title}</p>}
           </header>
 
           {/* Sections in resolved order */}
@@ -151,7 +144,9 @@ export function TechDevTemplate({ data, palette: _palette, locale, labels }: Tem
             if (section === 'experience' && data.experience.length > 0) {
               return (
                 <section className="tech-dev__section" key="experience">
-                  <h2 className="tech-dev__section-heading">// {labels.experience.toLowerCase()}</h2>
+                  <h2 className="tech-dev__section-heading">
+                    // {labels.experience.toLowerCase()}
+                  </h2>
                   {data.experience.map((e, i) => (
                     <div className="tech-dev__entry" key={`exp-${e.company}-${i}`}>
                       <div className="tech-dev__entry-head">
@@ -165,9 +160,7 @@ export function TechDevTemplate({ data, palette: _palette, locale, labels }: Tem
                           {formatDateRange(e.startDate, e.endDate, locale, labels.present)}
                         </div>
                       </div>
-                      {e.location && (
-                        <div className="tech-dev__entry-location">{e.location}</div>
-                      )}
+                      {e.location && <div className="tech-dev__entry-location">{e.location}</div>}
                       {e.bullets.length > 0 && (
                         <ul className="tech-dev__bullets">
                           {e.bullets.map((b, j) => (
@@ -176,9 +169,7 @@ export function TechDevTemplate({ data, palette: _palette, locale, labels }: Tem
                         </ul>
                       )}
                       {e.tags && e.tags.length > 0 && (
-                        <div className="tech-dev__entry-tags">
-                          [{e.tags.join(', ')}]
-                        </div>
+                        <div className="tech-dev__entry-tags">[{e.tags.join(', ')}]</div>
                       )}
                     </div>
                   ))}
@@ -222,12 +213,8 @@ export function TechDevTemplate({ data, palette: _palette, locale, labels }: Tem
               {cs.items.map((it, i) => (
                 <div className="tech-dev__custom-entry" key={i}>
                   <div className="tech-dev__custom-title">{it.title}</div>
-                  {it.subtitle && (
-                    <div className="tech-dev__custom-subtitle">{it.subtitle}</div>
-                  )}
-                  {it.description && (
-                    <p className="tech-dev__custom-desc">{it.description}</p>
-                  )}
+                  {it.subtitle && <div className="tech-dev__custom-subtitle">{it.subtitle}</div>}
+                  {it.description && <p className="tech-dev__custom-desc">{it.description}</p>}
                   {it.bullets && it.bullets.length > 0 && (
                     <ul className="tech-dev__bullets">
                       {it.bullets.map((b, j) => (

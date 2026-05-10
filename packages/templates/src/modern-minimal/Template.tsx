@@ -1,15 +1,11 @@
-import type { ReactElement } from 'react';
 import type { TemplateProps } from '@codevena/forq-schema';
+import type { ReactElement } from 'react';
 import { formatDateRange } from '../utils/dates.js';
 import { initials } from '../utils/initials.js';
 import { resolveSectionOrder } from '../utils/sections.js';
 import { meta } from './meta.js';
 
-export function ModernMinimalTemplate({
-  data,
-  locale,
-  labels,
-}: TemplateProps): ReactElement {
+export function ModernMinimalTemplate({ data, locale, labels }: TemplateProps): ReactElement {
   const sections = resolveSectionOrder({
     override: data.rendering.sectionOrder,
     defaults: meta.defaultSectionOrder,
@@ -28,9 +24,7 @@ export function ModernMinimalTemplate({
             <h1 className="modern-minimal__name">
               {p.firstName} {p.lastName}
             </h1>
-            {p.title && (
-              <p className="modern-minimal__title">{p.title}</p>
-            )}
+            {p.title && <p className="modern-minimal__title">{p.title}</p>}
             <div className="modern-minimal__contacts">
               {contacts.email && (
                 <span className="modern-minimal__contact-item">
@@ -38,14 +32,10 @@ export function ModernMinimalTemplate({
                 </span>
               )}
               {contacts.phone && (
-                <span className="modern-minimal__contact-item">
-                  {contacts.phone}
-                </span>
+                <span className="modern-minimal__contact-item">{contacts.phone}</span>
               )}
               {contacts.location && (
-                <span className="modern-minimal__contact-item">
-                  {contacts.location}
-                </span>
+                <span className="modern-minimal__contact-item">{contacts.location}</span>
               )}
               {contacts.website && (
                 <span className="modern-minimal__contact-item">
@@ -54,9 +44,7 @@ export function ModernMinimalTemplate({
               )}
               {contacts.github && (
                 <span className="modern-minimal__contact-item">
-                  <a href={`https://github.com/${contacts.github}`}>
-                    github.com/{contacts.github}
-                  </a>
+                  <a href={`https://github.com/${contacts.github}`}>github.com/{contacts.github}</a>
                 </span>
               )}
               {contacts.linkedin && (
@@ -157,7 +145,8 @@ export function ModernMinimalTemplate({
           }
 
           if (section === 'skills' && data.skills) {
-            const hasCategorized = data.skills.categorized && Object.keys(data.skills.categorized).length > 0;
+            const hasCategorized =
+              data.skills.categorized && Object.keys(data.skills.categorized).length > 0;
             const hasStack = data.skills.stack && data.skills.stack.length > 0;
             if (!hasCategorized && !hasStack) return null;
 
@@ -174,9 +163,7 @@ export function ModernMinimalTemplate({
                     ))}
                   </div>
                 ) : (
-                  <p className="modern-minimal__skills-flat">
-                    {data.skills!.stack!.join(' · ')}
-                  </p>
+                  <p className="modern-minimal__skills-flat">{data.skills!.stack!.join(' · ')}</p>
                 )}
               </section>
             );
@@ -192,7 +179,8 @@ export function ModernMinimalTemplate({
                       {l.name}
                       {(l.label ?? l.level) && (
                         <span className="modern-minimal__language-level">
-                          {' '}— {l.label ?? l.level}
+                          {' '}
+                          — {l.label ?? l.level}
                         </span>
                       )}
                     </span>
@@ -213,13 +201,9 @@ export function ModernMinimalTemplate({
               <div className="modern-minimal__entry" key={i}>
                 <div className="modern-minimal__entry-head">
                   <div className="modern-minimal__entry-primary">{it.title}</div>
-                  {it.date && (
-                    <div className="modern-minimal__entry-date">{it.date}</div>
-                  )}
+                  {it.date && <div className="modern-minimal__entry-date">{it.date}</div>}
                 </div>
-                {it.subtitle && (
-                  <div className="modern-minimal__entry-location">{it.subtitle}</div>
-                )}
+                {it.subtitle && <div className="modern-minimal__entry-location">{it.subtitle}</div>}
                 {it.description && (
                   <p className="modern-minimal__summary" style={{ marginTop: '4pt' }}>
                     {it.description}

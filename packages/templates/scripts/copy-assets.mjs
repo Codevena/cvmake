@@ -1,4 +1,4 @@
-import { cp, readdir, stat, mkdir } from 'node:fs/promises';
+import { cp, mkdir, readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 
 const exts = new Set(['.css', '.png', '.woff2', '.svg']);

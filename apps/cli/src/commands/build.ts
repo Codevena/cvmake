@@ -1,16 +1,16 @@
-import { writeFile, readdir, mkdir } from 'node:fs/promises';
+import { mkdir, readdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import pc from 'picocolors';
 import {
   embedPhoto,
   generatePDF,
   loadCV,
   renderCV,
-  wrapHtmlDocument,
   shutdownPdfBrowser,
+  wrapHtmlDocument,
 } from '@codevena/forq-core';
 import { bootstrapTemplates, getTemplate } from '@codevena/forq-templates';
 import { loadTemplateCss } from '@codevena/forq-templates/css';
+import pc from 'picocolors';
 
 export interface BuildArgs {
   yaml: string;

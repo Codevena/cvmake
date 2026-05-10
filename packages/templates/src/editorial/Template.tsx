@@ -53,9 +53,7 @@ export function EditorialTemplate({ data, palette, locale, labels }: TemplatePro
             <h1 className="editorial__name">
               {data.personal.firstName} {data.personal.lastName}
             </h1>
-            {data.personal.title && (
-              <div className="editorial__title">{data.personal.title}</div>
-            )}
+            {data.personal.title && <div className="editorial__title">{data.personal.title}</div>}
             {contactParts.length > 0 && (
               <div className="editorial__contacts">
                 {contactParts.map((part, i) => (
@@ -102,9 +100,7 @@ export function EditorialTemplate({ data, palette, locale, labels }: TemplatePro
                         </div>
                       </div>
                       <div className="editorial__entry-title">{e.company}</div>
-                      {e.location && (
-                        <div className="editorial__entry-location">{e.location}</div>
-                      )}
+                      {e.location && <div className="editorial__entry-location">{e.location}</div>}
                       {e.bullets.length > 0 && (
                         <ul className="editorial__bullets">
                           {e.bullets.map((b, j) => (
@@ -133,9 +129,7 @@ export function EditorialTemplate({ data, palette, locale, labels }: TemplatePro
                         </div>
                       </div>
                       <div className="editorial__entry-title">{e.institution}</div>
-                      {e.location && (
-                        <div className="editorial__entry-location">{e.location}</div>
-                      )}
+                      {e.location && <div className="editorial__entry-location">{e.location}</div>}
                       {e.bullets && e.bullets.length > 0 && (
                         <ul className="editorial__bullets">
                           {e.bullets.map((b, j) => (
@@ -149,7 +143,11 @@ export function EditorialTemplate({ data, palette, locale, labels }: TemplatePro
               );
             }
 
-            if (section === 'skills' && data.skills && (data.skills.categorized || data.skills.stack)) {
+            if (
+              section === 'skills' &&
+              data.skills &&
+              (data.skills.categorized || data.skills.stack)
+            ) {
               return (
                 <section className="editorial__section" key="skills">
                   <h2 className="editorial__section-heading">{labels.skills}</h2>
@@ -195,12 +193,8 @@ export function EditorialTemplate({ data, palette, locale, labels }: TemplatePro
               {cs.items.map((it, i) => (
                 <div className="editorial__custom-entry" key={i}>
                   <div className="editorial__custom-title">{it.title}</div>
-                  {it.subtitle && (
-                    <div className="editorial__custom-subtitle">{it.subtitle}</div>
-                  )}
-                  {it.description && (
-                    <p className="editorial__custom-desc">{it.description}</p>
-                  )}
+                  {it.subtitle && <div className="editorial__custom-subtitle">{it.subtitle}</div>}
+                  {it.description && <p className="editorial__custom-desc">{it.description}</p>}
                   {it.bullets && (
                     <ul className="editorial__bullets">
                       {it.bullets.map((b, j) => (

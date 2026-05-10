@@ -1,14 +1,9 @@
 import { getLabels } from './i18n.js';
 import type { RenderInput, RenderOutput } from './renderer-types.js';
 
-export async function renderCV({
-  data,
-  template,
-  paletteId,
-}: RenderInput): Promise<RenderOutput> {
+export async function renderCV({ data, template, paletteId }: RenderInput): Promise<RenderOutput> {
   const { renderToStaticMarkup } = await import('react-dom/server');
-  const palette =
-    template.palettes.find((p) => p.id === paletteId) ?? template.palettes[0];
+  const palette = template.palettes.find((p) => p.id === paletteId) ?? template.palettes[0];
   if (!palette) throw new Error(`template ${template.meta.id} has no palettes`);
   const accent = data.rendering.accentOverride ?? palette.accent;
   const effectivePalette = { ...palette, accent };

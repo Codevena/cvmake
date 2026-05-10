@@ -1,7 +1,7 @@
 import type { TemplateDefinition } from '@codevena/forq-schema';
+import { MonochromeDarkTemplate } from './Template.js';
 import { meta as templateMeta } from './meta.js';
 import { palettes } from './palettes.js';
-import { MonochromeDarkTemplate } from './Template.js';
 
 export const monochromeDark: TemplateDefinition = {
   meta: templateMeta,
