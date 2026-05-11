@@ -7,7 +7,7 @@
 ![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=nextdotjs)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178c6?logo=typescript&logoColor=white)
 
-**→ Live demo: [codevena.github.io/cvmake](https://codevena.github.io/cvmake/)**
+**→ Live demo: [cvmake.codevena.dev](https://cvmake.codevena.dev)**
 
 ---
 
