@@ -5,7 +5,6 @@
   "description": "Static showcase landing page deployed to GitHub Pages.",
   "scripts": {
     "sync-assets": "rm -rf screenshots && mkdir -p screenshots && cp ../../docs/screenshots/*.png screenshots/",
-    "dev": "pnpm run sync-assets && python3 -m http.server 4173",
-    "build": "pnpm run sync-assets"
+    "dev": "pnpm run sync-assets && python3 -m http.server 4173"
   }
 }
