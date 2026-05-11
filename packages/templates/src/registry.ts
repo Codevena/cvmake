@@ -1,4 +1,4 @@
-import type { TemplateDefinition } from '@codevena/forq-schema';
+import type { TemplateDefinition } from '@codevena/cvmake-schema';
 import { validateTemplate } from './validate.js';
 
 const REGISTRY = new Map<string, TemplateDefinition>();

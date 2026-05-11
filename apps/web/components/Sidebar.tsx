@@ -1,8 +1,8 @@
 'use client';
 import type { PreviewBootstrap } from '@/lib/preview-bootstrap';
-import type { CVData } from '@codevena/forq-schema';
-import { getTemplate, listTemplates } from '@codevena/forq-templates';
-import { ColorPicker, PaletteSelector, TemplateCard } from '@codevena/forq-ui';
+import type { CVData } from '@codevena/cvmake-schema';
+import { getTemplate, listTemplates } from '@codevena/cvmake-templates';
+import { ColorPicker, PaletteSelector, TemplateCard } from '@codevena/cvmake-ui';
 import { useEffect, useRef } from 'react';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
 import { HiddenSectionsToggles } from './HiddenSectionsToggles';

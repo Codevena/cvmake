@@ -1,4 +1,4 @@
-import type { CVData } from '@codevena/forq-schema';
+import type { CVData } from '@codevena/cvmake-schema';
 
 const HIDDABLE = new Set([
   'summary',

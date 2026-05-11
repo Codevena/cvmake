@@ -1,5 +1,5 @@
 'use client';
-import type { CVData } from '@codevena/forq-schema';
+import type { CVData } from '@codevena/cvmake-schema';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
@@ -54,7 +54,7 @@ export function TopBar({ slug, allSlugs, saveState, saveError, onRetry, lastSave
       className="flex h-12 shrink-0 items-center justify-between gap-4 border-b px-4"
     >
       <div className="flex items-center gap-3">
-        <span className="font-semibold">forq</span>
+        <span className="font-semibold">cvmake</span>
         <select
           aria-label="CV auswählen"
           value={slug}

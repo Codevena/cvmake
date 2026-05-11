@@ -1,4 +1,4 @@
-import type { ColorPalette } from '@codevena/forq-schema';
+import type { ColorPalette } from '@codevena/cvmake-schema';
 
 export interface PaletteSelectorProps {
   palettes: ColorPalette[];

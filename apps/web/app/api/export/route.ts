@@ -1,9 +1,9 @@
 import { getPreviewBootstrap } from '@/lib/preview-bootstrap';
-import { wrapHtmlDocument } from '@codevena/forq-core/html-document';
-import { generatePDF } from '@codevena/forq-core/pdf';
-import { renderCV } from '@codevena/forq-core/renderer';
-import { CVDataSchema } from '@codevena/forq-schema';
-import { bootstrapTemplates, getTemplate } from '@codevena/forq-templates';
+import { wrapHtmlDocument } from '@codevena/cvmake-core/html-document';
+import { generatePDF } from '@codevena/cvmake-core/pdf';
+import { renderCV } from '@codevena/cvmake-core/renderer';
+import { CVDataSchema } from '@codevena/cvmake-schema';
+import { bootstrapTemplates, getTemplate } from '@codevena/cvmake-templates';
 import { NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';

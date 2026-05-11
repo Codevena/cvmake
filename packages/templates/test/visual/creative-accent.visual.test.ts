@@ -1,5 +1,5 @@
-import { renderCV, shutdownPdfBrowser, wrapHtmlDocument } from '@codevena/forq-core';
-import { fullFixture } from '@codevena/forq-schema/test/fixtures.js';
+import { renderCV, shutdownPdfBrowser, wrapHtmlDocument } from '@codevena/cvmake-core';
+import { fullFixture } from '@codevena/cvmake-schema/test/fixtures.js';
 import puppeteer from 'puppeteer';
 import { afterAll, describe, expect, it } from 'vitest';
 import { creativeAccent } from '../../src/creative-accent/index.js';

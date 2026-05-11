@@ -1,6 +1,6 @@
 'use client';
-import type { CVData } from '@codevena/forq-schema';
-import { Textarea } from '@codevena/forq-ui';
+import type { CVData } from '@codevena/cvmake-schema';
+import { Textarea } from '@codevena/cvmake-ui';
 import { Controller, useFormContext } from 'react-hook-form';
 
 // With exactOptionalPropertyTypes:true the Phase-7 <Textarea> rejects an

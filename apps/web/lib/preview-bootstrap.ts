@@ -1,8 +1,8 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import type { TemplateDefinition } from '@codevena/forq-schema';
-import { listTemplates } from '@codevena/forq-templates';
+import type { TemplateDefinition } from '@codevena/cvmake-schema';
+import { listTemplates } from '@codevena/cvmake-templates';
 
 export interface PreviewBootstrapTemplateEntry {
   css: string;

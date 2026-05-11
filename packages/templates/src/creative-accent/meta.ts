@@ -1,4 +1,4 @@
-import type { TemplateMeta } from '@codevena/forq-schema';
+import type { TemplateMeta } from '@codevena/cvmake-schema';
 
 export const meta: TemplateMeta = {
   id: 'creative-accent',

@@ -1,6 +1,6 @@
 'use client';
 import type { SaveState } from '@/components/SaveIndicator';
-import type { CVData } from '@codevena/forq-schema';
+import type { CVData } from '@codevena/cvmake-schema';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDebouncedValue } from './use-debounced-value';
 import { useHotkey } from './use-hotkey';

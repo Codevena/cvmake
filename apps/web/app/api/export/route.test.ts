@@ -1,4 +1,4 @@
-import { bootstrapTemplates } from '@codevena/forq-templates';
+import { bootstrapTemplates } from '@codevena/cvmake-templates';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 const VALID_DATA = {
@@ -23,7 +23,7 @@ async function post(body: unknown) {
 describe('POST /api/export', () => {
   beforeAll(() => bootstrapTemplates());
   afterAll(async () => {
-    const pdf = await import('@codevena/forq-core/pdf');
+    const pdf = await import('@codevena/cvmake-core/pdf');
     await pdf.shutdownPdfBrowser();
   });
 

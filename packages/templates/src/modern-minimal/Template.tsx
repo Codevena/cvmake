@@ -1,4 +1,4 @@
-import type { TemplateProps } from '@codevena/forq-schema';
+import type { TemplateProps } from '@codevena/cvmake-schema';
 import type { ReactElement } from 'react';
 import { formatDateRange } from '../utils/dates.js';
 import { initials } from '../utils/initials.js';

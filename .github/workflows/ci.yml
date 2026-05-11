@@ -40,7 +40,7 @@ jobs:
           path: ~/.cache/puppeteer
           key: ${{ runner.os }}-puppeteer-${{ hashFiles('**/pnpm-lock.yaml') }}
       - name: ensure puppeteer chrome installed
-        run: pnpm --filter @codevena/forq-core exec puppeteer browsers install chrome
+        run: pnpm --filter @codevena/cvmake-core exec puppeteer browsers install chrome
       - run: pnpm build
       - run: pnpm -r test:unit
 
@@ -71,18 +71,18 @@ jobs:
           key: ${{ runner.os }}-puppeteer-${{ hashFiles('**/pnpm-lock.yaml') }}
 
       - name: install playwright chromium
-        run: pnpm --filter @codevena/forq-web exec playwright install --with-deps chromium
+        run: pnpm --filter @codevena/cvmake-web exec playwright install --with-deps chromium
 
       - name: ensure puppeteer chrome installed
-        run: pnpm --filter @codevena/forq-core exec puppeteer browsers install chrome
+        run: pnpm --filter @codevena/cvmake-core exec puppeteer browsers install chrome
 
       - run: pnpm build
 
       - name: run e2e tests
-        run: pnpm --filter @codevena/forq-web test:e2e
+        run: pnpm --filter @codevena/cvmake-web test:e2e
 
       - name: run visual tests
-        run: pnpm --filter @codevena/forq-templates test:visual
+        run: pnpm --filter @codevena/cvmake-templates test:visual
 
       - name: upload visual artifacts on failure
         if: failure()

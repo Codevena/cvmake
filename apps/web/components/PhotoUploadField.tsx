@@ -1,5 +1,5 @@
 'use client';
-import { type PhotoAspect, type PhotoCropResult, PhotoCropper } from '@codevena/forq-ui';
+import { type PhotoAspect, type PhotoCropResult, PhotoCropper } from '@codevena/cvmake-ui';
 import { type ChangeEvent, useState } from 'react';
 
 interface Props {

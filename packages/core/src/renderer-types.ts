@@ -1,4 +1,4 @@
-import type { CVData, TemplateDefinition } from '@codevena/forq-schema';
+import type { CVData, TemplateDefinition } from '@codevena/cvmake-schema';
 
 export interface RenderInput {
   data: CVData;

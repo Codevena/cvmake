@@ -1,6 +1,6 @@
 'use client';
-import type { CVData } from '@codevena/forq-schema';
-import { BulletListEditor, DateRangeInput, Input } from '@codevena/forq-ui';
+import type { CVData } from '@codevena/cvmake-schema';
+import { BulletListEditor, DateRangeInput, Input } from '@codevena/cvmake-ui';
 import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
 import { TagInput } from '../TagInput';
 
