@@ -52,6 +52,7 @@ export function Sidebar(_props: Props) {
                   templateId={t.meta.id}
                   name={t.meta.name}
                   description={t.meta.description}
+                  thumbnailSrc={`/template-thumbnails/${t.meta.id}.png`}
                   selected={field.value === t.meta.id}
                   onSelect={() => field.onChange(t.meta.id)}
                 />
