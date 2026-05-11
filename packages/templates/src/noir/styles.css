@@ -1,0 +1,191 @@
+@import "../shared/reset.css";
+@import "../shared/print.css";
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap");
+
+/* Noir: cinematic high-contrast, cream serif on black, gold accent.
+   CSS variables (--accent, --bg, --surface, --text, --text-muted,
+   --text-on-accent) are set globally by the renderer on :root. */
+
+body,
+.noir {
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+  background: var(--bg);
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+.noir {
+  font-family: "Cormorant Garamond", "EB Garamond", "Playfair Display", Georgia, serif;
+  background: var(--bg);
+  color: var(--text);
+  padding: 32px 36px;
+  line-height: 1.5;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+/* ── Header ─────────────────────────────────────────────────────── */
+.noir__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.noir__head-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.noir__photo {
+  width: 70px;
+  height: 90px;
+  object-fit: cover;
+  object-position: center top;
+  filter: grayscale(100%) sepia(15%) contrast(1.05) brightness(0.92);
+  border: 1px solid var(--accent);
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.noir__initials {
+  width: 70px;
+  height: 90px;
+  border: 1px solid var(--accent);
+  background: var(--surface);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+  margin-top: 4px;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+.noir__num {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.4em;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+
+.noir__name {
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.noir__role {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.32em;
+  color: var(--accent);
+  margin-top: 6px;
+}
+
+/* ── Rule / divider ─────────────────────────────────────────────── */
+.noir__rule {
+  height: 1px;
+  background: var(--accent);
+  opacity: 0.35;
+  margin: 14px 0;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+/* ── Contact line ───────────────────────────────────────────────── */
+.noir__contact {
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  opacity: 0.7;
+  line-height: 1.6;
+}
+
+/* ── Summary (pull-quote) ───────────────────────────────────────── */
+.noir__summary {
+  font-style: italic;
+  font-size: 11px;
+  line-height: 1.55;
+  margin: 12px 0;
+  max-width: 90%;
+  color: var(--text);
+}
+
+/* ── Sections ───────────────────────────────────────────────────── */
+.noir__section {
+  margin-top: 14px;
+}
+
+.noir__section h4 {
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.34em;
+  color: var(--accent);
+  margin: 0 0 8px;
+  font-weight: 500;
+}
+
+/* ── Items (experience, education) ──────────────────────────────── */
+.noir__item {
+  margin-bottom: 12px;
+  break-inside: avoid;
+}
+
+.noir__item-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.noir__item-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.noir__item-dates {
+  font-size: 9px;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.noir__item-org {
+  font-style: italic;
+  font-size: 10px;
+  opacity: 0.75;
+  margin-bottom: 4px;
+}
+
+.noir__item-body {
+  font-size: 9.5px;
+  line-height: 1.55;
+  opacity: 0.85;
+  margin: 0;
+}
+
+/* ── Skills / languages (flat prose-style) ──────────────────────── */
+.noir__skills,
+.noir__languages {
+  font-size: 9.5px;
+  line-height: 1.7;
+  opacity: 0.85;
+}
+
+.noir__skills-group {
+  margin-bottom: 2px;
+}
