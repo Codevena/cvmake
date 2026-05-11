@@ -1,4 +1,4 @@
-import { bootstrapTemplates, listTemplates } from '@codevena/forq-templates';
+import { bootstrapTemplates, listTemplates } from '@codevena/cvmake-templates';
 import pc from 'picocolors';
 
 export function runListTemplates(): number {

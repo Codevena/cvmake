@@ -1,4 +1,4 @@
-import type { Locale } from '@codevena/forq-schema';
+import type { Locale } from '@codevena/cvmake-schema';
 
 const MONTHS_DE = [
   'Jan.',

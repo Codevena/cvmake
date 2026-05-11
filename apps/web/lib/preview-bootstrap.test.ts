@@ -1,4 +1,4 @@
-import { bootstrapTemplates, listTemplates } from '@codevena/forq-templates';
+import { bootstrapTemplates, listTemplates } from '@codevena/cvmake-templates';
 import { describe, expect, it } from 'vitest';
 import { getPreviewBootstrap } from './preview-bootstrap';
 

@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { type CVData, CVDataSchema, type Locale } from '@codevena/forq-schema';
+import { type CVData, CVDataSchema, type Locale } from '@codevena/cvmake-schema';
 import yaml from 'js-yaml';
 import { ValidationError, YAMLParseError } from './errors.js';
 

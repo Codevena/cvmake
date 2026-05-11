@@ -1,4 +1,4 @@
-import { LABEL_KEYS } from '@codevena/forq-schema';
+import { LABEL_KEYS } from '@codevena/cvmake-schema';
 import { describe, expect, it } from 'vitest';
 import { getLabels } from '../src/i18n.js';
 

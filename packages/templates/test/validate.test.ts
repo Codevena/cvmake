@@ -1,4 +1,4 @@
-import type { TemplateDefinition } from '@codevena/forq-schema';
+import type { TemplateDefinition } from '@codevena/cvmake-schema';
 import type { ReactElement } from 'react';
 import { describe, expect, it } from 'vitest';
 import { validateTemplate } from '../src/validate.js';

@@ -5,7 +5,7 @@ on:
       branch:
         description: 'Branch to generate baselines for'
         required: true
-        default: 'feat/cvmake-mvp'
+        default: 'main'
 
 jobs:
   generate:
@@ -28,11 +28,11 @@ jobs:
           path: ~/.cache/puppeteer
           key: ${{ runner.os }}-puppeteer-${{ hashFiles('**/pnpm-lock.yaml') }}
       - name: ensure puppeteer chrome installed
-        run: pnpm --filter @codevena/forq-templates exec puppeteer browsers install chrome
+        run: pnpm --filter @codevena/cvmake-templates exec puppeteer browsers install chrome
       - name: regenerate all visual baselines
         env:
           UPDATE_VISUAL: '1'
-        run: pnpm --filter @codevena/forq-templates test:visual
+        run: pnpm --filter @codevena/cvmake-templates test:visual
       - name: upload baselines
         uses: actions/upload-artifact@v4
         with:

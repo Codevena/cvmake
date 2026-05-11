@@ -1,6 +1,6 @@
 'use client';
 
-import type { ColorPalette } from '@codevena/forq-schema';
+import type { ColorPalette } from '@codevena/cvmake-schema';
 import {
   BulletListEditor,
   ColorPicker,
@@ -13,7 +13,7 @@ import {
   Select,
   TemplateCard,
   Textarea,
-} from '@codevena/forq-ui';
+} from '@codevena/cvmake-ui';
 import { notFound } from 'next/navigation';
 import { useState } from 'react';
 
@@ -56,7 +56,7 @@ export default function DevUI(): JSX.Element {
 
   return (
     <main className="mx-auto flex max-w-3xl flex-col gap-12 p-8">
-      <h1 className="text-2xl font-semibold text-text">forq-ui dev playground</h1>
+      <h1 className="text-2xl font-semibold text-text">cvmake-ui dev playground</h1>
 
       <section className="flex flex-col gap-2">
         <h2 className="text-lg font-medium text-text">Input</h2>

@@ -1,4 +1,4 @@
-import type { TemplateProps } from '@codevena/forq-schema';
+import type { TemplateProps } from '@codevena/cvmake-schema';
 import { formatDateRange } from '../utils/dates.js';
 import { resolveSectionOrder } from '../utils/sections.js';
 import { meta } from './meta.js';

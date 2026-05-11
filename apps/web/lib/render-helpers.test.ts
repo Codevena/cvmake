@@ -1,4 +1,4 @@
-import type { CVData } from '@codevena/forq-schema';
+import type { CVData } from '@codevena/cvmake-schema';
 import { describe, expect, it } from 'vitest';
 import { applyHiddenSections } from './render-helpers';
 

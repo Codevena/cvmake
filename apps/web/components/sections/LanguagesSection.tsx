@@ -1,6 +1,6 @@
 'use client';
-import type { CVData } from '@codevena/forq-schema';
-import { Input, Select } from '@codevena/forq-ui';
+import type { CVData } from '@codevena/cvmake-schema';
+import { Input, Select } from '@codevena/cvmake-ui';
 import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
 
 // With exactOptionalPropertyTypes:true the Phase-7 <Input>/<Select> reject an

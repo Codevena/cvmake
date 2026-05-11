@@ -1,12 +1,12 @@
 import { mkdir, readdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { wrapHtmlDocument } from '@codevena/forq-core/html-document';
-import { loadCV } from '@codevena/forq-core/loader';
-import { generatePDF, shutdownPdfBrowser } from '@codevena/forq-core/pdf';
-import { embedPhoto } from '@codevena/forq-core/photo-embed';
-import { renderCV } from '@codevena/forq-core/renderer';
-import { bootstrapTemplates, getTemplate } from '@codevena/forq-templates';
-import { loadTemplateCss } from '@codevena/forq-templates/css';
+import { wrapHtmlDocument } from '@codevena/cvmake-core/html-document';
+import { loadCV } from '@codevena/cvmake-core/loader';
+import { generatePDF, shutdownPdfBrowser } from '@codevena/cvmake-core/pdf';
+import { embedPhoto } from '@codevena/cvmake-core/photo-embed';
+import { renderCV } from '@codevena/cvmake-core/renderer';
+import { bootstrapTemplates, getTemplate } from '@codevena/cvmake-templates';
+import { loadTemplateCss } from '@codevena/cvmake-templates/css';
 import pc from 'picocolors';
 
 export interface BuildArgs {
@@ -46,6 +46,7 @@ export async function runBuild(args: BuildArgs): Promise<void> {
   });
   const pdf = await generatePDF(html);
   const outPath = path.resolve(args.output);
+  await mkdir(path.dirname(outPath), { recursive: true });
   await writeFile(outPath, pdf);
   await shutdownPdfBrowser();
   console.warn(pc.green(`✓ wrote ${outPath} (${pdf.byteLength} bytes)`));

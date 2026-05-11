@@ -1,6 +1,6 @@
 import type { PreviewBootstrap } from '@/lib/preview-bootstrap';
-import type { CVData } from '@codevena/forq-schema';
-import { bootstrapTemplates } from '@codevena/forq-templates';
+import type { CVData } from '@codevena/cvmake-schema';
+import { bootstrapTemplates } from '@codevena/cvmake-templates';
 import { render, screen } from '@testing-library/react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { describe, expect, it } from 'vitest';

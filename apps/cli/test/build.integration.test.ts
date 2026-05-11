@@ -2,7 +2,7 @@ import { mkdtemp, readFile, rm, stat } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { shutdownPdfBrowser } from '@codevena/forq-core/pdf';
+import { shutdownPdfBrowser } from '@codevena/cvmake-core/pdf';
 import { afterAll, describe, expect, it } from 'vitest';
 import { runBuild } from '../src/commands/build.js';
 

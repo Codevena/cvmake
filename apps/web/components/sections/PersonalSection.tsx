@@ -1,6 +1,6 @@
 'use client';
-import type { CVData } from '@codevena/forq-schema';
-import { Input } from '@codevena/forq-ui';
+import type { CVData } from '@codevena/cvmake-schema';
+import { Input } from '@codevena/cvmake-ui';
 import { Controller, useFormContext } from 'react-hook-form';
 import { PhotoUploadField } from '../PhotoUploadField';
 

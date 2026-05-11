@@ -1,4 +1,4 @@
-import type { CVData } from '@codevena/forq-schema';
+import type { CVData } from '@codevena/cvmake-schema';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { describe, expect, it } from 'vitest';

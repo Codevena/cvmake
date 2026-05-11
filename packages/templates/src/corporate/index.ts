@@ -1,4 +1,4 @@
-import type { TemplateDefinition } from '@codevena/forq-schema';
+import type { TemplateDefinition } from '@codevena/cvmake-schema';
 import { CorporateTemplate } from './Template.js';
 import { meta as templateMeta } from './meta.js';
 import { palettes } from './palettes.js';

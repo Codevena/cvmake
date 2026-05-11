@@ -2,8 +2,8 @@ import { readdir, stat } from 'node:fs/promises';
 import { EditorShell } from '@/components/EditorShell';
 import { dataDir, resolveCvPath } from '@/lib/data-paths';
 import { getPreviewBootstrap } from '@/lib/preview-bootstrap';
-import { loadCV } from '@codevena/forq-core/loader';
-import { bootstrapTemplates } from '@codevena/forq-templates';
+import { loadCV } from '@codevena/cvmake-core/loader';
+import { bootstrapTemplates } from '@codevena/cvmake-templates';
 import { notFound } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';

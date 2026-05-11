@@ -1,5 +1,5 @@
-import type { CVData } from '@codevena/forq-schema';
-import { bootstrapTemplates } from '@codevena/forq-templates';
+import type { CVData } from '@codevena/cvmake-schema';
+import { bootstrapTemplates } from '@codevena/cvmake-templates';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { PreviewFrame } from './PreviewFrame';

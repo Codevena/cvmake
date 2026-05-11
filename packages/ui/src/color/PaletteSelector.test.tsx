@@ -1,4 +1,4 @@
-import type { ColorPalette } from '@codevena/forq-schema';
+import type { ColorPalette } from '@codevena/cvmake-schema';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';

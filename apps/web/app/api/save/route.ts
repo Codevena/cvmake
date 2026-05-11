@@ -1,8 +1,8 @@
 import { stat } from 'node:fs/promises';
 import { atomicWriteFile } from '@/lib/atomic-write';
 import { resolveCvPath } from '@/lib/data-paths';
-import { loadCV } from '@codevena/forq-core/loader';
-import { CVDataSchema } from '@codevena/forq-schema';
+import { loadCV } from '@codevena/cvmake-core/loader';
+import { CVDataSchema } from '@codevena/cvmake-schema';
 import yaml from 'js-yaml';
 import { NextResponse } from 'next/server';
 

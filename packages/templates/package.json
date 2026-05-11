@@ -1,5 +1,5 @@
 {
-  "name": "@codevena/forq-templates",
+  "name": "@codevena/cvmake-templates",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -23,8 +23,8 @@
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {
-    "@codevena/forq-core": "workspace:*",
-    "@codevena/forq-schema": "workspace:*",
+    "@codevena/cvmake-core": "workspace:*",
+    "@codevena/cvmake-schema": "workspace:*",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },

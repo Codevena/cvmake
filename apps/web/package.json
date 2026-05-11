@@ -1,5 +1,5 @@
 {
-  "name": "@codevena/forq-web",
+  "name": "@codevena/cvmake-web",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -13,10 +13,10 @@
     "clean": "rm -rf .next .turbo"
   },
   "dependencies": {
-    "@codevena/forq-core": "workspace:*",
-    "@codevena/forq-schema": "workspace:*",
-    "@codevena/forq-templates": "workspace:*",
-    "@codevena/forq-ui": "workspace:*",
+    "@codevena/cvmake-core": "workspace:*",
+    "@codevena/cvmake-schema": "workspace:*",
+    "@codevena/cvmake-templates": "workspace:*",
+    "@codevena/cvmake-ui": "workspace:*",
     "@hookform/resolvers": "3.9.1",
     "clsx": "2.1.1",
     "js-yaml": "4.1.0",

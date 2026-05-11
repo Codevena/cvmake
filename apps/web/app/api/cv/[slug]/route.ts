@@ -1,7 +1,7 @@
 import { stat } from 'node:fs/promises';
 import { resolveCvPath } from '@/lib/data-paths';
-import { ValidationError, YAMLParseError } from '@codevena/forq-core/errors';
-import { loadCV } from '@codevena/forq-core/loader';
+import { ValidationError, YAMLParseError } from '@codevena/cvmake-core/errors';
+import { loadCV } from '@codevena/cvmake-core/loader';
 import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';

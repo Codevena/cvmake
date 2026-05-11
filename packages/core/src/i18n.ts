@@ -1,4 +1,4 @@
-import type { LabelDictionary, Locale } from '@codevena/forq-schema';
+import type { LabelDictionary, Locale } from '@codevena/cvmake-schema';
 
 const DE: LabelDictionary = {
   summary: 'Profil',

@@ -1,7 +1,7 @@
 import { mkdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { photoDir, uploadStagingDir, validateSlug } from '@/lib/data-paths';
-import { processPhoto } from '@codevena/forq-core/photo';
+import { processPhoto } from '@codevena/cvmake-core/photo';
 import { NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';

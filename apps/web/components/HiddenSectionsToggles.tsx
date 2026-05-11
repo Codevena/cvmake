@@ -1,5 +1,5 @@
 'use client';
-import type { CVData } from '@codevena/forq-schema';
+import type { CVData } from '@codevena/cvmake-schema';
 import { Controller, useFormContext } from 'react-hook-form';
 
 const TOGGLES: Array<{ id: string; label: string }> = [

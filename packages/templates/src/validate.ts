@@ -2,7 +2,7 @@ import {
   ColorPaletteSchema,
   type TemplateDefinition,
   TemplateMetaSchema,
-} from '@codevena/forq-schema';
+} from '@codevena/cvmake-schema';
 
 export function validateTemplate(def: TemplateDefinition): void {
   TemplateMetaSchema.parse(def.meta);

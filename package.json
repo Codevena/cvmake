@@ -1,5 +1,5 @@
 {
-  "name": "forq",
+  "name": "cvmake",
   "version": "0.0.0",
   "private": true,
   "packageManager": "pnpm@9.12.0",
@@ -15,7 +15,9 @@
     "test:integration": "turbo run test:integration",
     "test:e2e": "turbo run test:e2e",
     "test:visual": "turbo run test:visual",
-    "clean": "turbo run clean && rm -rf node_modules"
+    "clean": "turbo run clean && rm -rf node_modules",
+    "screenshots": "node scripts/render-screenshots.mjs",
+    "cvmake": "node apps/cli/bin/cvmake"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
