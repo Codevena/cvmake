@@ -1,5 +1,7 @@
 # Phase 10 — OSS Public Readiness Implementation Plan
 
+> **Status: COMPLETE (2026-05-11).** PR #4 squash-merged to `main` (`f50a9ca`). Repo `Codevena/cvmake` is now PUBLIC with MIT license auto-detected, 8 topics, and 8 template screenshots. Completion notes at the end of this document.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Bring `Codevena/cvmake` from private + legacy brand `forq` to public + fork-friendly OSS as `cvmake` — full package rename, OSS standard files (LICENSE/README/CONTRIBUTING/CoC), 8 template screenshots, GitHub metadata, public visibility toggle.
@@ -76,7 +78,7 @@
 
 **Files:** none (GitHub + local git only)
 
-- [ ] **Step 1: Verify external prereqs**
+- [x] **Step 1: Verify external prereqs**
 
 Run all four; each must succeed:
 
@@ -93,7 +95,7 @@ Expected:
 - `pdftocairo` present (any version)
 - Node ≥ 20.11
 
-- [ ] **Step 2: Confirm no open PRs (default-branch flip safety)**
+- [x] **Step 2: Confirm no open PRs (default-branch flip safety)**
 
 ```bash
 gh pr list --repo Codevena/cvmake --state open
@@ -101,7 +103,7 @@ gh pr list --repo Codevena/cvmake --state open
 
 Expected: empty list. If non-empty: STOP, ask user — flipping default-branch with open PRs may retarget them.
 
-- [ ] **Step 3: Sync local main**
+- [x] **Step 3: Sync local main**
 
 ```bash
 git checkout main
@@ -111,7 +113,7 @@ git status
 
 Expected: clean, up-to-date with `origin/main`, HEAD = `92683c3` or later.
 
-- [ ] **Step 4: Flip default branch on GitHub (spec Step 1)**
+- [x] **Step 4: Flip default branch on GitHub (spec Step 1)**
 
 ```bash
 gh repo edit Codevena/cvmake --default-branch main
@@ -120,7 +122,7 @@ gh repo view Codevena/cvmake --json defaultBranchRef
 
 Expected: `defaultBranchRef.name` = `main`.
 
-- [ ] **Step 5: Create feature branch**
+- [x] **Step 5: Create feature branch**
 
 ```bash
 git checkout -b feat/phase-10-oss-public-readiness
@@ -143,7 +145,7 @@ This is the largest single change. Execute sub-steps a–g sequentially; commit 
 
 **File:** `package.json`
 
-- [ ] **Step 1: Change `"name"` field**
+- [x] **Step 1: Change `"name"` field**
 
 Edit: `"name": "forq"` → `"name": "cvmake"`
 
@@ -163,7 +165,7 @@ Files (full list):
 - `packages/templates/package.json`
 - `packages/ui/package.json`
 
-- [ ] **Step 1: Apply name + deps rename to all six**
+- [x] **Step 1: Apply name + deps rename to all six**
 
 After: `rg '@codevena/forq-' apps packages -t json` returns nothing.
 
@@ -174,17 +176,17 @@ After: `rg '@codevena/forq-' apps packages -t json` returns nothing.
 - Rename: `apps/cli/bin/forq` → `apps/cli/bin/cvmake`
 - Modify: `apps/cli/src/index.ts:7`
 
-- [ ] **Step 1: Rename the binary file**
+- [x] **Step 1: Rename the binary file**
 
 ```bash
 git mv apps/cli/bin/forq apps/cli/bin/cvmake
 ```
 
-- [ ] **Step 2: Update `"bin"` entry in `apps/cli/package.json`**
+- [x] **Step 2: Update `"bin"` entry in `apps/cli/package.json`**
 
 Change: `"bin": { "forq": "./bin/forq" }` → `"bin": { "cvmake": "./bin/cvmake" }`
 
-- [ ] **Step 3: Update CLI program name in `apps/cli/src/index.ts`**
+- [x] **Step 3: Update CLI program name in `apps/cli/src/index.ts`**
 
 Change:
 ```ts
@@ -199,7 +201,7 @@ program.name('cvmake').description('cvmake — fork-friendly OSS CV builder. YAM
 
 Mechanical bulk rename of every `@codevena/forq-*` import to `@codevena/cvmake-*`.
 
-- [ ] **Step 1: List affected files**
+- [x] **Step 1: List affected files**
 
 ```bash
 rg -l '@codevena/forq-' apps packages
@@ -207,7 +209,7 @@ rg -l '@codevena/forq-' apps packages
 
 Expected output: ~50 files across `apps/cli/src/`, `apps/web/`, `packages/core/src/`, `packages/templates/src/`, `packages/ui/src/`, plus test files.
 
-- [ ] **Step 2: Bulk replace**
+- [x] **Step 2: Bulk replace**
 
 Two ways — pick one:
 
@@ -223,7 +225,7 @@ rg -l '@codevena/forq-' apps packages | xargs sed -i '' 's|@codevena/forq-|@code
 
 (`-i ''` is BSD-sed for macOS. On Linux use `-i` without the empty string.)
 
-- [ ] **Step 3: Update CSS import**
+- [x] **Step 3: Update CSS import**
 
 **File:** `apps/web/app/globals.css`
 
@@ -231,7 +233,7 @@ Change: `@import "@codevena/forq-ui/styles/tailwind.css";` → `@import "@codeve
 
 (The bulk replace in Step 2 covers it if scoped widely, but verify globals.css is included.)
 
-- [ ] **Step 4: Verify zero `@codevena/forq-` left in source**
+- [x] **Step 4: Verify zero `@codevena/forq-` left in source**
 
 ```bash
 rg '@codevena/forq-' apps packages
@@ -243,7 +245,7 @@ Expected: no matches.
 
 **File:** `.github/workflows/ci.yml`
 
-- [ ] **Step 1: Replace every `@codevena/forq-` with `@codevena/cvmake-`**
+- [x] **Step 1: Replace every `@codevena/forq-` with `@codevena/cvmake-`**
 
 ```bash
 sed -i '' 's|@codevena/forq-|@codevena/cvmake-|g' .github/workflows/ci.yml
@@ -254,7 +256,7 @@ Expected: no matches.
 
 ### Sub-step 1f: Lockfile + Turbo cache refresh
 
-- [ ] **Step 1: Wipe turbo cache + reinstall**
+- [x] **Step 1: Wipe turbo cache + reinstall**
 
 ```bash
 pnpm clean              # turbo run clean + rm -rf node_modules
@@ -263,7 +265,7 @@ pnpm install
 
 Expected: pnpm resolves the new `@codevena/cvmake-*` workspace names, regenerates `pnpm-lock.yaml`. No `ERR_PNPM_*` errors.
 
-- [ ] **Step 2: Sanity-check the new lockfile**
+- [x] **Step 2: Sanity-check the new lockfile**
 
 ```bash
 rg '@codevena/forq-' pnpm-lock.yaml
@@ -276,13 +278,13 @@ Expected: zero forq matches; cvmake matches present.
 
 Goal: every remaining `forq` reference must fall into the “unchanged” categories from the spec’s classification table.
 
-- [ ] **Step 1: Run the audit**
+- [x] **Step 1: Run the audit**
 
 ```bash
 rg -i 'forq' --glob '!node_modules' --glob '!.git' --glob '!dist' --glob '!.next' --glob '!.turbo' --glob '!pnpm-lock.yaml' --glob '!.review*'
 ```
 
-- [ ] **Step 2: Classify every hit**
+- [x] **Step 2: Classify every hit**
 
 Expected hits fall into these buckets (all left unchanged):
 
@@ -300,7 +302,7 @@ Any hit outside these buckets is a bug — fix before proceeding.
 
 All four commands must succeed back-to-back.
 
-- [ ] **Step 1: Typecheck**
+- [x] **Step 1: Typecheck**
 
 ```bash
 pnpm typecheck
@@ -308,7 +310,7 @@ pnpm typecheck
 
 Expected: green, zero TypeScript errors across all 6 packages.
 
-- [ ] **Step 2: Build**
+- [x] **Step 2: Build**
 
 ```bash
 pnpm build
@@ -316,7 +318,7 @@ pnpm build
 
 Expected: green, all package `dist/` artifacts produced.
 
-- [ ] **Step 3: Unit tests**
+- [x] **Step 3: Unit tests**
 
 ```bash
 pnpm -r test:unit
@@ -324,7 +326,7 @@ pnpm -r test:unit
 
 Expected: 178 tests passing (schema 9 + core 16 + ui 38 + templates 46 + cli 2 + web 67).
 
-- [ ] **Step 4: CLI smoke test with new binary name**
+- [x] **Step 4: CLI smoke test with new binary name**
 
 ```bash
 pnpm --filter @codevena/cvmake-cli exec cvmake build data/cvs/example.de.yaml --output /tmp/cvmake-smoke.pdf
@@ -335,7 +337,7 @@ Expected: PDF file ≥ 20 KB exists.
 
 ### Sub-step 1i: Commit
 
-- [ ] **Step 1: Stage the rename atomically and commit**
+- [x] **Step 1: Stage the rename atomically and commit**
 
 ```bash
 git add -A
@@ -375,7 +377,7 @@ EOF
 **Files:**
 - Create: `LICENSE`
 
-- [ ] **Step 1: Write LICENSE file**
+- [x] **Step 1: Write LICENSE file**
 
 Use the OSI-approved MIT template with copyright line:
 
@@ -403,7 +405,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-- [ ] **Step 2: Verify**
+- [x] **Step 2: Verify**
 
 ```bash
 test -f LICENSE && head -3 LICENSE
@@ -412,7 +414,7 @@ wc -l LICENSE
 
 Expected: file exists, ~21 lines.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add LICENSE
@@ -450,7 +452,7 @@ Use the first palette in each template’s `palettes` array. Concrete IDs (verif
 
 Hardcode this list in the script — avoids importing the TS templates package from a `.mjs` file.
 
-- [ ] **Step 1: Verify `pdftocairo` available**
+- [x] **Step 1: Verify `pdftocairo` available**
 
 ```bash
 which pdftocairo
@@ -458,7 +460,7 @@ which pdftocairo
 
 Expected: `/opt/homebrew/bin/pdftocairo` (or similar). If missing: `brew install poppler` first.
 
-- [ ] **Step 2: Write `scripts/render-screenshots.mjs`**
+- [x] **Step 2: Write `scripts/render-screenshots.mjs`**
 
 Create the file with this content:
 
@@ -517,7 +519,7 @@ await rm(PDF_DIR, { recursive: true });
 console.log('\nAll 8 screenshots rendered.');
 ```
 
-- [ ] **Step 3: Add root `screenshots` script**
+- [x] **Step 3: Add root `screenshots` script**
 
 **File:** `package.json`
 
@@ -527,7 +529,7 @@ Add to the `"scripts"` object:
 "screenshots": "node scripts/render-screenshots.mjs"
 ```
 
-- [ ] **Step 4: Run the script**
+- [x] **Step 4: Run the script**
 
 ```bash
 pnpm screenshots
@@ -535,7 +537,7 @@ pnpm screenshots
 
 Expected: 8 ✓ lines, no errors, `dist/screenshots/` removed at end.
 
-- [ ] **Step 5: Verify outputs**
+- [x] **Step 5: Verify outputs**
 
 ```bash
 ls -lh docs/screenshots/
@@ -551,11 +553,11 @@ Expected: 8 PNGs, each between ~50 KB and ~500 KB, named exactly:
 - `monochrome-dark.png`
 - `tech-dev.png`
 
-- [ ] **Step 6: Spot-check one PNG visually**
+- [x] **Step 6: Spot-check one PNG visually**
 
 Open `docs/screenshots/tech-dev.png` in the OS image viewer. Confirm it’s a CV page (not blank, not corrupted).
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add scripts/render-screenshots.mjs package.json docs/screenshots/
@@ -579,7 +581,7 @@ Documented in CONTRIBUTING.md."
 **Files:**
 - Create: `README.md`
 
-- [ ] **Step 1: Write README**
+- [x] **Step 1: Write README**
 
 Create `README.md` with this content:
 
@@ -662,7 +664,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Bug reports, template ideas, and pull re
 MIT — see [LICENSE](LICENSE).
 ```
 
-- [ ] **Step 2: Verify all screenshot links resolve locally**
+- [x] **Step 2: Verify all screenshot links resolve locally**
 
 ```bash
 for f in academic classic-serif corporate creative-accent editorial modern-minimal monochrome-dark tech-dev; do
@@ -672,7 +674,7 @@ done
 
 Expected: 8× `OK`.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add README.md
@@ -690,7 +692,7 @@ git commit -m "docs: add README with showcase, quickstart, templates"
 **Files:**
 - Create: `CONTRIBUTING.md`
 
-- [ ] **Step 1: Write CONTRIBUTING**
+- [x] **Step 1: Write CONTRIBUTING**
 
 Create `CONTRIBUTING.md` with this content:
 
@@ -759,7 +761,7 @@ git add docs/screenshots/
 - Tests must pass; CI gates `static` (typecheck + build) and `unit`.
 ```
 
-- [ ] **Step 2: Verify**
+- [x] **Step 2: Verify**
 
 ```bash
 test -f CONTRIBUTING.md && wc -l CONTRIBUTING.md
@@ -767,7 +769,7 @@ test -f CONTRIBUTING.md && wc -l CONTRIBUTING.md
 
 Expected: ~55 lines.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add CONTRIBUTING.md
@@ -785,7 +787,7 @@ git commit -m "docs: add CONTRIBUTING with setup, branches, tests, screenshots"
 **Files:**
 - Create: `CODE_OF_CONDUCT.md`
 
-- [ ] **Step 1: Fetch + write the Covenant**
+- [x] **Step 1: Fetch + write the Covenant**
 
 Copy the official Contributor Covenant 2.1 text from <https://www.contributor-covenant.org/version/2/1/code_of_conduct/>. Set the enforcement contact section to:
 
@@ -800,7 +802,7 @@ promptly and fairly.
 
 (Leave the rest of the Covenant 2.1 text untouched — Our Pledge, Our Standards, Our Responsibilities, Scope, Enforcement Guidelines, Attribution.)
 
-- [ ] **Step 2: Verify**
+- [x] **Step 2: Verify**
 
 ```bash
 test -f CODE_OF_CONDUCT.md
@@ -810,7 +812,7 @@ rg 'Contributor Covenant' CODE_OF_CONDUCT.md
 
 Expected: file exists; both rg patterns hit at least once.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add CODE_OF_CONDUCT.md
@@ -827,7 +829,7 @@ git commit -m "docs: add Contributor Covenant 2.1"
 
 **Files:** none modified — audit-only.
 
-- [ ] **Step 1: Personal-data audit (spec §9 sub-step 1)**
+- [x] **Step 1: Personal-data audit (spec §9 sub-step 1)**
 
 Run the audit pattern from spec §9 sub-step 1 against tracked files only (so gitignored locals like `data/cvs/cv.de.yaml` or `data/cvs/photos/markus.*` are correctly ignored):
 
@@ -847,7 +849,7 @@ Classify every hit — only the four expected buckets are acceptable:
 
 Any hit outside these buckets: STOP and redact before continuing.
 
-- [ ] **Step 2: Migration-Doc re-read (spec §9 sub-step 2)**
+- [x] **Step 2: Migration-Doc re-read (spec §9 sub-step 2)**
 
 ```bash
 ${PAGER:-less} docs/superpowers/specs/2026-05-10-personal-data-migration-COMPLETE.md
@@ -855,7 +857,7 @@ ${PAGER:-less} docs/superpowers/specs/2026-05-10-personal-data-migration-COMPLET
 
 Scan for any backup path that would constitute a security or privacy concern if public (per the spec: expectation is OK because all paths are local-only). If anything looks sensitive: shorten or remove that line, then commit a fixup.
 
-- [ ] **Step 3: Final verification build**
+- [x] **Step 3: Final verification build**
 
 ```bash
 pnpm clean
@@ -867,7 +869,7 @@ pnpm -r test:unit
 
 Expected: all green; 178 unit tests pass.
 
-- [ ] **Step 4: Confirm working tree is clean**
+- [x] **Step 4: Confirm working tree is clean**
 
 ```bash
 git status
@@ -892,7 +894,7 @@ git commit -m "chore: pre-public personal-data audit cleanup"
 
 This task does not produce code changes; it gates the PR.
 
-- [ ] **Step 1: Static checks (CLAUDE.md Step 1)**
+- [x] **Step 1: Static checks (CLAUDE.md Step 1)**
 
 Already done in Task 7 Step 3. Re-confirm with:
 
@@ -904,7 +906,7 @@ pnpm -r test:unit
 
 Lint may report the “60 known non-auto-fixable issues” already tracked in CI — these are tolerated, but a *new* lint regression introduced by phase 10 is a FAIL.
 
-- [ ] **Step 2: Codex Review Agent A**
+- [x] **Step 2: Codex Review Agent A**
 
 ```bash
 mkdir -p .review
@@ -944,13 +946,13 @@ opencode run --dangerously-skip-permissions "$(<.review/codex-prompt.txt)"
 
 Read `.review/codex-a-findings.md`. If FAIL: fix every CRITICAL+WARN and restart from Task 8 Step 1.
 
-- [ ] **Step 3: Claude Review Agent A**
+- [x] **Step 3: Claude Review Agent A**
 
 Spawn a `code-reviewer` subagent with the same scope, instructing it to write findings to `.review/claude-a-findings.md` using the same format.
 
 If FAIL: fix and restart from Task 8 Step 1.
 
-- [ ] **Step 4: Cleanup review artifacts before commit**
+- [x] **Step 4: Cleanup review artifacts before commit**
 
 ```bash
 rm -rf .review/
@@ -966,19 +968,19 @@ rm -rf .review/
 
 **Goal:** push the branch, open a PR, get explicit user approval to push (CLAUDE.md rule), merge.
 
-- [ ] **Step 1: Ask the user before pushing**
+- [x] **Step 1: Ask the user before pushing**
 
 CLAUDE.md: “Never push to remote (origin) without explicit user permission.” STOP here and ask: *“Branch ready, 4-agent review PASS. Push `feat/phase-10-oss-public-readiness` and open PR?”*
 
 Proceed only after explicit yes.
 
-- [ ] **Step 2: Push branch**
+- [x] **Step 2: Push branch**
 
 ```bash
 git push -u origin feat/phase-10-oss-public-readiness
 ```
 
-- [ ] **Step 3: Open PR**
+- [x] **Step 3: Open PR**
 
 ```bash
 gh pr create --base main --head feat/phase-10-oss-public-readiness \
@@ -1004,7 +1006,7 @@ EOF
 )"
 ```
 
-- [ ] **Step 4: Wait for CI green**
+- [x] **Step 4: Wait for CI green**
 
 ```bash
 gh pr checks --watch
@@ -1012,7 +1014,7 @@ gh pr checks --watch
 
 Expected: `static`, `unit`, `e2e-visual` all green.
 
-- [ ] **Step 5: Merge**
+- [x] **Step 5: Merge**
 
 Ask the user one more time before merging. Then:
 
@@ -1030,7 +1032,7 @@ git pull --ff-only origin main
 
 **Goal:** set repo description + topics so the public landing page reflects the brand.
 
-- [ ] **Step 1: Set description + topics**
+- [x] **Step 1: Set description + topics**
 
 ```bash
 gh repo edit Codevena/cvmake \
@@ -1047,7 +1049,7 @@ gh repo edit Codevena/cvmake \
   --add-topic cli
 ```
 
-- [ ] **Step 2: Verify metadata**
+- [x] **Step 2: Verify metadata**
 
 ```bash
 gh repo view Codevena/cvmake --json description,repositoryTopics,licenseInfo
@@ -1068,15 +1070,15 @@ Expected:
 
 This step is **out of code scope**. It blocks Task 12.
 
-- [ ] **Step 1: Ask the user to confirm the mailbox is configured**
+- [x] **Step 1: Ask the user to confirm the mailbox is configured**
 
 Prompt: *“Is `hello@codevena.dev` set up and able to receive mail? (We will not flip the repo public until you confirm.)”*
 
-- [ ] **Step 2: Send a test mail from an external account**
+- [x] **Step 2: Send a test mail from an external account**
 
 User action: send a test mail (e.g. from their personal account) to `hello@codevena.dev` with a recognizable subject like `cvmake-coc-mailbox-test`.
 
-- [ ] **Step 3: Confirm receipt**
+- [x] **Step 3: Confirm receipt**
 
 User opens the mailbox and confirms the test mail arrived. Reply to this conversation with “verified.”
 
@@ -1088,17 +1090,17 @@ User opens the mailbox and confirms the test mail arrived. Reply to this convers
 
 **Goal:** flip the repo to public and verify anonymous access.
 
-- [ ] **Step 1: Final ask before the irreversible toggle**
+- [x] **Step 1: Final ask before the irreversible toggle**
 
 The visibility flip is reversible in theory but search-engine indexing and forks are not. Prompt: *“Confirm flip `Codevena/cvmake` to PUBLIC now?”*
 
-- [ ] **Step 2: Flip visibility**
+- [x] **Step 2: Flip visibility**
 
 ```bash
 gh repo edit Codevena/cvmake --visibility public --accept-visibility-change-consequences
 ```
 
-- [ ] **Step 3: Verify**
+- [x] **Step 3: Verify**
 
 ```bash
 gh repo view Codevena/cvmake --json visibility
@@ -1106,11 +1108,11 @@ gh repo view Codevena/cvmake --json visibility
 
 Expected: `"visibility": "PUBLIC"`.
 
-- [ ] **Step 4: Anonymous browser load**
+- [x] **Step 4: Anonymous browser load**
 
 Open <https://github.com/Codevena/cvmake> in a logged-out browser window (private/incognito tab). Expected: page loads, README renders with all 8 screenshots, badges show CI + MIT.
 
-- [ ] **Step 5: Anonymous clone**
+- [x] **Step 5: Anonymous clone**
 
 ```bash
 git clone https://github.com/Codevena/cvmake /tmp/cvmake-public-test
@@ -1120,7 +1122,7 @@ ls
 
 Expected: clone succeeds without auth, repo contents present.
 
-- [ ] **Step 6: Cleanup**
+- [x] **Step 6: Cleanup**
 
 ```bash
 rm -rf /tmp/cvmake-public-test
@@ -1149,3 +1151,59 @@ rm -rf /tmp/cvmake-public-test
 - `pdftocairo` installed locally — verified; no action needed.
 
 **DoD per task:** each task has an explicit verifiable end-state (command + expected output), not just “done.”
+
+---
+
+## Completion Notes (added 2026-05-11)
+
+**Outcome:** PR #4 `phase 10: OSS public readiness` squash-merged to `main` (`f50a9ca`). Repo flipped PUBLIC. All 12 task DoDs satisfied.
+
+**Branch history (11 commits, squashed to 1 on merge):**
+
+| SHA | Subject |
+|---|---|
+| `92683c3` | docs: phase-10 OSS-public-readiness design spec |
+| `b0336d5` | docs: phase-10 OSS-public-readiness implementation plan |
+| `ad1f2a3` | chore: rename forq → cvmake across workspace |
+| `99100b7` | docs: add MIT LICENSE |
+| `1105ea2` | feat: add screenshot pipeline + 8 template PNGs |
+| `695dae9` | chore: clean up screenshot temp dir even on failure (review fix) |
+| `bbd6bd2` | docs: add README with showcase, quickstart, templates |
+| `7d2d9e2` | docs: add CONTRIBUTING with setup, branches, tests, screenshots |
+| `b6e844d` | docs: add Contributor Covenant 2.1 |
+| `97946f2` | fix: 4-agent review followup — biome format CLI, add build step to README |
+| `bdb65d9` | fix: 4-agent review followup — auto-mkdir output dir, default branch |
+
+**Deviations applied vs the plan-as-written (all justified, all reviewer-approved):**
+
+1. **Task 1 — also renamed `.github/workflows/update-baselines.yml`** (plan only named `ci.yml`). Same `--filter @codevena/forq-templates` pattern; leaving it would have broken the workflow at first dispatch. Spec §5.2 "CI workflow filter args" rule applies uniformly.
+2. **Task 1 — also updated user-visible brand text** in `apps/web/components/TopBar.tsx:57` (nav wordmark) and `apps/web/app/dev-ui/page.tsx:59` (h1 heading). Spec §5.2 "User-visible Brand-Refs → cvmake" rule.
+3. **Task 1 — 5 additional test mkdtemp tmp-prefixes left unchanged** (`packages/core/test/photo.test.ts`, four `apps/web/app/api/.../route.test.ts` files). Same pattern as the plan-named `apps/cli/test/build.integration.test.ts`. Spec §5.2 "internal symbol → unchanged" rule.
+4. **Task 3 — screenshot script uses `node apps/cli/bin/cvmake` not `pnpm --filter @codevena/cvmake-cli exec cvmake`.** The documented form fails with `ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL  Command "cvmake" not found` because pnpm doesn't link a workspace package's own `bin` into its own `node_modules/.bin/`.
+5. **Task 3 — cleanup wrapped in `try/finally`** (code-quality reviewer recommendation). `dist/screenshots/` is removed even if the build/rasterise loop throws mid-iteration.
+6. **Task 4 — added root `pnpm cvmake` script** to `package.json` (`"cvmake": "node apps/cli/bin/cvmake"`). README and CONTRIBUTING use this ergonomic form. Same root cause as deviation #4.
+7. **Task 4 — README quickstart includes `pnpm build`** between `pnpm install` and `pnpm cvmake build`. The CLI binary imports `../dist/index.js`; cold clones must build before running.
+8. **Followup fix — biome format split in `apps/cli/src/index.ts`.** The plan's program.name().description().version() chain became a single 120-char line after rename, triggering a NEW biome lint error. Split across 4 lines (matches biome 100-char rule).
+9. **Followup fix — `runBuild` now auto-mkdirs the output dir.** `apps/cli/src/commands/build.ts` matched the existing `runBuildAll` pattern. Without this, a cold-clone user following the README quickstart with the default `out/cv.pdf` output hit `ENOENT`.
+10. **Followup fix — `.github/workflows/update-baselines.yml` workflow_dispatch input default `feat/cvmake-mvp` → `main`.** Stale after the Task 0 default-branch flip.
+
+**4-agent DoD review:**
+- Codex Agent A — Codex CLI hit `OpenAI usage limit` on the second pass. Fell back to OpenCode (`opencode run --dangerously-skip-permissions "$(<.review/codex-prompt.txt)"`) per CLAUDE.md fallback rule. Final OpenCode verdict: PASS.
+- Claude Agent A — `code-reviewer` subagent. First pass: FAIL (1 CRITICAL = the `runBuild` ENOENT, 1 WARN = stale update-baselines default). Re-run after fixes: PASS.
+- No GitHub issue targeted phase 10 → Agent B (issue verification) skipped per plan §Task 8 note. 2 of 4 agents ran (the Agent A code-quality pair).
+
+**Audit final state:**
+- `rg '@codevena/forq-' apps packages .github` → zero matches.
+- `rg -i forq` outside expected buckets → zero hits. Expected hits: 15 historical doc files, 6 internal test tmp-prefixes (5 unmodified + 1 plan-explicit).
+- Personal-data audit (`git ls-files -z | xargs -0 rg -i 'markus|wiesecke|@gmail'`) → only LICENSE copyright + 5 documented spec/plan files.
+- `pnpm typecheck && pnpm build && pnpm -r test:unit` → 178 tests green.
+- Anonymous clone smoke test → success, all 8 screenshots present, README renders.
+
+**Phase 11+ candidates** (parked, out-of-scope per spec §8):
+- npm-Publish (`@codevena/cvmake-*` on npm; `npx cvmake init`).
+- Live demo URL (`cvmake.codevena.dev` or GitHub Pages).
+- `SECURITY.md`, `.github/ISSUE_TEMPLATE/`, `.github/PULL_REQUEST_TEMPLATE.md`.
+- GitHub Discussions toggle.
+- GitHub Pages (static showcase site).
+- Cleanup of legacy `feat/cvmake-mvp` branch (historical, now non-default).
+- `/tmp/forq-rewrite` cleanup per Migration-Plan §34.1 (eligible from ~2026-05-12).
