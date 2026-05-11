@@ -1,0 +1,181 @@
+@import "../shared/reset.css";
+@import "../shared/print.css";
+
+.magazine {
+  font-family: "Playfair Display", "Didot", "Bodoni MT", "Cormorant Garamond", serif;
+  background: var(--bg);
+  color: var(--text);
+  padding: 36px 40px;
+}
+
+.magazine__head {
+  display: grid;
+  grid-template-columns: 1fr 110px;
+  gap: 20px;
+  align-items: end;
+}
+
+.magazine__head-text {
+  min-width: 0;
+}
+
+.magazine__photo {
+  width: 110px;
+  height: 138px;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+.magazine__initials {
+  width: 110px;
+  height: 138px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 36px;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.magazine__label {
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.34em;
+  color: var(--accent);
+}
+
+.magazine__name {
+  font-size: 42px;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 0.95;
+  margin-top: 8px;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.magazine__role {
+  font-size: 11px;
+  font-style: italic;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+.magazine__divider {
+  width: 60px;
+  height: 1px;
+  background: var(--text-muted);
+  margin: 14px 0;
+}
+
+.magazine__summary {
+  font-family: Georgia, "EB Garamond", serif;
+  font-size: 10.5px;
+  line-height: 1.6;
+  max-width: 92%;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+.magazine__grid {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 18px;
+  margin-top: 18px;
+  font-family: Georgia, "EB Garamond", serif;
+  font-size: 10px;
+  color: var(--text);
+}
+
+.magazine__section-label {
+  font-family: "Playfair Display", serif;
+  font-size: 9px;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--text-muted);
+  padding-top: 4px;
+}
+
+.magazine__section-body {
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.magazine__item {
+  margin-bottom: 10px;
+  break-inside: avoid;
+}
+
+.magazine__item-title {
+  font-family: "Playfair Display", serif;
+  font-weight: 500;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--text);
+}
+
+.magazine__item-meta {
+  font-size: 9px;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-bottom: 3px;
+}
+
+.magazine__item-body {
+  font-size: 9.5px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.magazine__section-body ul {
+  margin: 4px 0 0;
+  padding-left: 14px;
+  font-size: 9.5px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.magazine__section-body ul li {
+  margin-bottom: 2px;
+}
+
+.magazine__skills-group {
+  margin-bottom: 6px;
+}
+
+.magazine__skills-group-label {
+  font-family: "Playfair Display", serif;
+  font-style: italic;
+  font-size: 10px;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.magazine__lang-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.magazine__contacts {
+  font-family: Georgia, "EB Garamond", serif;
+  font-size: 9.5px;
+  font-style: italic;
+  color: var(--text-muted);
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+.magazine__contacts span {
+  display: inline-block;
+}
+
+.magazine__contacts span + span::before {
+  content: " · ";
+  color: var(--text-muted);
+}
