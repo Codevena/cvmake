@@ -29,6 +29,7 @@
 git clone https://github.com/Codevena/cvmake
 cd cvmake
 pnpm install
+pnpm build      # builds the workspace packages once
 
 # Copy the example to your local-only CV (cv.*.yaml is gitignored)
 cp data/cvs/example.de.yaml data/cvs/cv.de.yaml
