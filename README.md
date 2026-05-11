@@ -13,11 +13,26 @@
 
 ## Showcase
 
-| | | | |
-|---|---|---|---|
-| <img src="docs/screenshots/academic.png" width="200" alt="academic"><br/>**academic** | <img src="docs/screenshots/bauhaus.png" width="200" alt="bauhaus"><br/>**bauhaus** | <img src="docs/screenshots/classic-serif.png" width="200" alt="classic-serif"><br/>**classic-serif** | <img src="docs/screenshots/corporate.png" width="200" alt="corporate"><br/>**corporate** |
-| <img src="docs/screenshots/creative-accent.png" width="200" alt="creative-accent"><br/>**creative-accent** | <img src="docs/screenshots/editorial.png" width="200" alt="editorial"><br/>**editorial** | <img src="docs/screenshots/magazine.png" width="200" alt="magazine"><br/>**magazine** | <img src="docs/screenshots/modern-minimal.png" width="200" alt="modern-minimal"><br/>**modern-minimal** |
-| <img src="docs/screenshots/monochrome-dark.png" width="200" alt="monochrome-dark"><br/>**monochrome-dark** | <img src="docs/screenshots/noir.png" width="200" alt="noir"><br/>**noir** | <img src="docs/screenshots/swiss.png" width="200" alt="swiss"><br/>**swiss** | <img src="docs/screenshots/tech-dev.png" width="200" alt="tech-dev"><br/>**tech-dev** |
+<table width="100%">
+  <tr>
+    <td width="25%" align="center"><img src="docs/screenshots/academic.png" width="200" alt="academic"><br/><b>academic</b></td>
+    <td width="25%" align="center"><img src="docs/screenshots/bauhaus.png" width="200" alt="bauhaus"><br/><b>bauhaus</b></td>
+    <td width="25%" align="center"><img src="docs/screenshots/classic-serif.png" width="200" alt="classic-serif"><br/><b>classic-serif</b></td>
+    <td width="25%" align="center"><img src="docs/screenshots/corporate.png" width="200" alt="corporate"><br/><b>corporate</b></td>
+  </tr>
+  <tr>
+    <td width="25%" align="center"><img src="docs/screenshots/creative-accent.png" width="200" alt="creative-accent"><br/><b>creative-accent</b></td>
+    <td width="25%" align="center"><img src="docs/screenshots/editorial.png" width="200" alt="editorial"><br/><b>editorial</b></td>
+    <td width="25%" align="center"><img src="docs/screenshots/magazine.png" width="200" alt="magazine"><br/><b>magazine</b></td>
+    <td width="25%" align="center"><img src="docs/screenshots/modern-minimal.png" width="200" alt="modern-minimal"><br/><b>modern-minimal</b></td>
+  </tr>
+  <tr>
+    <td width="25%" align="center"><img src="docs/screenshots/monochrome-dark.png" width="200" alt="monochrome-dark"><br/><b>monochrome-dark</b></td>
+    <td width="25%" align="center"><img src="docs/screenshots/noir.png" width="200" alt="noir"><br/><b>noir</b></td>
+    <td width="25%" align="center"><img src="docs/screenshots/swiss.png" width="200" alt="swiss"><br/><b>swiss</b></td>
+    <td width="25%" align="center"><img src="docs/screenshots/tech-dev.png" width="200" alt="tech-dev"><br/><b>tech-dev</b></td>
+  </tr>
+</table>
 
 ## Why cvmake
 
