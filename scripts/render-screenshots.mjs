@@ -8,12 +8,16 @@ import path from 'node:path';
 
 const TEMPLATES = [
   { id: 'academic', palette: 'academic-slate' },
+  { id: 'bauhaus', palette: 'bauhaus-primary' },
   { id: 'classic-serif', palette: 'classic-grey' },
   { id: 'corporate', palette: 'corporate-graphite' },
   { id: 'creative-accent', palette: 'creative-citrus' },
   { id: 'editorial', palette: 'editorial-paper' },
+  { id: 'magazine', palette: 'magazine-sand' },
   { id: 'modern-minimal', palette: 'minimal-ink' },
   { id: 'monochrome-dark', palette: 'mono-carbon' },
+  { id: 'noir', palette: 'noir-gold' },
+  { id: 'swiss', palette: 'swiss-red' },
   { id: 'tech-dev', palette: 'tech-terminal' },
 ];
 
@@ -53,4 +57,4 @@ try {
 } finally {
   await rm(PDF_DIR, { recursive: true, force: true });
 }
-console.log('\nAll 8 screenshots rendered.');
+console.log(`\nAll ${TEMPLATES.length} screenshots rendered.`);

@@ -40,6 +40,26 @@ const TEMPLATES = [
     name: 'Monochrome Dark',
     blurb: 'High-contrast dark theme.',
   },
+  {
+    id: 'swiss',
+    name: 'Swiss / International',
+    blurb: 'Strict grid, Helvetica, red accent. Pure information design.',
+  },
+  {
+    id: 'bauhaus',
+    name: 'Bauhaus',
+    blurb: 'Geometric shapes, primary palette, Futura. Joyful structure.',
+  },
+  {
+    id: 'noir',
+    name: 'Noir',
+    blurb: 'Cinematic high-contrast — black canvas, cream serif, gold accent.',
+  },
+  {
+    id: 'magazine',
+    name: 'Editorial Magazine',
+    blurb: 'Luxe display serif, italic, generous whitespace. Vogue-feel.',
+  },
 ];
 
 function renderTemplateGrid() {
