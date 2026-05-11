@@ -46,6 +46,7 @@ export async function runBuild(args: BuildArgs): Promise<void> {
   });
   const pdf = await generatePDF(html);
   const outPath = path.resolve(args.output);
+  await mkdir(path.dirname(outPath), { recursive: true });
   await writeFile(outPath, pdf);
   await shutdownPdfBrowser();
   console.warn(pc.green(`✓ wrote ${outPath} (${pdf.byteLength} bytes)`));
