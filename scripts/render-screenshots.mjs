@@ -25,30 +25,32 @@ const CLI = 'apps/cli/bin/cvmake';
 await mkdir(PDF_DIR, { recursive: true });
 await mkdir(PNG_DIR, { recursive: true });
 
-for (const { id, palette } of TEMPLATES) {
-  const pdfPath = path.join(PDF_DIR, `${id}.pdf`);
-  const pngBase = path.join(PNG_DIR, id); // pdftocairo -singlefile appends .png
+try {
+  for (const { id, palette } of TEMPLATES) {
+    const pdfPath = path.join(PDF_DIR, `${id}.pdf`);
+    const pngBase = path.join(PNG_DIR, id); // pdftocairo -singlefile appends .png
 
-  console.log(`\n→ ${id} (${palette})`);
+    console.log(`\n→ ${id} (${palette})`);
 
-  execFileSync(
-    'node',
-    [CLI, 'build', YAML, '--template', id, '--palette', palette, '--output', pdfPath],
-    { stdio: 'inherit' },
-  );
+    execFileSync(
+      'node',
+      [CLI, 'build', YAML, '--template', id, '--palette', palette, '--output', pdfPath],
+      { stdio: 'inherit' },
+    );
 
-  execFileSync(
-    'pdftocairo',
-    ['-png', '-r', '150', '-f', '1', '-l', '1', '-singlefile', pdfPath, pngBase],
-    { stdio: 'inherit' },
-  );
+    execFileSync(
+      'pdftocairo',
+      ['-png', '-r', '150', '-f', '1', '-l', '1', '-singlefile', pdfPath, pngBase],
+      { stdio: 'inherit' },
+    );
 
-  const info = await stat(`${pngBase}.png`);
-  if (info.size < 10_000) {
-    throw new Error(`${id}.png suspiciously small (${info.size} bytes)`);
+    const info = await stat(`${pngBase}.png`);
+    if (info.size < 10_000) {
+      throw new Error(`${id}.png suspiciously small (${info.size} bytes)`);
+    }
+    console.log(`  ✓ ${pngBase}.png  (${(info.size / 1024).toFixed(0)} KB)`);
   }
-  console.log(`  ✓ ${pngBase}.png  (${(info.size / 1024).toFixed(0)} KB)`);
+} finally {
+  await rm(PDF_DIR, { recursive: true, force: true });
 }
-
-await rm(PDF_DIR, { recursive: true });
 console.log('\nAll 8 screenshots rendered.');
