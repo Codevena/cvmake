@@ -1,0 +1,51 @@
+/* Custom polish on top of Tailwind. Keep this small — most styling lives in
+   utility classes in index.html. */
+
+html {
+  background-color: #0b0f17;
+}
+
+body {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Subtle radial glow behind the hero, just enough to lift it off the grid. */
+section#top::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      ellipse 60% 50% at 50% 0%,
+      rgba(212, 165, 116, 0.18),
+      transparent 70%
+    );
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Tailwind utilities aren't a perfect fit for the slightly-tighter scrollbar
+   we want on code blocks inside cards, so override here. */
+pre::-webkit-scrollbar {
+  height: 6px;
+}
+pre::-webkit-scrollbar-track {
+  background: transparent;
+}
+pre::-webkit-scrollbar-thumb {
+  background: rgba(212, 165, 116, 0.25);
+  border-radius: 3px;
+}
+
+/* Reduce motion for users who prefer it. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

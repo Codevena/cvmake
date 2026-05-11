@@ -48,6 +48,9 @@ public/photos/*
 # Visual regression test actual screenshots (ephemeral, baselines are committed)
 **/__visual__/**/.actual/
 
+# Showcase assets are synced from docs/screenshots/ at build time — no copies committed.
+apps/showcase/screenshots/
+
 # Personal / sensitive data — never commit (kept local only)
 data/letters/
 scripts/build-letter.mjs

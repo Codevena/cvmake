@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>cvmake — make your CV from YAML</title>
+    <meta
+      name="description"
+      content="Open-source CV builder. YAML in, PDF out. Eight polished templates with multiple palettes, multilingual, CLI + web preview."
+    />
+    <meta property="og:title" content="cvmake — make your CV from YAML" />
+    <meta
+      property="og:description"
+      content="Open-source CV builder. YAML in, PDF out. Eight polished templates with multiple palettes, multilingual, CLI + web preview."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://cvmake.codevena.dev" />
+    <meta property="og:image" content="screenshots/classic-serif.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#0b0f17" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              ink: {
+                DEFAULT: '#0b0f17',
+                soft: '#11161f',
+                line: '#1f2531',
+              },
+              sand: {
+                DEFAULT: '#d4a574',
+                muted: '#a98558',
+              },
+              parchment: '#f5efe6',
+            },
+            fontFamily: {
+              display: ['Fraunces', 'serif'],
+              body: ['Inter', 'system-ui', 'sans-serif'],
+              mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+            },
+            boxShadow: {
+              card: '0 30px 60px -30px rgba(0, 0, 0, 0.5)',
+              ring: '0 0 0 1px rgba(212, 165, 116, 0.25)',
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body class="bg-ink text-parchment font-body antialiased selection:bg-sand selection:text-ink">
+    <!-- subtle grid backdrop -->
+    <div aria-hidden="true" class="pointer-events-none fixed inset-0 -z-10 opacity-[0.06]">
+      <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="grid" width="36" height="36" patternUnits="userSpaceOnUse">
+            <path d="M 36 0 L 0 0 0 36" fill="none" stroke="currentColor" stroke-width="1" />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#grid)" />
+      </svg>
+    </div>
+
+    <!-- top nav -->
+    <header class="fixed inset-x-0 top-0 z-40 backdrop-blur-md bg-ink/70 border-b border-ink-line">
+      <nav class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+        <a href="#top" class="flex items-center gap-2 font-display text-lg font-semibold tracking-tight">
+          <span class="inline-block h-2.5 w-2.5 rounded-full bg-sand"></span>
+          cvmake
+        </a>
+        <div class="flex items-center gap-4 text-xs text-parchment/70 sm:gap-7 sm:text-sm">
+          <a href="#templates" class="hover:text-parchment transition">Templates</a>
+          <a href="#quickstart" class="hover:text-parchment transition">Quickstart</a>
+          <a href="#why" class="hidden hover:text-parchment transition sm:inline">Why</a>
+          <a
+            href="https://github.com/Codevena/cvmake"
+            target="_blank"
+            rel="noreferrer"
+            class="hover:text-parchment transition"
+            >GitHub ↗</a
+          >
+        </div>
+      </nav>
+    </header>
+
+    <!-- hero -->
+    <section id="top" class="relative pt-40 pb-28 lg:pt-48 lg:pb-36">
+      <div class="mx-auto max-w-6xl px-6">
+        <div class="mx-auto max-w-3xl text-center">
+          <span
+            class="inline-flex items-center gap-2 rounded-full border border-ink-line bg-ink-soft px-3 py-1 text-xs uppercase tracking-[0.18em] text-parchment/70"
+          >
+            <span class="h-1.5 w-1.5 rounded-full bg-sand"></span>
+            Open source · MIT
+          </span>
+          <h1
+            class="mt-8 font-display text-5xl font-medium leading-[1.05] tracking-tight md:text-7xl"
+          >
+            Make your CV
+            <span class="block italic text-sand">from YAML.</span>
+          </h1>
+          <p class="mt-7 text-lg leading-relaxed text-parchment/80 md:text-xl">
+            One plain-text file. Eight polished templates. A PDF in one command. Diff it, version
+            it, fork it — your résumé as code.
+          </p>
+          <div class="mt-10 flex flex-wrap items-center justify-center gap-3">
+            <a
+              href="#templates"
+              class="inline-flex items-center gap-2 rounded-md bg-sand px-5 py-3 text-sm font-semibold text-ink shadow-card transition hover:-translate-y-0.5 hover:bg-sand/90"
+            >
+              Browse templates
+              <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path d="M10 3a1 1 0 0 1 1 1v9.586l3.293-3.293a1 1 0 1 1 1.414 1.414l-5 5a1 1 0 0 1-1.414 0l-5-5a1 1 0 1 1 1.414-1.414L9 13.586V4a1 1 0 0 1 1-1Z" />
+              </svg>
+            </a>
+            <a
+              href="https://github.com/Codevena/cvmake"
+              target="_blank"
+              rel="noreferrer"
+              class="inline-flex items-center gap-2 rounded-md border border-ink-line bg-ink-soft px-5 py-3 text-sm font-semibold text-parchment transition hover:border-sand/40 hover:bg-ink"
+            >
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.21.7-3.88-1.54-3.88-1.54-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.17.08 1.78 1.2 1.78 1.2 1.03 1.77 2.71 1.26 3.37.97.1-.75.4-1.26.73-1.55-2.56-.29-5.26-1.28-5.26-5.7 0-1.26.45-2.29 1.2-3.1-.12-.3-.52-1.48.12-3.08 0 0 .98-.31 3.2 1.18a11.06 11.06 0 0 1 5.83 0c2.22-1.49 3.2-1.18 3.2-1.18.64 1.6.24 2.78.12 3.08.75.81 1.2 1.84 1.2 3.1 0 4.43-2.7 5.41-5.28 5.69.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z" />
+              </svg>
+              GitHub
+            </a>
+          </div>
+
+          <!-- terminal preview -->
+          <div class="mx-auto mt-16 max-w-2xl text-left">
+            <div class="overflow-hidden rounded-xl border border-ink-line bg-ink-soft shadow-card">
+              <div class="flex items-center gap-2 border-b border-ink-line px-4 py-2.5">
+                <span class="h-3 w-3 rounded-full bg-[#ff5f56]"></span>
+                <span class="h-3 w-3 rounded-full bg-[#ffbd2e]"></span>
+                <span class="h-3 w-3 rounded-full bg-[#27c93f]"></span>
+                <span class="ml-3 text-xs text-parchment/50">~/cvmake</span>
+              </div>
+              <pre class="overflow-x-auto px-5 py-4 font-mono text-sm leading-7 text-parchment/90"><span class="text-sand">$</span> pnpm cvmake build data/cvs/cv.de.yaml
+<span class="text-parchment/50">→ rendering with template "classic-serif"</span>
+<span class="text-parchment/50">→ writing out/cv.pdf</span>
+<span class="text-emerald-400">✓ done in 1.4s</span></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- templates showcase -->
+    <section id="templates" class="border-t border-ink-line bg-ink-soft/40 py-24">
+      <div class="mx-auto max-w-6xl px-6">
+        <div class="flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
+          <div>
+            <h2 class="font-display text-3xl font-medium tracking-tight md:text-4xl">
+              Eight templates, ready to fork
+            </h2>
+            <p class="mt-3 max-w-xl text-parchment/70">
+              Every template ships with three or more color palettes. Click any preview for the
+              full résumé.
+            </p>
+          </div>
+          <a
+            href="https://github.com/Codevena/cvmake/tree/main/packages/templates"
+            target="_blank"
+            rel="noreferrer"
+            class="text-sm text-sand hover:underline"
+            >View source ↗</a
+          >
+        </div>
+
+        <div
+          id="template-grid"
+          class="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+        ></div>
+      </div>
+    </section>
+
+    <!-- quickstart -->
+    <section id="quickstart" class="py-24">
+      <div class="mx-auto max-w-5xl px-6">
+        <div class="text-center">
+          <h2 class="font-display text-3xl font-medium tracking-tight md:text-4xl">
+            From clone to PDF in three steps
+          </h2>
+          <p class="mt-3 text-parchment/70">No accounts. No telemetry. Everything stays on your machine.</p>
+        </div>
+
+        <ol class="mt-14 grid gap-6 md:grid-cols-3">
+          <li class="rounded-xl border border-ink-line bg-ink-soft p-6 shadow-card">
+            <div class="flex items-center gap-3 text-sand">
+              <span class="font-display text-2xl">01</span>
+              <span class="text-xs uppercase tracking-[0.18em]">Clone</span>
+            </div>
+            <pre class="mt-5 overflow-x-auto rounded-md bg-ink/80 p-4 font-mono text-[13px] leading-6 text-parchment/90"><code>git clone https://github.com/Codevena/cvmake
+cd cvmake
+pnpm install
+pnpm build</code></pre>
+          </li>
+          <li class="rounded-xl border border-ink-line bg-ink-soft p-6 shadow-card">
+            <div class="flex items-center gap-3 text-sand">
+              <span class="font-display text-2xl">02</span>
+              <span class="text-xs uppercase tracking-[0.18em]">Edit YAML</span>
+            </div>
+            <pre class="mt-5 overflow-x-auto rounded-md bg-ink/80 p-4 font-mono text-[13px] leading-6 text-parchment/90"><code>cp data/cvs/example.de.yaml \
+   data/cvs/cv.de.yaml
+
+# open in any editor</code></pre>
+          </li>
+          <li class="rounded-xl border border-ink-line bg-ink-soft p-6 shadow-card">
+            <div class="flex items-center gap-3 text-sand">
+              <span class="font-display text-2xl">03</span>
+              <span class="text-xs uppercase tracking-[0.18em]">Render</span>
+            </div>
+            <pre class="mt-5 overflow-x-auto rounded-md bg-ink/80 p-4 font-mono text-[13px] leading-6 text-parchment/90"><code>pnpm cvmake build \
+   data/cvs/cv.de.yaml
+
+# → out/cv.pdf</code></pre>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- why -->
+    <section id="why" class="border-t border-ink-line bg-ink-soft/40 py-24">
+      <div class="mx-auto max-w-6xl px-6">
+        <div class="max-w-2xl">
+          <h2 class="font-display text-3xl font-medium tracking-tight md:text-4xl">
+            Why CV-as-code
+          </h2>
+          <p class="mt-3 text-parchment/70">
+            A résumé is the most important document most people own. It deserves the same tools you
+            use for your code.
+          </p>
+        </div>
+
+        <div class="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <article class="rounded-xl border border-ink-line bg-ink p-6">
+            <div class="flex h-10 w-10 items-center justify-center rounded-md bg-sand/10 text-sand">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                <path d="M4 7h16M4 12h16M4 17h10" stroke-linecap="round" />
+              </svg>
+            </div>
+            <h3 class="mt-5 font-display text-lg font-medium">YAML source of truth</h3>
+            <p class="mt-2 text-sm leading-relaxed text-parchment/70">
+              Plain text. Diff in git, search with grep, copy between machines without lock-in.
+            </p>
+          </article>
+
+          <article class="rounded-xl border border-ink-line bg-ink p-6">
+            <div class="flex h-10 w-10 items-center justify-center rounded-md bg-sand/10 text-sand">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                <path d="M12 3v18M3 12h18" stroke-linecap="round" />
+                <circle cx="12" cy="12" r="9" />
+              </svg>
+            </div>
+            <h3 class="mt-5 font-display text-lg font-medium">Multilingual</h3>
+            <p class="mt-2 text-sm leading-relaxed text-parchment/70">
+              Author <code class="font-mono text-xs">cv.de.yaml</code> and
+              <code class="font-mono text-xs">cv.en.yaml</code> side by side. Switch via CLI flag.
+            </p>
+          </article>
+
+          <article class="rounded-xl border border-ink-line bg-ink p-6">
+            <div class="flex h-10 w-10 items-center justify-center rounded-md bg-sand/10 text-sand">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                <rect x="3" y="4" width="7" height="7" rx="1" />
+                <rect x="14" y="4" width="7" height="7" rx="1" />
+                <rect x="3" y="14" width="7" height="7" rx="1" />
+                <rect x="14" y="14" width="7" height="7" rx="1" />
+              </svg>
+            </div>
+            <h3 class="mt-5 font-display text-lg font-medium">8 templates · 24+ palettes</h3>
+            <p class="mt-2 text-sm leading-relaxed text-parchment/70">
+              Academic, corporate, editorial, tech — each with three or more color palettes baked
+              in.
+            </p>
+          </article>
+
+          <article class="rounded-xl border border-ink-line bg-ink p-6">
+            <div class="flex h-10 w-10 items-center justify-center rounded-md bg-sand/10 text-sand">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                <path d="M8 9l-4 3 4 3M16 9l4 3-4 3M14 5l-4 14" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </div>
+            <h3 class="mt-5 font-display text-lg font-medium">CLI + web preview</h3>
+            <p class="mt-2 text-sm leading-relaxed text-parchment/70">
+              Render from your terminal or edit live in the browser. Same engine either way.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- tech bar -->
+    <section class="border-t border-ink-line py-14">
+      <div class="mx-auto max-w-6xl px-6">
+        <div
+          class="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 text-xs uppercase tracking-[0.2em] text-parchment/50"
+        >
+          <span>Next.js 16</span>
+          <span class="text-ink-line">·</span>
+          <span>TypeScript 5.6</span>
+          <span class="text-ink-line">·</span>
+          <span>React 18</span>
+          <span class="text-ink-line">·</span>
+          <span>Puppeteer</span>
+          <span class="text-ink-line">·</span>
+          <span>Tailwind CSS 4</span>
+          <span class="text-ink-line">·</span>
+          <span>Vitest + Playwright</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- footer -->
+    <footer class="border-t border-ink-line py-10 text-sm text-parchment/60">
+      <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 md:flex-row">
+        <div class="flex items-center gap-2 font-display">
+          <span class="inline-block h-2 w-2 rounded-full bg-sand"></span>
+          cvmake · MIT
+        </div>
+        <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
+          <a href="https://github.com/Codevena/cvmake" target="_blank" rel="noreferrer" class="hover:text-parchment">GitHub</a>
+          <a href="https://github.com/Codevena/cvmake/discussions" target="_blank" rel="noreferrer" class="hover:text-parchment">Discussions</a>
+          <a href="https://github.com/Codevena/cvmake/blob/main/SECURITY.md" target="_blank" rel="noreferrer" class="hover:text-parchment">Security</a>
+          <a href="https://github.com/Codevena/cvmake/blob/main/CONTRIBUTING.md" target="_blank" rel="noreferrer" class="hover:text-parchment">Contribute</a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- lightbox -->
+    <div
+      id="lightbox"
+      class="fixed inset-0 z-50 hidden items-center justify-center bg-ink/95 backdrop-blur-sm p-6"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Template preview"
+    >
+      <button
+        id="lightbox-close"
+        class="absolute right-6 top-6 inline-flex h-10 w-10 items-center justify-center rounded-full border border-ink-line bg-ink-soft text-parchment hover:border-sand/40"
+        aria-label="Close preview"
+      >
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" />
+        </svg>
+      </button>
+      <figure class="flex max-h-full max-w-5xl flex-col items-center gap-4">
+        <img id="lightbox-img" src="" alt="" class="max-h-[78vh] w-auto rounded-md shadow-card" />
+        <figcaption id="lightbox-caption" class="text-center text-sm text-parchment/70"></figcaption>
+      </figure>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
