@@ -1,6 +1,23 @@
 @import "../shared/reset.css";
 @import "../shared/print.css";
 
+/* Background on html/body so it repeats on every printed page, not just the
+   content area. Without this, short CVs leave a white gap below the article
+   on each page. print-color-adjust: exact forces Chromium to render the
+   beige/dark canvas when generating the PDF. */
+html,
+body {
+  background: var(--bg);
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+body,
+.bauhaus {
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
 /* ─── Root ─────────────────────────────────────────────────────────────── */
 .bauhaus {
   font-family: "Futura", "Trebuchet MS", "Avenir Next", sans-serif;
