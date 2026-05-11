@@ -15,9 +15,9 @@
 
 | | | | |
 |---|---|---|---|
-| ![academic](docs/screenshots/academic.png)<br/>**academic** | ![bauhaus](docs/screenshots/bauhaus.png)<br/>**bauhaus** | ![classic-serif](docs/screenshots/classic-serif.png)<br/>**classic-serif** | ![corporate](docs/screenshots/corporate.png)<br/>**corporate** |
-| ![creative-accent](docs/screenshots/creative-accent.png)<br/>**creative-accent** | ![editorial](docs/screenshots/editorial.png)<br/>**editorial** | ![magazine](docs/screenshots/magazine.png)<br/>**magazine** | ![modern-minimal](docs/screenshots/modern-minimal.png)<br/>**modern-minimal** |
-| ![monochrome-dark](docs/screenshots/monochrome-dark.png)<br/>**monochrome-dark** | ![noir](docs/screenshots/noir.png)<br/>**noir** | ![swiss](docs/screenshots/swiss.png)<br/>**swiss** | ![tech-dev](docs/screenshots/tech-dev.png)<br/>**tech-dev** |
+| <img src="docs/screenshots/academic.png" width="200" alt="academic"><br/>**academic** | <img src="docs/screenshots/bauhaus.png" width="200" alt="bauhaus"><br/>**bauhaus** | <img src="docs/screenshots/classic-serif.png" width="200" alt="classic-serif"><br/>**classic-serif** | <img src="docs/screenshots/corporate.png" width="200" alt="corporate"><br/>**corporate** |
+| <img src="docs/screenshots/creative-accent.png" width="200" alt="creative-accent"><br/>**creative-accent** | <img src="docs/screenshots/editorial.png" width="200" alt="editorial"><br/>**editorial** | <img src="docs/screenshots/magazine.png" width="200" alt="magazine"><br/>**magazine** | <img src="docs/screenshots/modern-minimal.png" width="200" alt="modern-minimal"><br/>**modern-minimal** |
+| <img src="docs/screenshots/monochrome-dark.png" width="200" alt="monochrome-dark"><br/>**monochrome-dark** | <img src="docs/screenshots/noir.png" width="200" alt="noir"><br/>**noir** | <img src="docs/screenshots/swiss.png" width="200" alt="swiss"><br/>**swiss** | <img src="docs/screenshots/tech-dev.png" width="200" alt="tech-dev"><br/>**tech-dev** |
 
 ## Why cvmake
 
