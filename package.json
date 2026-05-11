@@ -15,7 +15,8 @@
     "test:integration": "turbo run test:integration",
     "test:e2e": "turbo run test:e2e",
     "test:visual": "turbo run test:visual",
-    "clean": "turbo run clean && rm -rf node_modules"
+    "clean": "turbo run clean && rm -rf node_modules",
+    "screenshots": "node scripts/render-screenshots.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
