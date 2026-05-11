@@ -1,10 +1,14 @@
 export * from './bootstrap.js';
 export * from './registry.js';
 export { academic } from './academic/index.js';
+export { bauhaus } from './bauhaus/index.js';
 export { classicSerif } from './classic-serif/index.js';
 export { corporate } from './corporate/index.js';
 export { creativeAccent } from './creative-accent/index.js';
 export { editorial } from './editorial/index.js';
+export { magazine } from './magazine/index.js';
 export { modernMinimal } from './modern-minimal/index.js';
 export { monochromeDark } from './monochrome-dark/index.js';
+export { noir } from './noir/index.js';
+export { swiss } from './swiss/index.js';
 export { techDev } from './tech-dev/index.js';
