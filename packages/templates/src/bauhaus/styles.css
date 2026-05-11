@@ -1,0 +1,194 @@
+@import "../shared/reset.css";
+@import "../shared/print.css";
+
+/* ─── Root ─────────────────────────────────────────────────────────────── */
+.bauhaus {
+  font-family: "Futura", "Trebuchet MS", "Avenir Next", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  position: relative;
+  padding: 40px 44px;
+  min-height: 100%;
+  overflow: hidden;
+}
+
+/* ─── Decorative shapes (hardcoded — part of the Bauhaus identity) ─────── */
+.bauhaus__circle {
+  position: absolute;
+  right: -30px;
+  top: -30px;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: #e63946;
+  z-index: 0;
+}
+
+.bauhaus__triangle {
+  position: absolute;
+  right: 60px;
+  bottom: 30px;
+  width: 0;
+  height: 0;
+  border-left: 26px solid transparent;
+  border-right: 26px solid transparent;
+  border-bottom: 26px solid #fbbf24;
+  z-index: 0;
+}
+
+/* ─── Header ───────────────────────────────────────────────────────────── */
+.bauhaus__head {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.bauhaus__head-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.bauhaus__photo {
+  width: 86px;
+  height: 86px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 3px solid var(--accent);
+  position: relative;
+  z-index: 2;
+}
+
+.bauhaus__initials {
+  width: 86px;
+  height: 86px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 3px solid var(--accent);
+  position: relative;
+  z-index: 2;
+  background: var(--surface);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.bauhaus__name {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+.bauhaus__role {
+  font-size: 11px;
+  margin-top: 6px;
+  padding: 3px 8px;
+  background: var(--accent);
+  color: var(--text-on-accent);
+  display: inline-block;
+  font-weight: 500;
+}
+
+.bauhaus__contact {
+  font-size: 8.5px;
+  line-height: 1.5;
+  margin-top: 8px;
+  color: var(--text-muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 10px;
+}
+
+.bauhaus__contact a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.bauhaus__contact-item {
+  white-space: nowrap;
+}
+
+/* ─── Sections ─────────────────────────────────────────────────────────── */
+.bauhaus__section {
+  position: relative;
+  z-index: 1;
+  margin-top: 12px;
+}
+
+.bauhaus__section h4 {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-weight: 700;
+  margin: 0 0 6px;
+  display: inline-block;
+  border-bottom: 3px solid #fbbf24;
+  padding-bottom: 2px;
+}
+
+/* ─── Items (experience, education, custom) ────────────────────────────── */
+.bauhaus__item {
+  margin-bottom: 9px;
+  font-size: 10px;
+  break-inside: avoid;
+}
+
+.bauhaus__item-title {
+  font-weight: 700;
+  font-size: 11px;
+}
+
+.bauhaus__item-meta {
+  font-size: 9px;
+  color: var(--text-muted);
+  margin-bottom: 3px;
+}
+
+.bauhaus__item ul {
+  margin: 2px 0 0;
+  padding-left: 14px;
+  font-size: 9.5px;
+  line-height: 1.5;
+  list-style: disc;
+}
+
+.bauhaus__item ul li::marker {
+  color: var(--accent);
+}
+
+/* ─── Skills (two-column grid) ─────────────────────────────────────────── */
+.bauhaus__skills {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 12px;
+  font-size: 9.5px;
+}
+
+.bauhaus__skills b {
+  font-weight: 700;
+}
+
+.bauhaus__skills-flat {
+  font-size: 9.5px;
+  line-height: 1.6;
+}
+
+/* ─── Languages ────────────────────────────────────────────────────────── */
+.bauhaus__languages {
+  font-size: 9.5px;
+  line-height: 1.6;
+}
+
+.bauhaus__summary {
+  font-size: 10px;
+  line-height: 1.55;
+}
