@@ -35,6 +35,7 @@ jobs:
           cp apps/showcase/styles.css dist/
           cp apps/showcase/app.js dist/
           cp apps/showcase/favicon.svg dist/
+          cp apps/showcase/CNAME dist/
           mkdir -p dist/screenshots
           cp docs/screenshots/*.png dist/screenshots/
 
