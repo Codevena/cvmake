@@ -1,6 +1,8 @@
+import { dataDir } from '@/lib/data-paths';
 import { getPreviewBootstrap } from '@/lib/preview-bootstrap';
 import { wrapHtmlDocument } from '@codevena/cvmake-core/html-document';
 import { generatePDF } from '@codevena/cvmake-core/pdf';
+import { embedPhoto } from '@codevena/cvmake-core/photo-embed';
 import { renderCV } from '@codevena/cvmake-core/renderer';
 import { CVDataSchema } from '@codevena/cvmake-schema';
 import { bootstrapTemplates, getTemplate } from '@codevena/cvmake-templates';
@@ -39,8 +41,18 @@ export async function POST(req: Request): Promise<Response> {
   if (!template) {
     return NextResponse.json({ kind: 'unknown_template' }, { status: 404 });
   }
+  // The live preview iframe loads photos via the Next.js public dir as
+  // /photos/<slug>.jpg URLs, but Puppeteer renders the HTML via setContent
+  // with no base URL — those relative/absolute paths would 404 inside the
+  // PDF. Inline the photo as a base64 data URL first, matching what the CLI
+  // build pipeline does (apps/cli/src/commands/build.ts). dataDir() points
+  // at data/cvs/ which is both the natural base for relative photo paths
+  // ("photos/example-lena.webp" → data/cvs/photos/example-lena.webp) and a
+  // descendant from which embedPhoto can walk up to find public/photos for
+  // absolute /photos/<slug>.jpg URLs produced by the upload API.
+  const embedded = await embedPhoto(parsed.data, dataDir());
   const { html, css } = await renderCV({
-    data: parsed.data,
+    data: embedded,
     template,
     ...(body.paletteId !== undefined ? { paletteId: body.paletteId } : {}),
   });
