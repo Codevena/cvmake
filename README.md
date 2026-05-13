@@ -43,6 +43,17 @@
 
 ## Quickstart
 
+### Install + render in one shot
+
+```bash
+npx @codevena/cvmake-cli build path/to/cv.yaml
+```
+
+No clone required. The first run downloads Chromium (~150 MB, one-time)
+which is needed for high-fidelity PDF rendering.
+
+### Or clone for contribution / customization
+
 ```bash
 git clone https://github.com/Codevena/cvmake
 cd cvmake
