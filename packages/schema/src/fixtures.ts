@@ -1,4 +1,4 @@
-import type { CVData } from '../src/cv.js';
+import type { CVData } from './cv.js';
 
 export const minimalFixture: CVData = {
   meta: { locale: 'de' },

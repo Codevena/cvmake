@@ -100,9 +100,9 @@ Replace the entire file with:
   "types": "./dist/index.d.ts",
   "exports": {
     ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
-    "./test/fixtures.js": {
-      "types": "./test/fixtures.ts",
-      "default": "./test/fixtures.ts"
+    "./fixtures": {
+      "types": "./dist/fixtures.d.ts",
+      "default": "./dist/fixtures.js"
     }
   },
   "files": ["dist", "README.md", "LICENSE"],
@@ -114,9 +114,12 @@ Replace the entire file with:
     "clean": "rm -rf dist .turbo",
     "prepublishOnly": "pnpm run build"
   },
-  "dependencies": { "react": "18.3.1", "zod": "3.23.8" },
+  "dependencies": { "zod": "3.23.8" },
+  "peerDependencies": { "react": "^18" },
+  "peerDependenciesMeta": { "react": { "optional": true } },
   "devDependencies": {
     "@types/react": "18.3.12",
+    "react": "18.3.1",
     "typescript": "5.6.3",
     "vitest": "2.1.5"
   }

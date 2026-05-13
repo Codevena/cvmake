@@ -1,5 +1,5 @@
 import { getLabels } from '@codevena/cvmake-core';
-import { fullFixture, minimalFixture } from '@codevena/cvmake-schema/test/fixtures.js';
+import { fullFixture, minimalFixture } from '@codevena/cvmake-schema/fixtures';
 import { renderToStaticMarkup } from 'react-dom/server';
 /** @vitest-environment node */
 import { describe, expect, it } from 'vitest';

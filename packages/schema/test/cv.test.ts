@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CVDataSchema } from '../src/cv.js';
-import { fullFixture, minimalFixture } from './fixtures.js';
+import { fullFixture, minimalFixture } from '../src/fixtures.js';
 
 describe('CVDataSchema', () => {
   it('akzeptiert das Minimal-Fixture', () => {

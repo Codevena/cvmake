@@ -1,5 +1,5 @@
 import type { TemplateDefinition } from '@codevena/cvmake-schema';
-import { minimalFixture } from '@codevena/cvmake-schema/test/fixtures.js';
+import { minimalFixture } from '@codevena/cvmake-schema/fixtures';
 /** @vitest-environment node */
 import { describe, expect, it } from 'vitest';
 import { renderCV } from '../src/renderer.js';

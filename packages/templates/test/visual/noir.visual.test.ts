@@ -1,5 +1,5 @@
 import { renderCV, shutdownPdfBrowser, wrapHtmlDocument } from '@codevena/cvmake-core';
-import { fullFixture } from '@codevena/cvmake-schema/test/fixtures.js';
+import { fullFixture } from '@codevena/cvmake-schema/fixtures';
 import puppeteer from 'puppeteer';
 import { afterAll, describe, expect, it } from 'vitest';
 import { loadTemplateCss } from '../../src/css.js';
