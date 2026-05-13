@@ -7,6 +7,10 @@
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
       "inputs": ["src/**", "tsconfig.json", "package.json"]
     },
+    "@codevena/cvmake-showcase#build": {
+      "outputs": ["tailwind.css"],
+      "inputs": ["src/**", "index.html", "app.js", "package.json"]
+    },
     "dev": { "cache": false, "persistent": true },
     "typecheck": {
       "dependsOn": ["^build"],

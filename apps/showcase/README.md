@@ -31,7 +31,8 @@ pnpm --filter @codevena/cvmake-showcase build:css
 ## Deployment
 
 `.github/workflows/deploy-showcase.yml` installs dependencies, runs the
-showcase build (sync screenshots + build Tailwind), assembles a `dist/`
+showcase build (`build:css` only — the workflow copies screenshots
+straight from `docs/screenshots/` into the artifact), assembles a `dist/`
 payload (HTML/CSS/JS/SVG + screenshots), and publishes via the official
 `actions/deploy-pages` flow. No `gh-pages` branch involved.
 
