@@ -1,7 +1,17 @@
 {
   "name": "@codevena/cvmake-templates",
-  "version": "0.0.0",
-  "private": true,
+  "version": "0.1.0",
+  "description": "12 production-ready CV templates for cvmake — React components with CSS, multi-palette.",
+  "keywords": ["cv", "resume", "react", "templates", "cvmake"],
+  "homepage": "https://cvmake.codevena.dev",
+  "bugs": { "url": "https://github.com/Codevena/cvmake/issues" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Codevena/cvmake.git",
+    "directory": "packages/templates"
+  },
+  "license": "MIT",
+  "author": "Markus Wiesecke",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -15,12 +25,15 @@
       "default": "./dist/css.js"
     }
   },
+  "files": ["dist", "README.md", "LICENSE"],
+  "publishConfig": { "access": "public" },
   "scripts": {
     "build": "tsc -p tsconfig.json && node scripts/copy-assets.mjs",
     "typecheck": "tsc --noEmit",
     "test:unit": "vitest run",
     "test:visual": "vitest run --config vitest.visual.config.ts",
-    "clean": "rm -rf dist .turbo"
+    "clean": "rm -rf dist .turbo",
+    "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
     "@codevena/cvmake-core": "workspace:*",
