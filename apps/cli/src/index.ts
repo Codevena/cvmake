@@ -1,13 +1,22 @@
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, resolve } from 'node:path';
+
 import { Command } from 'commander';
 import { runBuild, runBuildAll } from './commands/build.js';
 import { runListTemplates } from './commands/list-templates.js';
 import { runValidate } from './commands/validate.js';
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const pkg = JSON.parse(
+  readFileSync(resolve(__dirname, '../package.json'), 'utf8'),
+) as { version: string };
+
 const program = new Command();
 program
   .name('cvmake')
   .description('cvmake — fork-friendly OSS CV builder. YAML in, PDF out.')
-  .version('0.0.0');
+  .version(pkg.version);
 
 program
   .command('build')

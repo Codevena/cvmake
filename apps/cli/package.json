@@ -1,16 +1,29 @@
 {
   "name": "@codevena/cvmake-cli",
-  "version": "0.0.0",
-  "private": true,
+  "version": "0.1.0",
+  "description": "YAML in, PDF out. The official cvmake CLI — render CVs from a plain-text YAML file.",
+  "keywords": ["cv", "resume", "yaml", "pdf", "cli", "puppeteer", "react"],
+  "homepage": "https://cvmake.codevena.dev",
+  "bugs": { "url": "https://github.com/Codevena/cvmake/issues" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Codevena/cvmake.git",
+    "directory": "apps/cli"
+  },
+  "license": "MIT",
+  "author": "Markus Wiesecke",
   "type": "module",
   "main": "./dist/index.js",
   "bin": { "cvmake": "./bin/cvmake" },
+  "files": ["dist", "bin", "README.md", "LICENSE"],
+  "publishConfig": { "access": "public" },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc --noEmit",
     "test:unit": "vitest run",
     "test:integration": "vitest run --config vitest.integration.config.ts",
-    "clean": "rm -rf dist .turbo"
+    "clean": "rm -rf dist .turbo",
+    "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
     "@codevena/cvmake-core": "workspace:*",
