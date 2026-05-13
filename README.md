@@ -101,6 +101,25 @@ pnpm cvmake list-templates
 - **CLI** — Commander 12
 - **Testing** — Vitest, Playwright (e2e), visual regression via pixelmatch
 
+## Releasing
+
+(Maintainers only.) All 4 published packages bump in lockstep:
+
+```bash
+pnpm -r --filter "@codevena/cvmake-{cli,core,schema,templates}" \
+     exec pnpm version <major|minor|patch>
+git add -p   # review the version bumps
+git commit -m "release: vX.Y.Z"
+git tag "v$(node -p "require('./apps/cli/package.json').version")"
+git push origin main --tags
+```
+
+The tag push triggers `.github/workflows/release.yml` which runs the
+full test matrix and publishes all 4 packages via the `NPM_TOKEN`
+repo secret. Set the secret once via npm Granular Access Token
+(`codevena` org, read+write, long expiration) at
+https://github.com/Codevena/cvmake/settings/secrets/actions.
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). Bug reports, template ideas, and pull requests welcome.
