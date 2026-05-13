@@ -8,8 +8,18 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+const ALLOWED_UPLOAD_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 
 export async function POST(req: Request): Promise<NextResponse> {
+  // Reject oversize bodies before parsing the multipart form. Content-Length
+  // can be missing or spoofed — the post-parse `file.size` check below catches
+  // both cases — but pre-checking the declared length avoids buffering an
+  // attacker-controlled multipart payload into memory when the header is
+  // honest. Defense in depth, not a hard guarantee.
+  const declaredLength = req.headers.get('content-length');
+  if (declaredLength !== null && Number(declaredLength) > MAX_UPLOAD_BYTES) {
+    return NextResponse.json({ kind: 'too_large', maxBytes: MAX_UPLOAD_BYTES }, { status: 413 });
+  }
   let form: FormData;
   try {
     form = await req.formData();
@@ -39,6 +49,14 @@ export async function POST(req: Request): Promise<NextResponse> {
     crop = JSON.parse(cropRaw);
   } catch {
     return NextResponse.json({ kind: 'bad_crop' }, { status: 400 });
+  }
+  // Reject by declared MIME type before reading the body — Sharp is hardened
+  // but the narrower the surface, the better.
+  if (!ALLOWED_UPLOAD_TYPES.has(file.type)) {
+    return NextResponse.json(
+      { kind: 'unsupported_type', allowed: [...ALLOWED_UPLOAD_TYPES] },
+      { status: 415 },
+    );
   }
   // Reject oversize uploads BEFORE buffering the body into memory. Blob has a
   // synchronous `size` property, so we can short-circuit here and avoid loading

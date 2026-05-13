@@ -49,6 +49,18 @@ describe('POST /api/upload', () => {
     expect(res.status).toBe(400);
   });
 
+  it('415 wenn MIME-Type nicht in Allowlist', async () => {
+    const form = new FormData();
+    form.append('file', new Blob([new Uint8Array([1, 2, 3])], { type: 'image/gif' }), 'p.gif');
+    form.append('slug', 'cv.de');
+    form.append('crop', JSON.stringify({ x: 0, y: 0, width: 1, height: 1 }));
+    form.append('aspect', '1:1');
+    const res = await post(form);
+    expect(res.status).toBe(415);
+    const body = await res.json();
+    expect(body.kind).toBe('unsupported_type');
+  });
+
   it('413 wenn Datei größer als 10 MB', async () => {
     // 10 MB + 1 byte → must be rejected before we attempt to buffer/process.
     const oversize = new Uint8Array(10 * 1024 * 1024 + 1);

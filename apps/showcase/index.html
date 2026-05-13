@@ -6,16 +6,16 @@
     <title>cvmake — make your CV from YAML</title>
     <meta
       name="description"
-      content="Open-source CV builder. YAML in, PDF out. Eight polished templates with multiple palettes, multilingual, CLI + web preview."
+      content="Open-source CV builder. YAML in, PDF out. Twelve polished templates with multiple palettes, multilingual, CLI + web preview."
     />
     <meta property="og:title" content="cvmake — make your CV from YAML" />
     <meta
       property="og:description"
-      content="Open-source CV builder. YAML in, PDF out. Eight polished templates with multiple palettes, multilingual, CLI + web preview."
+      content="Open-source CV builder. YAML in, PDF out. Twelve polished templates with multiple palettes, multilingual, CLI + web preview."
     />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://cvmake.codevena.dev" />
-    <meta property="og:image" content="screenshots/classic-serif.png" />
+    <meta property="og:image" content="https://cvmake.codevena.dev/screenshots/classic-serif.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="theme-color" content="#0b0f17" />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
@@ -27,36 +27,7 @@
       rel="stylesheet"
     />
 
-    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              ink: {
-                DEFAULT: '#0b0f17',
-                soft: '#11161f',
-                line: '#1f2531',
-              },
-              sand: {
-                DEFAULT: '#d4a574',
-                muted: '#a98558',
-              },
-              parchment: '#f5efe6',
-            },
-            fontFamily: {
-              display: ['Fraunces', 'serif'],
-              body: ['Inter', 'system-ui', 'sans-serif'],
-              mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
-            },
-            boxShadow: {
-              card: '0 30px 60px -30px rgba(0, 0, 0, 0.5)',
-              ring: '0 0 0 1px rgba(212, 165, 116, 0.25)',
-            },
-          },
-        },
-      };
-    </script>
+    <link rel="stylesheet" href="tailwind.css" />
     <link rel="stylesheet" href="styles.css" />
   </head>
 
@@ -112,7 +83,7 @@
             <span class="block italic text-sand">from YAML.</span>
           </h1>
           <p class="mt-7 text-lg leading-relaxed text-parchment/80 md:text-xl">
-            One plain-text file. Eight polished templates. A PDF in one command. Diff it, version
+            One plain-text file. Twelve polished templates. A PDF in one command. Diff it, version
             it, fork it — your résumé as code.
           </p>
           <div class="mt-10 flex flex-wrap items-center justify-center gap-3">
@@ -357,7 +328,7 @@ pnpm build</code></pre>
         </svg>
       </button>
       <figure class="flex max-h-full max-w-5xl flex-col items-center gap-4">
-        <img id="lightbox-img" src="" alt="" class="max-h-[78vh] w-auto rounded-md shadow-card" />
+        <img id="lightbox-img" src="" alt="Template preview" class="max-h-[78vh] w-auto rounded-md shadow-card" />
         <figcaption id="lightbox-caption" class="text-center text-sm text-parchment/70"></figcaption>
       </figure>
     </div>

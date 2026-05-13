@@ -1,0 +1,26 @@
+/* Tailwind v4 CSS-first config for the showcase landing page.
+   Build: `pnpm --filter @codevena/cvmake-showcase build:css`. Output
+   `tailwind.css` is gitignored and produced on every build (locally and
+   in CI). The theme block mirrors what used to live as an inline
+   `tailwind.config` object in index.html when the Play CDN was in use. */
+
+@import "tailwindcss" source(none);
+
+@source "../index.html";
+@source "../app.js";
+
+@theme {
+  --color-ink: #0b0f17;
+  --color-ink-soft: #11161f;
+  --color-ink-line: #1f2531;
+  --color-sand: #d4a574;
+  --color-sand-muted: #a98558;
+  --color-parchment: #f5efe6;
+
+  --font-display: "Fraunces", serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --shadow-card: 0 30px 60px -30px rgba(0, 0, 0, 0.5);
+  --shadow-ring: 0 0 0 1px rgba(212, 165, 116, 0.25);
+}

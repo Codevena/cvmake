@@ -5,6 +5,12 @@
   "description": "Static showcase landing page deployed to GitHub Pages.",
   "scripts": {
     "sync-assets": "rm -rf screenshots && mkdir -p screenshots && cp ../../docs/screenshots/*.png screenshots/",
-    "dev": "pnpm run sync-assets && python3 -m http.server 4173"
+    "build:css": "tailwindcss -i src/input.css -o tailwind.css --minify",
+    "build": "pnpm run sync-assets && pnpm run build:css",
+    "dev": "pnpm run build && python3 -m http.server 4173"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "4.0.0-beta.3",
+    "tailwindcss": "4.0.0-beta.3"
   }
 }

@@ -30,8 +30,16 @@ export default async function Home() {
   const slug = pickDefault(slugs);
   if (!slug) {
     return (
-      <main className="p-8">
-        Keine CVs in <code>data/cvs/</code> gefunden.
+      <main className="p-8 text-sm">
+        No CV files found in <code>data/cvs/</code>.{' '}
+        <a
+          href="https://github.com/Codevena/cvmake#quickstart"
+          className="underline"
+          target="_blank"
+          rel="noreferrer"
+        >
+          See the quickstart guide.
+        </a>
       </main>
     );
   }

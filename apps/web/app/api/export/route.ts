@@ -11,11 +11,36 @@ import { NextResponse } from 'next/server';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-let booted = false;
-function ensureBoot(): void {
-  if (booted) return;
-  bootstrapTemplates();
-  booted = true;
+// A CV is text — even a verbose payload with embedded base64 photos sits
+// well under a megabyte. Cap explicit so an unbounded JSON body cannot
+// pressure memory before validation runs.
+const MAX_EXPORT_BODY_BYTES = 2 * 1024 * 1024;
+
+class BodyTooLargeError extends Error {}
+
+async function readBoundedText(req: Request, maxBytes: number): Promise<string> {
+  const reader = req.body?.getReader();
+  if (!reader) return '';
+  const chunks: Uint8Array[] = [];
+  let received = 0;
+  for (;;) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    if (!value) continue;
+    received += value.byteLength;
+    if (received > maxBytes) {
+      await reader.cancel().catch(() => {});
+      throw new BodyTooLargeError();
+    }
+    chunks.push(value);
+  }
+  const total = new Uint8Array(received);
+  let offset = 0;
+  for (const chunk of chunks) {
+    total.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return new TextDecoder('utf-8').decode(total);
 }
 
 interface ExportRequest {
@@ -26,10 +51,33 @@ interface ExportRequest {
 }
 
 export async function POST(req: Request): Promise<Response> {
-  ensureBoot();
+  bootstrapTemplates();
+  // Pre-check the declared Content-Length, then stream the body and count
+  // bytes. Content-Length can be missing or spoofed, so the streaming counter
+  // is the actual enforcement and the header check just lets us short-circuit
+  // honest oversize requests before allocating any buffers.
+  const declaredLength = req.headers.get('content-length');
+  if (declaredLength !== null && Number(declaredLength) > MAX_EXPORT_BODY_BYTES) {
+    return NextResponse.json(
+      { kind: 'too_large', maxBytes: MAX_EXPORT_BODY_BYTES },
+      { status: 413 },
+    );
+  }
+  let rawText: string;
+  try {
+    rawText = await readBoundedText(req, MAX_EXPORT_BODY_BYTES);
+  } catch (err) {
+    if (err instanceof BodyTooLargeError) {
+      return NextResponse.json(
+        { kind: 'too_large', maxBytes: MAX_EXPORT_BODY_BYTES },
+        { status: 413 },
+      );
+    }
+    return NextResponse.json({ kind: 'bad_request' }, { status: 400 });
+  }
   let body: ExportRequest;
   try {
-    body = (await req.json()) as ExportRequest;
+    body = JSON.parse(rawText) as ExportRequest;
   } catch {
     return NextResponse.json({ kind: 'bad_request' }, { status: 400 });
   }

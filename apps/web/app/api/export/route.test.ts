@@ -53,4 +53,16 @@ describe('POST /api/export', () => {
     const res = await post({ data: VALID_DATA, templateId: 'no-such' });
     expect(res.status).toBe(404);
   });
+
+  it('413 wenn Body 2 MB übersteigt', async () => {
+    // 3 MB filler — well above the 2 MB cap. Either the Content-Length
+    // pre-check or the streaming counter inside readBoundedText must
+    // reject; both return the same {kind:"too_large"} shape.
+    const filler = 'x'.repeat(3 * 1024 * 1024);
+    const res = await post({ data: VALID_DATA, templateId: 'classic-serif', filler });
+    expect(res.status).toBe(413);
+    const body = await res.json();
+    expect(body.kind).toBe('too_large');
+    expect(body.maxBytes).toBe(2 * 1024 * 1024);
+  });
 });

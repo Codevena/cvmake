@@ -26,6 +26,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 9.12.0 }
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.11.1
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: build showcase
+        run: pnpm --filter @codevena/cvmake-showcase build
 
       - name: assemble showcase output
         run: |
@@ -33,6 +43,7 @@ jobs:
           mkdir -p dist
           cp apps/showcase/index.html dist/
           cp apps/showcase/styles.css dist/
+          cp apps/showcase/tailwind.css dist/
           cp apps/showcase/app.js dist/
           cp apps/showcase/favicon.svg dist/
           cp apps/showcase/CNAME dist/
