@@ -1,7 +1,8 @@
 # cvmake
 
-> fork-friendly OSS CV builder. YAML in, PDF out.
+> Open-source CV builder. YAML in, PDF out.
 
+[![npm](https://img.shields.io/npm/v/@codevena/cvmake-cli?logo=npm&label=cvmake-cli)](https://www.npmjs.com/package/@codevena/cvmake-cli)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![CI](https://github.com/Codevena/cvmake/actions/workflows/ci.yml/badge.svg)](https://github.com/Codevena/cvmake/actions/workflows/ci.yml)
 ![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=nextdotjs)
@@ -36,10 +37,22 @@
 
 ## Why cvmake
 
-- **YAML as the source of truth** — your CV is a plain text file you can diff, version, and grep.
-- **Multilingual** — author in `cv.de.yaml`, `cv.en.yaml`, etc., switch via CLI flag.
-- **12 polished templates** — academic, bauhaus, classic-serif, corporate, creative-accent, editorial, magazine, modern-minimal, monochrome-dark, noir, swiss, tech-dev — each with multiple palettes.
-- **CLI + Web UI** — render PDFs from the terminal or edit live in the browser preview.
+You have a CV. You want to keep it in version control, render it to multiple templates,
+maintain it in two languages, and not pay $9/month forever for the privilege. cvmake does that.
+
+- **One YAML file is the truth** — diff in git, search with grep, copy between machines.
+  No Word document mystery formatting.
+- **12 polished templates** — academic, bauhaus, classic-serif, corporate, creative-accent,
+  editorial, magazine, modern-minimal, monochrome-dark, noir, swiss, tech-dev — each with
+  multiple color palettes. Same content, instant restyle.
+- **Multilingual by default** — author `cv.de.yaml` + `cv.en.yaml` side-by-side from one
+  schema, switch via CLI flag.
+- **High-fidelity PDF output** — React + Puppeteer means your live browser preview is
+  byte-identical to the exported PDF.
+- **CLI or browser** — `npx @codevena/cvmake-cli build cv.yaml` for terminal users,
+  [the live editor](https://cvmake.codevena.dev) for everyone else.
+- **MIT, no lockin** — your data stays on your machine. Fork the schema, fork a template,
+  add your own. The project is small enough to actually read.
 
 ## Quickstart
 
