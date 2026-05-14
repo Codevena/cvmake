@@ -4,6 +4,17 @@ import { Input } from '@codevena/cvmake-ui';
 import { Controller, useFormContext } from 'react-hook-form';
 import { PhotoUploadField } from '../PhotoUploadField';
 
+const t = {
+  heading: 'Personal',
+  firstName: 'First name',
+  lastName: 'Last name',
+  titleHeadline: 'Title / Headline',
+  birthDate: 'Date of birth',
+  maritalStatus: 'Marital status',
+  drivingLicense: 'Driving licence',
+  contact: 'Contact',
+} as const;
+
 // With exactOptionalPropertyTypes:true the Phase-7 <Input> rejects an
 // explicit `error: undefined`. Spread the prop only when a message exists.
 function errProp(message: string | undefined): { error: string } | Record<string, never> {
@@ -14,14 +25,14 @@ export function PersonalSection({ slug }: { slug: string }) {
   const { control } = useFormContext<CVData>();
   return (
     <fieldset className="flex flex-col gap-3">
-      <legend className="text-base font-semibold">Persönliche Daten</legend>
+      <legend className="font-display text-base font-semibold">{t.heading}</legend>
       <div className="grid grid-cols-2 gap-3">
         <Controller
           control={control}
           name="personal.firstName"
           render={({ field, fieldState }) => (
             <Input
-              label="Vorname"
+              label={t.firstName}
               value={field.value ?? ''}
               onChange={field.onChange}
               onBlur={field.onBlur}
@@ -35,7 +46,7 @@ export function PersonalSection({ slug }: { slug: string }) {
           name="personal.lastName"
           render={({ field, fieldState }) => (
             <Input
-              label="Nachname"
+              label={t.lastName}
               value={field.value ?? ''}
               onChange={field.onChange}
               onBlur={field.onBlur}
@@ -50,7 +61,7 @@ export function PersonalSection({ slug }: { slug: string }) {
         name="personal.title"
         render={({ field, fieldState }) => (
           <Input
-            label="Titel / Headline"
+            label={t.titleHeadline}
             value={field.value ?? ''}
             onChange={field.onChange}
             {...errProp(fieldState.error?.message)}
@@ -63,7 +74,7 @@ export function PersonalSection({ slug }: { slug: string }) {
           name="personal.birthDate"
           render={({ field, fieldState }) => (
             <Input
-              label="Geburtsdatum"
+              label={t.birthDate}
               value={field.value ?? ''}
               onChange={field.onChange}
               {...errProp(fieldState.error?.message)}
@@ -75,7 +86,7 @@ export function PersonalSection({ slug }: { slug: string }) {
           name="personal.maritalStatus"
           render={({ field, fieldState }) => (
             <Input
-              label="Familienstand"
+              label={t.maritalStatus}
               value={field.value ?? ''}
               onChange={field.onChange}
               {...errProp(fieldState.error?.message)}
@@ -87,7 +98,7 @@ export function PersonalSection({ slug }: { slug: string }) {
           name="personal.drivingLicense"
           render={({ field, fieldState }) => (
             <Input
-              label="Führerschein"
+              label={t.drivingLicense}
               value={field.value ?? ''}
               onChange={field.onChange}
               {...errProp(fieldState.error?.message)}
@@ -102,8 +113,8 @@ export function PersonalSection({ slug }: { slug: string }) {
           <PhotoUploadField slug={slug} value={field.value ?? ''} onChange={field.onChange} />
         )}
       />
-      <fieldset className="grid grid-cols-2 gap-3 rounded border p-3">
-        <legend className="px-1 text-sm font-medium">Kontakt</legend>
+      <fieldset className="grid grid-cols-2 gap-3 rounded border border-border p-3">
+        <legend className="px-1 text-sm font-medium">{t.contact}</legend>
         {(['email', 'phone', 'website', 'github', 'linkedin', 'location'] as const).map((k) => (
           <Controller
             key={k}

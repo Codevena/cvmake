@@ -3,6 +3,11 @@ import type { CVData } from '@codevena/cvmake-schema';
 import { Textarea } from '@codevena/cvmake-ui';
 import { Controller, useFormContext } from 'react-hook-form';
 
+const t = {
+  heading: 'Summary',
+  label: 'Summary',
+} as const;
+
 // With exactOptionalPropertyTypes:true the Phase-7 <Textarea> rejects an
 // explicit `error: undefined`. Spread the prop only when a message exists.
 function errProp(message: string | undefined): { error: string } | Record<string, never> {
@@ -13,13 +18,13 @@ export function SummarySection() {
   const { control } = useFormContext<CVData>();
   return (
     <fieldset className="mt-6 flex flex-col gap-2">
-      <legend className="text-base font-semibold">Profil</legend>
+      <legend className="font-display text-base font-semibold">{t.heading}</legend>
       <Controller
         control={control}
         name="summary"
         render={({ field, fieldState }) => (
           <Textarea
-            label="Profil"
+            label={t.label}
             value={field.value ?? ''}
             onChange={field.onChange}
             onBlur={field.onBlur}

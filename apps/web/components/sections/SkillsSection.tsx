@@ -5,6 +5,16 @@ import { useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { TagInput } from '../TagInput';
 
+const t = {
+  heading: 'Skills',
+  tabList: 'List',
+  tabCategories: 'Categories',
+  category: 'Category',
+  confirmDeleteCategory: (name: string) => `Delete category ${name}?`,
+  deleteCategory: (name: string) => `Delete category ${name}`,
+  addCategory: '+ Add category',
+} as const;
+
 type Tab = 'stack' | 'categorized';
 
 export function SkillsSection() {
@@ -16,33 +26,33 @@ export function SkillsSection() {
   const catEntries = Object.entries(cats);
 
   function addCategory() {
-    const name = prompt('Kategorie-Name?');
+    const name = prompt('Category name?');
     if (!name) return;
     setValue('skills.categorized', { ...cats, [name]: [] }, { shouldDirty: true });
   }
   function removeCategory(name: string) {
-    if (!confirm(`Kategorie ${name} löschen?`)) return;
+    if (!confirm(t.confirmDeleteCategory(name))) return;
     const { [name]: _omitted, ...rest } = cats;
     setValue('skills.categorized', rest, { shouldDirty: true });
   }
 
   return (
     <fieldset className="mt-6 flex flex-col gap-3">
-      <legend className="text-base font-semibold">Skills</legend>
+      <legend className="font-display text-base font-semibold">{t.heading}</legend>
       <div className="flex gap-2">
         <button
           type="button"
           onClick={() => setTab('stack')}
-          className={`rounded border px-3 py-1 text-sm ${tab === 'stack' ? 'bg-accent text-text-on-accent' : ''}`}
+          className={`rounded border border-border px-3 py-1 text-sm ${tab === 'stack' ? 'bg-accent text-text-on-accent' : 'text-text-muted hover:bg-elevated'}`}
         >
-          Liste
+          {t.tabList}
         </button>
         <button
           type="button"
           onClick={() => setTab('categorized')}
-          className={`rounded border px-3 py-1 text-sm ${tab === 'categorized' ? 'bg-accent text-text-on-accent' : ''}`}
+          className={`rounded border border-border px-3 py-1 text-sm ${tab === 'categorized' ? 'bg-accent text-text-on-accent' : 'text-text-muted hover:bg-elevated'}`}
         >
-          Kategorien
+          {t.tabCategories}
         </button>
       </div>
       {tab === 'stack' && (
@@ -57,10 +67,10 @@ export function SkillsSection() {
       {tab === 'categorized' && (
         <div className="flex flex-col gap-3">
           {catEntries.map(([name, items]) => (
-            <div key={name} className="rounded border p-3">
+            <div key={name} className="rounded border border-border p-3">
               <div className="mb-2 flex items-center justify-between">
                 <Input
-                  label="Kategorie"
+                  label={t.category}
                   value={name}
                   onChange={(next) => {
                     if (!next || next === name) return;
@@ -75,7 +85,7 @@ export function SkillsSection() {
                 <button
                   type="button"
                   onClick={() => removeCategory(name)}
-                  aria-label={`Kategorie ${name} löschen`}
+                  aria-label={t.deleteCategory(name)}
                 >
                   🗑
                 </button>
@@ -92,9 +102,9 @@ export function SkillsSection() {
           <button
             type="button"
             onClick={addCategory}
-            className="rounded border border-dashed p-2 text-sm hover:bg-surface"
+            className="rounded border border-dashed border-border p-2 text-sm text-text-muted hover:bg-elevated"
           >
-            + Kategorie hinzufügen
+            {t.addCategory}
           </button>
         </div>
       )}

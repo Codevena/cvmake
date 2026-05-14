@@ -13,7 +13,7 @@ const DATA: CVData = {
 };
 
 describe('<SummarySection />', () => {
-  it('rendert eine Textarea und speichert Änderungen im form-state', () => {
+  it('renders a textarea and saves changes to form state', () => {
     function Wrap() {
       const form = useForm<CVData>({ defaultValues: DATA, shouldUnregister: false });
       return (
@@ -24,7 +24,7 @@ describe('<SummarySection />', () => {
       );
     }
     render(<Wrap />);
-    const ta = screen.getByLabelText(/Profil/i) as HTMLTextAreaElement;
+    const ta = screen.getByLabelText(/Summary/i) as HTMLTextAreaElement;
     fireEvent.change(ta, { target: { value: 'Hallo Welt' } });
     expect(screen.getByRole('status')).toHaveTextContent('Hallo Welt');
   });

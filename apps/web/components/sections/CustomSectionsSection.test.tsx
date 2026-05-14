@@ -23,7 +23,7 @@ describe('<CustomSectionsSection />', () => {
       );
     }
     render(<Wrap />);
-    fireEvent.click(screen.getByRole('button', { name: /Section hinzufügen/ }));
+    fireEvent.click(screen.getByRole('button', { name: /Add section/ }));
     expect(screen.getByText('Section #1')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '+ Item' }));
     expect(screen.getByText('Item #1')).toBeInTheDocument();

@@ -26,10 +26,10 @@ const DATA: CVData = {
 };
 
 describe('<PersonalSection />', () => {
-  it('rendert Name-Felder und propagiert Änderungen', () => {
+  it('renders name fields and propagates changes', () => {
     render(<Wrapper initial={DATA} />);
-    const first = screen.getByLabelText(/Vorname/i) as HTMLInputElement;
+    const first = screen.getByLabelText(/First name/i) as HTMLInputElement;
     fireEvent.change(first, { target: { value: 'Lena' } });
-    expect((screen.getByLabelText(/Vorname/i) as HTMLInputElement).value).toBe('Lena');
+    expect((screen.getByLabelText(/First name/i) as HTMLInputElement).value).toBe('Lena');
   });
 });

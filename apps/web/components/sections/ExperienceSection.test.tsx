@@ -22,17 +22,17 @@ function Wrap() {
 }
 
 describe('<ExperienceSection />', () => {
-  it('+ Eintrag hinzufügen rendert ein neues Item', () => {
+  it('+ Add entry renders a new item', () => {
     render(<Wrap />);
-    fireEvent.click(screen.getByRole('button', { name: /Eintrag hinzufügen/ }));
+    fireEvent.click(screen.getByRole('button', { name: /Add entry/ }));
     expect(screen.getByText('#1')).toBeInTheDocument();
   });
 
-  it('löscht ein Item nach confirm', () => {
+  it('deletes an item after confirm', () => {
     vi.spyOn(window, 'confirm').mockReturnValue(true);
     render(<Wrap />);
-    fireEvent.click(screen.getByRole('button', { name: /Eintrag hinzufügen/ }));
-    fireEvent.click(screen.getByLabelText('Eintrag löschen'));
+    fireEvent.click(screen.getByRole('button', { name: /Add entry/ }));
+    fireEvent.click(screen.getByLabelText('Delete entry'));
     expect(screen.queryByText('#1')).not.toBeInTheDocument();
   });
 });

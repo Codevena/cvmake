@@ -13,7 +13,7 @@ const DATA: CVData = {
 };
 
 describe('<SkillsSection />', () => {
-  it('hat Tab-Buttons Liste/Kategorien', () => {
+  it('has tab buttons List/Categories', () => {
     function Wrap() {
       const form = useForm<CVData>({ defaultValues: DATA, shouldUnregister: false });
       return (
@@ -23,9 +23,9 @@ describe('<SkillsSection />', () => {
       );
     }
     render(<Wrap />);
-    expect(screen.getByRole('button', { name: /Liste/ })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Kategorien/ })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: /Kategorien/ }));
-    expect(screen.getByRole('button', { name: /Kategorie hinzufügen/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /List/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Categories/ })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /Categories/ }));
+    expect(screen.getByRole('button', { name: /Add category/ })).toBeInTheDocument();
   });
 });

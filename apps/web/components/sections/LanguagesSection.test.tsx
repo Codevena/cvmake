@@ -24,7 +24,7 @@ function Wrap() {
 describe('<LanguagesSection />', () => {
   it('add / remove cycle', () => {
     render(<Wrap />);
-    fireEvent.click(screen.getByRole('button', { name: /Sprache hinzufügen/ }));
-    expect(screen.getByLabelText(/Niveau/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /Add language/ }));
+    expect(screen.getByLabelText(/Level/i)).toBeInTheDocument();
   });
 });

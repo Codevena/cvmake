@@ -3,6 +3,22 @@ import type { CVData } from '@codevena/cvmake-schema';
 import { BulletListEditor, Input } from '@codevena/cvmake-ui';
 import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
 
+const t = {
+  heading: 'Custom sections',
+  itemTitle: 'Title',
+  itemSubtitle: 'Subtitle',
+  itemDate: 'Date',
+  itemDescription: 'Description',
+  deleteItem: 'Delete item',
+  confirmDeleteItem: 'Delete item?',
+  addItem: '+ Item',
+  sectionIdSlug: 'ID (slug)',
+  sectionTitle: 'Title',
+  deleteSection: 'Delete section',
+  confirmDeleteSection: 'Delete section?',
+  addSection: '+ Add section',
+} as const;
+
 // With exactOptionalPropertyTypes:true the Phase-7 <Input> rejects an explicit
 // `error: undefined`. Spread the prop only when a message exists.
 function errProp(message: string | undefined): { error: string } | Record<string, never> {
@@ -18,15 +34,15 @@ function ItemsArray({ outerIdx }: { outerIdx: number }) {
   return (
     <div className="mt-2 flex flex-col gap-2 pl-4">
       {fields.map((f, idx) => (
-        <div key={f.id} className="rounded border p-2">
+        <div key={f.id} className="rounded border border-border p-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs">Item #{idx + 1}</span>
+            <span className="text-xs text-text-muted">Item #{idx + 1}</span>
             <button
               type="button"
               onClick={() => {
-                if (confirm('Item löschen?')) remove(idx);
+                if (confirm(t.confirmDeleteItem)) remove(idx);
               }}
-              aria-label="Item löschen"
+              aria-label={t.deleteItem}
             >
               🗑
             </button>
@@ -37,7 +53,7 @@ function ItemsArray({ outerIdx }: { outerIdx: number }) {
               name={`customSections.${outerIdx}.items.${idx}.title`}
               render={({ field, fieldState }) => (
                 <Input
-                  label="Titel"
+                  label={t.itemTitle}
                   value={field.value ?? ''}
                   onChange={field.onChange}
                   required
@@ -50,7 +66,7 @@ function ItemsArray({ outerIdx }: { outerIdx: number }) {
               name={`customSections.${outerIdx}.items.${idx}.subtitle`}
               render={({ field, fieldState }) => (
                 <Input
-                  label="Subtitle"
+                  label={t.itemSubtitle}
                   value={field.value ?? ''}
                   onChange={field.onChange}
                   {...errProp(fieldState.error?.message)}
@@ -62,7 +78,7 @@ function ItemsArray({ outerIdx }: { outerIdx: number }) {
               name={`customSections.${outerIdx}.items.${idx}.date`}
               render={({ field, fieldState }) => (
                 <Input
-                  label="Datum"
+                  label={t.itemDate}
                   value={field.value ?? ''}
                   onChange={field.onChange}
                   {...errProp(fieldState.error?.message)}
@@ -74,7 +90,7 @@ function ItemsArray({ outerIdx }: { outerIdx: number }) {
               name={`customSections.${outerIdx}.items.${idx}.description`}
               render={({ field, fieldState }) => (
                 <Input
-                  label="Beschreibung"
+                  label={t.itemDescription}
                   value={field.value ?? ''}
                   onChange={field.onChange}
                   {...errProp(fieldState.error?.message)}
@@ -98,9 +114,9 @@ function ItemsArray({ outerIdx }: { outerIdx: number }) {
       <button
         type="button"
         onClick={() => append({ title: '' })}
-        className="rounded border border-dashed p-1 text-xs hover:bg-surface"
+        className="rounded border border-dashed border-border p-1 text-xs text-text-muted hover:bg-elevated"
       >
-        + Item
+        {t.addItem}
       </button>
     </div>
   );
@@ -111,17 +127,17 @@ export function CustomSectionsSection() {
   const { fields, append, remove } = useFieldArray({ control, name: 'customSections' });
   return (
     <fieldset className="mt-6 flex flex-col gap-3">
-      <legend className="text-base font-semibold">Eigene Sections</legend>
+      <legend className="font-display text-base font-semibold">{t.heading}</legend>
       {fields.map((f, idx) => (
-        <div key={f.id} className="rounded border p-3">
+        <div key={f.id} className="rounded border border-border p-3">
           <div className="flex items-center justify-between">
             <span className="font-medium">Section #{idx + 1}</span>
             <button
               type="button"
               onClick={() => {
-                if (confirm('Section löschen?')) remove(idx);
+                if (confirm(t.confirmDeleteSection)) remove(idx);
               }}
-              aria-label="Section löschen"
+              aria-label={t.deleteSection}
             >
               🗑
             </button>
@@ -132,7 +148,7 @@ export function CustomSectionsSection() {
               name={`customSections.${idx}.id`}
               render={({ field, fieldState }) => (
                 <Input
-                  label="ID (slug)"
+                  label={t.sectionIdSlug}
                   value={field.value ?? ''}
                   onChange={field.onChange}
                   required
@@ -145,7 +161,7 @@ export function CustomSectionsSection() {
               name={`customSections.${idx}.title`}
               render={({ field, fieldState }) => (
                 <Input
-                  label="Titel"
+                  label={t.sectionTitle}
                   value={field.value ?? ''}
                   onChange={field.onChange}
                   required
@@ -159,10 +175,10 @@ export function CustomSectionsSection() {
       ))}
       <button
         type="button"
-        className="rounded border border-dashed p-2 text-sm hover:bg-surface"
+        className="rounded border border-dashed border-border p-2 text-sm text-text-muted hover:bg-elevated"
         onClick={() => append({ id: '', title: '', items: [] })}
       >
-        + Section hinzufügen
+        {t.addSection}
       </button>
     </fieldset>
   );

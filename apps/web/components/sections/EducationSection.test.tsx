@@ -22,9 +22,9 @@ function Wrap() {
 }
 
 describe('<EducationSection />', () => {
-  it('+ Eintrag rendert ein Item', () => {
+  it('+ Add entry renders an item', () => {
     render(<Wrap />);
-    fireEvent.click(screen.getByRole('button', { name: /Eintrag hinzufügen/ }));
+    fireEvent.click(screen.getByRole('button', { name: /Add entry/ }));
     expect(screen.getByText('#1')).toBeInTheDocument();
   });
 });
