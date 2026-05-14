@@ -10,15 +10,45 @@ interface Props {
   aspect?: PhotoAspect;
 }
 
-// Read a (cropped) File as a base64 data URL — used in demo mode so the photo
-// lives in the form/browser only, never on the server. `embedPhoto` already
-// passes data URLs through untouched, so PDF export works the same way.
-function fileToDataUrl(file: File): Promise<string> {
+// Demo-mode photo pipeline. The server path runs the original file + crop
+// rect through Sharp (extract + resize); in demo mode there is no server
+// write, so we replicate it in a <canvas>: `result.file` is the ORIGINAL
+// image and `result.crop` is the crop rect in natural/source pixels (as
+// PhotoCropper produces it). We extract that rect, cap the long side at
+// 600px (matching Sharp's target size) and emit a base64 JPEG data URL.
+// `embedPhoto` passes data URLs through untouched, so PDF export works the
+// same way. Browsers apply EXIF orientation to images by default — same as
+// Sharp's `.rotate()` — so the crop coords line up.
+function cropFileToDataUrl(
+  file: File,
+  crop: { x: number; y: number; width: number; height: number },
+): Promise<string> {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = () => reject(reader.error ?? new Error('file read failed'));
-    reader.readAsDataURL(file);
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      try {
+        const MAX = 600;
+        const scale = Math.min(1, MAX / Math.max(crop.width, crop.height));
+        const outW = Math.max(1, Math.round(crop.width * scale));
+        const outH = Math.max(1, Math.round(crop.height * scale));
+        const canvas = document.createElement('canvas');
+        canvas.width = outW;
+        canvas.height = outH;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) throw new Error('canvas 2d context unavailable');
+        ctx.drawImage(img, crop.x, crop.y, crop.width, crop.height, 0, 0, outW, outH);
+        resolve(canvas.toDataURL('image/jpeg', 0.88));
+      } catch (err) {
+        reject(err as Error);
+      }
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error('image load failed'));
+    };
+    img.src = url;
   });
 }
 
@@ -39,8 +69,9 @@ export function PhotoUploadField({ slug, value, onChange, aspect = '1:1' }: Prop
     try {
       if (isDemoMode()) {
         // Demo deploy: every visitor shares the example slug, so a server-side
-        // write would clobber other visitors' photos. Keep it in-browser.
-        onChange(await fileToDataUrl(result.file));
+        // write would clobber other visitors' photos. Apply the crop in-browser
+        // and keep the result as a data URL in the form.
+        onChange(await cropFileToDataUrl(result.file, result.crop));
         setPending(null);
         return;
       }
