@@ -42,10 +42,16 @@ function writeInitialDoc(
   const doc = iframe.contentDocument;
   if (!doc) return null;
   doc.open();
+  // <base href="/cv/"> makes relative photo paths from the YAML
+  // (e.g. `photos/example-adam.webp`) resolve to `/cv/photos/...`, where
+  // the editor serves fixture photos, regardless of the editor's own URL
+  // (`/` in demo mode, `/cv/<slug>` otherwise). Absolute upload URLs
+  // (`/photos/<slug>.webp`) ignore <base> and keep resolving as-is.
   doc.write(`<!doctype html>
 <html lang="${locale}">
 <head>
 <meta charset="utf-8">
+<base href="/cv/">
 <style id="reset-css">${bootstrap.resetCss}</style>
 <style id="template-css">${tpl.css}</style>
 <style id="print-css">${bootstrap.printCss}</style>
