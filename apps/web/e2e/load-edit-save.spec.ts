@@ -8,8 +8,8 @@ test.describe('load → edit → save', () => {
 
   test('schreibt Änderung in YAML', async ({ page }) => {
     await page.goto('/cv/cv.test.de');
-    // Phase-7 <Input required> renders the label as "Vorname *" — match the prefix.
-    const first = page.getByLabel(/^Vorname/);
+    // Phase-7 <Input required> renders the label as "First name *" — match the prefix.
+    const first = page.getByLabel(/^First name/);
     // Wait for the form to hydrate before filling. Without this, `fill()` can
     // race the initial CV→form propagation and get clobbered when react-hook-form
     // settles its initial value — the source of the long-standing Linux-CI flake.

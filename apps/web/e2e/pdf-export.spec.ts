@@ -6,12 +6,12 @@ test.describe('pdf export', () => {
   test.beforeAll(() => installFixture('cv.test.de'));
   test.afterAll(() => uninstallFixture('cv.test.de'));
 
-  test('Klick auf "PDF exportieren" liefert ein A4 PDF', async ({ page }) => {
+  test('"Export PDF" button delivers an A4 PDF', async ({ page }) => {
     test.setTimeout(60_000);
     await page.goto('/cv/cv.test.de');
     // RHF mode is 'onChange' but the first valid render still needs a tick
     // for `formState.isValid` to flip and un-disable the button.
-    const exportBtn = page.getByRole('button', { name: /PDF exportieren/ });
+    const exportBtn = page.getByRole('button', { name: /Export PDF/ });
     await expect(exportBtn).toBeEnabled({ timeout: 5000 });
 
     const [download] = await Promise.all([
