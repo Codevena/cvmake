@@ -95,7 +95,7 @@ export function useAutosave(opts: UseAutosaveOpts): UseAutosaveReturn {
         lastSerializedRef.current = JSON.stringify(payload);
         current.onConflict({ currentData: body.currentData, currentMtime: body.currentMtime });
         setState('error');
-        setErrorMessage('Konflikt: Datei extern verändert');
+        setErrorMessage('Conflict: file changed externally');
         return;
       }
       if (res.status === 422) {
@@ -103,7 +103,7 @@ export function useAutosave(opts: UseAutosaveOpts): UseAutosaveReturn {
         lastSerializedRef.current = JSON.stringify(payload);
         current.onError({ kind: 'validation', issues: body.issues ?? [] });
         setState('error');
-        setErrorMessage('Validation-Fehler');
+        setErrorMessage('Validation error');
         return;
       }
       if (!res.ok) {
