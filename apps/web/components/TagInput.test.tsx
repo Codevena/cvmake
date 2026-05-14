@@ -9,16 +9,16 @@ function Host({ initial }: { initial: string[] }) {
 }
 
 describe('<TagInput />', () => {
-  it('fügt Tag bei Enter hinzu', () => {
+  it('adds tag on Enter', () => {
     render(<Host initial={[]} />);
     const input = screen.getByLabelText(/Tags/i) as HTMLInputElement;
     fireEvent.change(input, { target: { value: 'react' } });
     fireEvent.keyDown(input, { key: 'Enter' });
     expect(screen.getByText('react')).toBeInTheDocument();
   });
-  it('entfernt Tag per Click auf ×', () => {
+  it('removes tag on × click', () => {
     render(<Host initial={['a', 'b']} />);
-    fireEvent.click(screen.getByLabelText(/Tag a entfernen/i));
+    fireEvent.click(screen.getByLabelText(/Remove tag a/i));
     expect(screen.queryByText('a')).not.toBeInTheDocument();
     expect(screen.getByText('b')).toBeInTheDocument();
   });

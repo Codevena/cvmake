@@ -12,11 +12,11 @@ interface Props {
 
 function relativeTime(t: number): string {
   const s = Math.round((Date.now() - t) / 1000);
-  if (s < 60) return `vor ${s}s`;
+  if (s < 60) return `${s}s ago`;
   const m = Math.round(s / 60);
-  if (m < 60) return `vor ${m} Min.`;
+  if (m < 60) return `${m} min ago`;
   const h = Math.round(m / 60);
-  return `vor ${h} h`;
+  return `${h}h ago`;
 }
 
 export function SaveIndicator({ state, errorMessage, onRetry, lastSavedAt }: Props) {
@@ -28,17 +28,17 @@ export function SaveIndicator({ state, errorMessage, onRetry, lastSavedAt }: Pro
         state === 'saved' && 'text-success',
       )}
     >
-      {state === 'clean' && lastSavedAt && <span>✓ Gespeichert {relativeTime(lastSavedAt)}</span>}
-      {state === 'clean' && !lastSavedAt && <span>✓ Keine Änderungen</span>}
-      {state === 'dirty' && <span>• Ungespeicherte Änderungen (auto-save in 2s)</span>}
-      {state === 'saving' && <span>⟳ Speichere…</span>}
-      {state === 'saved' && <span>✓ Gespeichert</span>}
+      {state === 'clean' && lastSavedAt && <span>✓ Saved {relativeTime(lastSavedAt)}</span>}
+      {state === 'clean' && !lastSavedAt && <span>✓ No changes</span>}
+      {state === 'dirty' && <span>• Unsaved changes (auto-save in 2s)</span>}
+      {state === 'saving' && <span>⟳ Saving…</span>}
+      {state === 'saved' && <span>✓ Saved</span>}
       {state === 'error' && (
         <>
-          <span>⚠ {errorMessage ?? 'Fehler beim Speichern'}</span>
+          <span>⚠ {errorMessage ?? 'Error saving'}</span>
           {onRetry && (
             <button type="button" className="underline" onClick={onRetry}>
-              Erneut versuchen
+              Retry
             </button>
           )}
         </>

@@ -43,21 +43,21 @@ export function PhotoUploadField({ slug, value, onChange, aspect = '1:1' }: Prop
 
   return (
     <div className="flex flex-col gap-2">
-      <span className="text-sm font-medium">Foto</span>
+      <span className="text-sm font-medium">Photo</span>
       {value && (
         <div className="flex items-center gap-3">
-          <img src={value} alt="Foto-Vorschau" className="h-20 w-20 rounded object-cover" />
+          <img src={value} alt="Photo preview" className="h-20 w-20 rounded object-cover" />
           <button
             type="button"
-            className="rounded border px-2 py-1 text-xs"
+            className="rounded border border-border px-2 py-1 text-xs"
             onClick={() => onChange('')}
           >
-            Entfernen
+            Remove
           </button>
         </div>
       )}
       <label className="inline-flex w-fit cursor-pointer rounded border border-dashed px-3 py-1 text-sm">
-        {value ? 'Ersetzen' : 'Foto auswählen'}
+        {value ? 'Replace' : 'Choose photo'}
         <input type="file" accept="image/*" className="hidden" onChange={onFileSelect} />
       </label>
       {pending && (
@@ -68,7 +68,7 @@ export function PhotoUploadField({ slug, value, onChange, aspect = '1:1' }: Prop
           onConfirm={onCropConfirm}
         />
       )}
-      {busy && <span className="text-xs text-text-muted">Lade hoch…</span>}
+      {busy && <span className="text-xs text-text-muted">Uploading…</span>}
       {error && <span className="text-xs text-error">{error}</span>}
     </div>
   );

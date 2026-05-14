@@ -3,17 +3,17 @@ import { describe, expect, it } from 'vitest';
 import { SaveIndicator } from './SaveIndicator';
 
 describe('<SaveIndicator />', () => {
-  it('clean ohne lastSavedAt zeigt "Keine Änderungen"', () => {
+  it('clean without lastSavedAt shows "No changes"', () => {
     render(<SaveIndicator state="clean" />);
-    expect(screen.getByText(/Keine Änderungen/)).toBeInTheDocument();
+    expect(screen.getByText(/No changes/)).toBeInTheDocument();
   });
-  it('dirty', () => {
+  it('dirty shows unsaved changes', () => {
     render(<SaveIndicator state="dirty" />);
-    expect(screen.getByText(/Ungespeicherte/)).toBeInTheDocument();
+    expect(screen.getByText(/Unsaved/)).toBeInTheDocument();
   });
-  it('error mit retry', () => {
+  it('error with retry', () => {
     render(<SaveIndicator state="error" errorMessage="500" onRetry={() => {}} />);
     expect(screen.getByText(/500/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Erneut versuchen/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Retry/ })).toBeInTheDocument();
   });
 });

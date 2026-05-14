@@ -3,13 +3,13 @@ import { describe, expect, it } from 'vitest';
 import { PhotoUploadField } from './PhotoUploadField';
 
 describe('<PhotoUploadField />', () => {
-  it('rendert Auswahl-Button bei leerem Wert', () => {
+  it('renders choose-photo label when value is empty', () => {
     render(<PhotoUploadField slug="cv.de" value="" onChange={() => {}} />);
-    expect(screen.getByText(/Foto auswählen/)).toBeInTheDocument();
+    expect(screen.getByText(/Choose photo/)).toBeInTheDocument();
   });
-  it('rendert Bild und Ersetzen-Button bei gesetztem Wert', () => {
+  it('renders image and replace button when value is set', () => {
     render(<PhotoUploadField slug="cv.de" value="/photos/cv.de.jpg" onChange={() => {}} />);
     expect(screen.getByRole('img')).toHaveAttribute('src', '/photos/cv.de.jpg');
-    expect(screen.getByText(/Ersetzen/)).toBeInTheDocument();
+    expect(screen.getByText(/Replace/)).toBeInTheDocument();
   });
 });

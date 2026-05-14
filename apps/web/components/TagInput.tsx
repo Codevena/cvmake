@@ -50,7 +50,7 @@ export function TagInput({ label, value, onChange, placeholder }: Props) {
             {t}
             <button
               type="button"
-              aria-label={`Tag ${t} entfernen`}
+              aria-label={`Remove tag ${t}`}
               className="text-text-muted hover:text-text"
               onClick={() => remove(t)}
             >

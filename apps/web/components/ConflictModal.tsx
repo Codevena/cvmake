@@ -26,54 +26,54 @@ export function ConflictModal({
 }: Props) {
   const [confirmReload, setConfirmReload] = useState(false);
   const fileDeleted = currentData === null;
-  const reloadDisabledTitle = fileDeleted ? 'Datei existiert nicht mehr' : undefined;
+  const reloadDisabledTitle = fileDeleted ? 'File no longer exists' : undefined;
   return (
     // biome-ignore lint/a11y/useSemanticElements: native <dialog> requires showModal()/close() imperative APIs; explicit role="dialog" on a controlled overlay is the React-friendly pattern here
     <div
       role="dialog"
       aria-modal="true"
       aria-labelledby="conflict-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-bg/80"
     >
-      <div className="max-w-lg rounded bg-surface p-6 text-text shadow-xl">
+      <div className="max-w-lg rounded bg-surface border border-border p-6 text-text shadow-card">
         <h2 id="conflict-title" className="text-lg font-semibold">
-          {fileDeleted ? 'Datei wurde extern gelöscht' : 'Datei wurde extern verändert'}
+          {fileDeleted ? 'File was deleted externally' : 'File was modified externally'}
         </h2>
         {fileDeleted ? (
           <p className="mt-2 text-sm">
-            Die YAML-Datei <code>data/cvs/{slug}.yaml</code> wurde extern <strong>gelöscht</strong>.
-            Was möchtest du tun?
+            The YAML file <code>data/cvs/{slug}.yaml</code> was <strong>deleted</strong> externally.
+            What would you like to do?
           </p>
         ) : (
           <p className="mt-2 text-sm">
-            Die YAML-Datei <code>data/cvs/{slug}.yaml</code> wurde seit dem Laden geändert (z. B.
-            via <code>git pull</code> oder einem anderen Editor). Was möchtest du tun?
+            The YAML file <code>data/cvs/{slug}.yaml</code> was modified since it was loaded (e.g.
+            via <code>git pull</code> or another editor). What would you like to do?
           </p>
         )}
         {confirmReload ? (
           <div className="mt-4 flex flex-col gap-2">
             <p className="text-sm text-error">
-              Achtung: deine ungespeicherten Editor-Änderungen gehen verloren. Wirklich neu laden?
+              Warning: your unsaved editor changes will be lost. Really reload?
             </p>
             <div className="flex gap-2">
               <button
                 type="button"
                 disabled={fileDeleted}
                 title={reloadDisabledTitle}
-                className="rounded border px-3 py-1 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded border border-border px-3 py-1 disabled:cursor-not-allowed disabled:opacity-50"
                 onClick={() => {
                   if (!currentData) return;
                   onReload(currentData, currentMtime);
                 }}
               >
-                Ja, neu laden
+                Yes, reload
               </button>
               <button
                 type="button"
-                className="rounded border px-3 py-1"
+                className="rounded border border-border px-3 py-1"
                 onClick={() => setConfirmReload(false)}
               >
-                Doch nicht
+                Cancel
               </button>
             </div>
           </div>
@@ -83,24 +83,24 @@ export function ConflictModal({
               type="button"
               disabled={fileDeleted}
               title={reloadDisabledTitle}
-              className="rounded border px-3 py-1 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded border border-border px-3 py-1 disabled:cursor-not-allowed disabled:opacity-50"
               onClick={() => {
                 if (!currentData) return;
                 if (isFormDirty) setConfirmReload(true);
                 else onReload(currentData, currentMtime);
               }}
             >
-              Datenträger neu laden
+              Reload from disk
             </button>
             <button
               type="button"
-              className="rounded border px-3 py-1"
+              className="rounded border border-border px-3 py-1"
               onClick={() => onOverwrite(currentMtime)}
             >
-              Meine Version überschreiben
+              Overwrite with my version
             </button>
-            <button type="button" className="rounded border px-3 py-1" onClick={onCancel}>
-              Abbrechen
+            <button type="button" className="rounded border border-border px-3 py-1" onClick={onCancel}>
+              Cancel
             </button>
           </div>
         )}

@@ -12,7 +12,7 @@ const DATA: CVData = {
 };
 
 describe('<ConflictModal />', () => {
-  it('Reload mit dirty Form fragt nochmal nach', () => {
+  it('Reload with dirty form asks for confirmation', () => {
     const onReload = vi.fn();
     render(
       <ConflictModal
@@ -25,13 +25,13 @@ describe('<ConflictModal />', () => {
         onCancel={vi.fn()}
       />,
     );
-    fireEvent.click(screen.getByRole('button', { name: /Datenträger neu laden/ }));
+    fireEvent.click(screen.getByRole('button', { name: /Reload from disk/ }));
     expect(onReload).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByRole('button', { name: /Ja, neu laden/ }));
+    fireEvent.click(screen.getByRole('button', { name: /Yes, reload/ }));
     expect(onReload).toHaveBeenCalledWith(DATA, 1);
   });
 
-  it('Overwrite ruft onOverwrite mit currentMtime', () => {
+  it('Overwrite calls onOverwrite with currentMtime', () => {
     const onOverwrite = vi.fn();
     render(
       <ConflictModal
@@ -44,7 +44,7 @@ describe('<ConflictModal />', () => {
         onCancel={vi.fn()}
       />,
     );
-    fireEvent.click(screen.getByRole('button', { name: /überschreiben/ }));
+    fireEvent.click(screen.getByRole('button', { name: /Overwrite with my version/ }));
     expect(onOverwrite).toHaveBeenCalledWith(42);
   });
 
@@ -63,15 +63,15 @@ describe('<ConflictModal />', () => {
       />,
     );
     // Title + body reflect the deletion case.
-    expect(screen.getByText(/extern gelöscht/i)).toBeInTheDocument();
-    const reloadBtn = screen.getByRole('button', { name: /Datenträger neu laden/ });
+    expect(screen.getByText(/deleted externally/i)).toBeInTheDocument();
+    const reloadBtn = screen.getByRole('button', { name: /Reload from disk/ });
     expect(reloadBtn).toBeDisabled();
-    expect(reloadBtn).toHaveAttribute('title', 'Datei existiert nicht mehr');
+    expect(reloadBtn).toHaveAttribute('title', 'File no longer exists');
     // Clicking the disabled button must not call onReload.
     fireEvent.click(reloadBtn);
     expect(onReload).not.toHaveBeenCalled();
     // Overwrite still works (re-creates the file).
-    fireEvent.click(screen.getByRole('button', { name: /überschreiben/ }));
+    fireEvent.click(screen.getByRole('button', { name: /Overwrite with my version/ }));
     expect(onOverwrite).toHaveBeenCalledWith(0);
   });
 });

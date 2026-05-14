@@ -3,11 +3,11 @@ import type { CVData } from '@codevena/cvmake-schema';
 import { Controller, useFormContext } from 'react-hook-form';
 
 const TOGGLES: Array<{ id: string; label: string }> = [
-  { id: 'summary', label: 'Profil' },
-  { id: 'experience', label: 'Berufserfahrung' },
-  { id: 'education', label: 'Ausbildung' },
+  { id: 'summary', label: 'Profile' },
+  { id: 'experience', label: 'Experience' },
+  { id: 'education', label: 'Education' },
   { id: 'skills', label: 'Skills' },
-  { id: 'languages', label: 'Sprachen' },
+  { id: 'languages', label: 'Languages' },
 ];
 
 export function HiddenSectionsToggles() {
