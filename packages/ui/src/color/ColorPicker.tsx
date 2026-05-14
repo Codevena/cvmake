@@ -84,7 +84,7 @@ export function ColorPicker(props: ColorPickerProps): JSX.Element {
           type="button"
           onClick={reset}
           disabled={disabled}
-          className="rounded-md border border-border px-3 py-1.5 text-sm text-text-muted hover:bg-surface-muted"
+          className="rounded-md border border-border px-3 py-1.5 text-sm text-text-muted hover:bg-elevated"
         >
           {resetLabel}
         </button>

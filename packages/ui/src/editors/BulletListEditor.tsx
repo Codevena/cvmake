@@ -95,7 +95,7 @@ export function BulletListEditor(props: BulletListEditorProps): JSX.Element {
       <button
         type="button"
         onClick={add}
-        className="self-start rounded-md border border-border px-3 py-1.5 text-sm text-text-muted hover:bg-surface-muted"
+        className="self-start rounded-md border border-border px-3 py-1.5 text-sm text-text-muted hover:bg-elevated"
       >
         + {addLabel}
       </button>

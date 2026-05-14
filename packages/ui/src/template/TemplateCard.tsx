@@ -26,7 +26,7 @@ export function TemplateCard(props: TemplateCardProps): JSX.Element {
       onClick={() => onSelect(templateId)}
       className={wrapperClass}
     >
-      <div className="aspect-[3/4] w-full bg-surface-muted">
+      <div className="aspect-[3/4] w-full bg-elevated">
         {thumbnailSrc ? (
           <img src={thumbnailSrc} alt={`${name} preview`} className="h-full w-full object-cover" />
         ) : (

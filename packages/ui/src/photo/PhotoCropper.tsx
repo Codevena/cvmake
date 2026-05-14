@@ -205,7 +205,7 @@ export function PhotoCropper(props: PhotoCropperProps): JSX.Element {
         <button
           type="button"
           onClick={handleCancel}
-          className="rounded-md border border-border px-3 py-1.5 text-sm text-text-muted hover:bg-surface-muted"
+          className="rounded-md border border-border px-3 py-1.5 text-sm text-text-muted hover:bg-elevated"
         >
           Cancel
         </button>
@@ -213,7 +213,7 @@ export function PhotoCropper(props: PhotoCropperProps): JSX.Element {
           type="button"
           onClick={handleConfirm}
           disabled={!pixelCrop}
-          className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50"
+          className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-bg disabled:opacity-50"
         >
           Confirm
         </button>
