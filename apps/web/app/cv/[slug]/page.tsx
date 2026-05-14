@@ -52,7 +52,10 @@ export default async function CvPage({ params }: Ctx) {
   const bootstrap = getPreviewBootstrap();
 
   return (
+    // key={slug} keeps EditorShell's react-hook-form in sync with the CV
+    // (consistent with the demo route at /, where switching is a query param).
     <EditorShell
+      key={slug}
       initialData={data}
       initialMtime={mtime}
       slug={slug}

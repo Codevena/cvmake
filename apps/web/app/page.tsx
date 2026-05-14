@@ -71,7 +71,12 @@ export default async function Home({
   const mtime = (await stat(target)).mtimeMs;
   const bootstrap = getPreviewBootstrap();
   return (
+    // key={slug} forces a fresh EditorShell (and a fresh react-hook-form)
+    // when the CV changes. In demo mode CV switching is a `?slug=` change on
+    // the same route, so without the key the component would not remount and
+    // useForm would keep the old defaultValues.
     <EditorShell
+      key={slug}
       initialData={data}
       initialMtime={mtime}
       slug={slug}

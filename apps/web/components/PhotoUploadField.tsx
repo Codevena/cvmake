@@ -1,4 +1,5 @@
 'use client';
+import { isDemoMode } from '@/lib/demo-mode';
 import { type PhotoAspect, type PhotoCropResult, PhotoCropper } from '@codevena/cvmake-ui';
 import { type ChangeEvent, useState } from 'react';
 
@@ -7,6 +8,18 @@ interface Props {
   value: string;
   onChange: (path: string) => void;
   aspect?: PhotoAspect;
+}
+
+// Read a (cropped) File as a base64 data URL — used in demo mode so the photo
+// lives in the form/browser only, never on the server. `embedPhoto` already
+// passes data URLs through untouched, so PDF export works the same way.
+function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(reader.error ?? new Error('file read failed'));
+    reader.readAsDataURL(file);
+  });
 }
 
 export function PhotoUploadField({ slug, value, onChange, aspect = '1:1' }: Props) {
@@ -24,6 +37,13 @@ export function PhotoUploadField({ slug, value, onChange, aspect = '1:1' }: Prop
     setBusy(true);
     setError(null);
     try {
+      if (isDemoMode()) {
+        // Demo deploy: every visitor shares the example slug, so a server-side
+        // write would clobber other visitors' photos. Keep it in-browser.
+        onChange(await fileToDataUrl(result.file));
+        setPending(null);
+        return;
+      }
       const form = new FormData();
       form.append('file', result.file);
       form.append('slug', slug);
