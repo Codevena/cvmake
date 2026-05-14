@@ -23,6 +23,14 @@ COPY pnpm-lock.yaml pnpm-workspace.yaml package.json turbo.json tsconfig.base.js
 COPY apps ./apps
 COPY packages ./packages
 COPY data ./data
+# apps/web/public/ has git-tracked symlinks pointing OUT of apps/web:
+#   public/template-thumbnails -> ../../../docs/screenshots  (12 template PNGs)
+#   public/photos              -> ../../../public/photos     (uploaded photos)
+#   public/cv/photos           -> ../../../../data/cvs/photos (example photos — data/ already copied)
+# Without docs/ and public/ in the image those symlinks dangle and every
+# thumbnail/photo 404s. Copy the symlink targets so they resolve.
+COPY docs ./docs
+COPY public ./public
 RUN pnpm install --frozen-lockfile
 # Puppeteer's bundled Chromium download for the build/runtime image.
 RUN pnpm --filter @codevena/cvmake-core exec puppeteer browsers install chrome
