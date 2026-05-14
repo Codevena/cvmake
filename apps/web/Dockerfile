@@ -14,6 +14,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 FROM base AS build
 WORKDIR /app
+# This image is the public demo deploy. NEXT_PUBLIC_* vars are inlined into
+# the client bundle by `next build`, so the flag MUST be set BEFORE the build
+# — otherwise client components (EditorShell, TopBar) bake in demo=false
+# while the server (page.tsx) reads demo=true at runtime: a split-brain bug.
+ENV NEXT_PUBLIC_DEMO_MODE=true
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json turbo.json tsconfig.base.json biome.json ./
 COPY apps ./apps
 COPY packages ./packages
@@ -26,6 +31,9 @@ RUN pnpm build
 FROM base AS run
 WORKDIR /app
 ENV NODE_ENV=production
+# Also set at runtime so the server-side read in page.tsx matches the
+# build-time-inlined client value.
+ENV NEXT_PUBLIC_DEMO_MODE=true
 COPY --from=build /app ./
 COPY --from=build /root/.cache/puppeteer /root/.cache/puppeteer
 EXPOSE 3000
