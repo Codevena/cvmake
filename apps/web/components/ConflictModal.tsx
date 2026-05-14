@@ -99,7 +99,11 @@ export function ConflictModal({
             >
               Overwrite with my version
             </button>
-            <button type="button" className="rounded border border-border px-3 py-1" onClick={onCancel}>
+            <button
+              type="button"
+              className="rounded border border-border px-3 py-1"
+              onClick={onCancel}
+            >
               Cancel
             </button>
           </div>

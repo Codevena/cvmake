@@ -46,7 +46,7 @@ export function PhotoUploadField({ slug, value, onChange, aspect = '1:1' }: Prop
       <span className="text-sm font-medium">Photo</span>
       {value && (
         <div className="flex items-center gap-3">
-          <img src={value} alt="Photo preview" className="h-20 w-20 rounded object-cover" />
+          <img src={value} alt="Uploaded headshot" className="h-20 w-20 rounded object-cover" />
           <button
             type="button"
             className="rounded border border-border px-2 py-1 text-xs"

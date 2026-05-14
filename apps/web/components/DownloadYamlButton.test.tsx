@@ -1,6 +1,6 @@
+import type { CVData } from '@codevena/cvmake-schema';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import type { CVData } from '@codevena/cvmake-schema';
 import { DownloadYamlButton } from './DownloadYamlButton';
 
 const DATA: CVData = {

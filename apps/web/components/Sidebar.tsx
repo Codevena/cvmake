@@ -38,11 +38,7 @@ export function Sidebar(_props: Props) {
   const palettes = currentTpl?.palettes ?? [];
 
   return (
-    // biome-ignore lint/a11y/noRedundantRoles: explicit complementary landmark for testability + intent
-    <aside
-      role="complementary"
-      className="flex w-[72px] shrink-0 flex-col items-center border-r border-border bg-surface py-3"
-    >
+    <aside className="flex w-[72px] shrink-0 flex-col items-center border-r border-border bg-surface py-3">
       <Popover
         label="Template"
         trigger={
@@ -159,6 +155,7 @@ export function Sidebar(_props: Props) {
       </Popover>
 
       <div className="mt-auto">
+        {/* biome-ignore lint/a11y/useAnchorContent: anchor has aria-label="GitHub"; SVG child is aria-hidden; this is the correct accessible pattern for icon-only links */}
         <a
           href="https://github.com/Codevena/cvmake"
           target="_blank"
@@ -175,7 +172,15 @@ export function Sidebar(_props: Props) {
             aria-hidden="true"
           >
             <circle cx="10" cy="10" r="8" stroke="currentColor" strokeWidth="1.5" />
-            <line x1="10" y1="9" x2="10" y2="14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            <line
+              x1="10"
+              y1="9"
+              x2="10"
+              y2="14"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
             <circle cx="10" cy="6.5" r="0.75" fill="currentColor" />
           </svg>
         </a>

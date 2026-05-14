@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { TabNav, type TabId } from './TabNav';
+import { type TabId, TabNav } from './TabNav';
 
 describe('TabNav', () => {
   it('renders all 7 section tabs', () => {

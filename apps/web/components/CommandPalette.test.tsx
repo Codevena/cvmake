@@ -25,11 +25,7 @@ describe('CommandPalette', () => {
     const exportPdf = vi.fn();
     const onClose = vi.fn();
     render(
-      <CommandPalette
-        open={true}
-        onClose={onClose}
-        commands={{ ...NOOP_COMMANDS, exportPdf }}
-      />,
+      <CommandPalette open={true} onClose={onClose} commands={{ ...NOOP_COMMANDS, exportPdf }} />,
     );
     fireEvent.click(screen.getByText(/export pdf/i));
     expect(exportPdf).toHaveBeenCalledTimes(1);

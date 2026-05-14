@@ -2,9 +2,9 @@
 import { isDemoMode } from '@/lib/demo-mode';
 import { exportPdf } from '@/lib/export-pdf';
 import type { PreviewBootstrap } from '@/lib/preview-bootstrap';
-import { useHotkey } from '@/lib/use-hotkey';
 import { type ConflictPayload, useAutosave } from '@/lib/use-autosave';
 import { useDebouncedValue } from '@/lib/use-debounced-value';
+import { useHotkey } from '@/lib/use-hotkey';
 import { applyZodIssues } from '@/lib/zod-issue-mapping';
 import { type CVData, CVDataSchema } from '@codevena/cvmake-schema';
 import { bootstrapTemplates, listTemplates } from '@codevena/cvmake-templates';
@@ -18,7 +18,7 @@ import { CommandPalette, type PaletteCommands } from './CommandPalette';
 import { ConflictModal } from './ConflictModal';
 import { PreviewFrame } from './PreviewFrame';
 import { Sidebar } from './Sidebar';
-import { TabNav, type TabId } from './TabNav';
+import { type TabId, TabNav } from './TabNav';
 import { TopBar } from './TopBar';
 import { CustomSectionsSection } from './sections/CustomSectionsSection';
 import { EducationSection } from './sections/EducationSection';
@@ -125,12 +125,8 @@ export function EditorShell({ initialData, initialMtime, slug, allSlugs, bootstr
           <Sidebar bootstrap={bootstrap} />
           <div className="flex flex-[0.85] flex-col overflow-hidden border-r border-border">
             <TabNav active={activeTab} onSelect={setActiveTab} />
-            {/* biome-ignore lint/a11y/useSemanticElements: explicit role="form" is intentional — <form> only has implicit role="form" when given an accessible name */}
-            <div
-              // biome-ignore lint/a11y/noRedundantRoles: explicit role="form" is intentional for the same reason
-              role="form"
-              className="flex-1 overflow-y-auto p-6"
-            >
+            {/* biome-ignore lint/a11y/useSemanticElements: explicit role="form" is needed — <form> only carries an implicit role when given an accessible name via aria-label/aria-labelledby */}
+            <div role="form" className="flex-1 overflow-y-auto p-6">
               {activeTab === 'personal' && <PersonalSection slug={slug} />}
               {activeTab === 'experience' && <ExperienceSection />}
               {activeTab === 'education' && <EducationSection />}
@@ -154,11 +150,22 @@ export function EditorShell({ initialData, initialMtime, slug, allSlugs, bootstr
         {demo && (
           <div className="shrink-0 border-t border-border bg-surface px-4 py-1.5 text-center text-xs text-text-muted">
             Demo mode — edits are not saved.{' '}
-            <a href="https://www.npmjs.com/package/@codevena/cvmake-cli" className="text-accent underline" target="_blank" rel="noreferrer">Use the CLI</a>{' '}
+            <a
+              href="https://www.npmjs.com/package/@codevena/cvmake-cli"
+              className="text-accent underline"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Use the CLI
+            </a>{' '}
             to keep your work.
           </div>
         )}
-        <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} commands={paletteCommands} />
+        <CommandPalette
+          open={paletteOpen}
+          onClose={() => setPaletteOpen(false)}
+          commands={paletteCommands}
+        />
       </div>
       {conflict && (
         <ConflictModal
@@ -190,9 +197,7 @@ export function EditorShell({ initialData, initialMtime, slug, allSlugs, bootstr
               });
               if (!res.ok) {
                 const text = await res.text().catch(() => '');
-                window.alert(
-                  `Overwrite failed (HTTP ${res.status})${text ? `:\n${text}` : ''}`,
-                );
+                window.alert(`Overwrite failed (HTTP ${res.status})${text ? `:\n${text}` : ''}`);
                 return;
               }
               const body = (await res.json()) as { mtime: number };

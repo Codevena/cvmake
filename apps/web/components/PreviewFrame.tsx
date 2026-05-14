@@ -57,7 +57,14 @@ function writeInitialDoc(
   return doc.getElementById('cv-root');
 }
 
-export function PreviewFrame({ data, bootstrap, templateId, paletteId, accentOverride, rendering }: Props) {
+export function PreviewFrame({
+  data,
+  bootstrap,
+  templateId,
+  paletteId,
+  accentOverride,
+  rendering,
+}: Props) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [root, setRoot] = useState<HTMLElement | null>(null);
   const lastTemplateRef = useRef<string | null>(null);

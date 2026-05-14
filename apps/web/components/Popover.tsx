@@ -41,6 +41,7 @@ export function Popover({ trigger, label, children }: Props) {
         {trigger}
       </button>
       {open && (
+        // biome-ignore lint/a11y/useSemanticElements: a popover panel has no semantic HTML equivalent; role="dialog" is the correct ARIA pattern
         <div
           role="dialog"
           aria-label={label}

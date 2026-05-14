@@ -34,8 +34,13 @@ describe('<PreviewFrame />', () => {
 
   it('zeigt das Rendering-Overlay wenn rendering=true', () => {
     render(
-      // biome-ignore lint/suspicious/noExplicitAny: minimal partial bootstrap mock for smoke test
-      <PreviewFrame data={DATA} bootstrap={bootstrap as any} templateId="classic-serif" rendering />,
+      <PreviewFrame
+        data={DATA}
+        // biome-ignore lint/suspicious/noExplicitAny: minimal partial bootstrap mock for smoke test
+        bootstrap={bootstrap as any}
+        templateId="classic-serif"
+        rendering
+      />,
     );
     expect(screen.getByTestId('preview-rendering')).toBeInTheDocument();
   });
@@ -50,8 +55,13 @@ describe('<PreviewFrame />', () => {
 
   it('zeigt kein Rendering-Overlay wenn rendering=false', () => {
     render(
-      // biome-ignore lint/suspicious/noExplicitAny: minimal partial bootstrap mock for smoke test
-      <PreviewFrame data={DATA} bootstrap={bootstrap as any} templateId="classic-serif" rendering={false} />,
+      <PreviewFrame
+        data={DATA}
+        // biome-ignore lint/suspicious/noExplicitAny: minimal partial bootstrap mock for smoke test
+        bootstrap={bootstrap as any}
+        templateId="classic-serif"
+        rendering={false}
+      />,
     );
     expect(screen.queryByTestId('preview-rendering')).not.toBeInTheDocument();
   });

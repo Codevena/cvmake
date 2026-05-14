@@ -17,9 +17,9 @@ describe('exportPdf', () => {
 
   it('POSTs to /api/export with the correct body and triggers anchor download', async () => {
     const fakeBlob = new Blob(['%PDF-fake'], { type: 'application/pdf' });
-    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
-      new Response(fakeBlob, { status: 200 }),
-    );
+    const fetchSpy = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValue(new Response(fakeBlob, { status: 200 }));
     const createUrl = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:fake-pdf');
     const revokeUrl = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
     const clicked: string[] = [];
