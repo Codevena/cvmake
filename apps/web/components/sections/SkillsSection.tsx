@@ -43,14 +43,14 @@ export function SkillsSection() {
         <button
           type="button"
           onClick={() => setTab('stack')}
-          className={`rounded border border-border px-3 py-1 text-sm ${tab === 'stack' ? 'bg-accent text-text-on-accent' : 'text-text-muted hover:bg-elevated'}`}
+          className={`rounded border border-border px-3 py-1 text-sm ${tab === 'stack' ? 'bg-accent text-bg' : 'text-text-muted hover:bg-elevated'}`}
         >
           {t.tabList}
         </button>
         <button
           type="button"
           onClick={() => setTab('categorized')}
-          className={`rounded border border-border px-3 py-1 text-sm ${tab === 'categorized' ? 'bg-accent text-text-on-accent' : 'text-text-muted hover:bg-elevated'}`}
+          className={`rounded border border-border px-3 py-1 text-sm ${tab === 'categorized' ? 'bg-accent text-bg' : 'text-text-muted hover:bg-elevated'}`}
         >
           {t.tabCategories}
         </button>

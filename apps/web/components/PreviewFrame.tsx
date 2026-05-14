@@ -110,7 +110,7 @@ export function PreviewFrame({
         ref={iframeRef}
         title="CV Preview"
         sandbox="allow-same-origin"
-        className="mx-auto block w-full max-w-3xl rounded-md bg-white shadow-card"
+        className="mx-auto block h-full w-full max-w-3xl rounded-md bg-white shadow-card"
       />
       {rendering && (
         <div
