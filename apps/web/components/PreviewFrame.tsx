@@ -14,6 +14,7 @@ interface Props {
   templateId: string;
   paletteId?: string | undefined;
   accentOverride?: string | undefined;
+  rendering?: boolean;
 }
 
 function effectivePalette(
@@ -56,7 +57,7 @@ function writeInitialDoc(
   return doc.getElementById('cv-root');
 }
 
-export function PreviewFrame({ data, bootstrap, templateId, paletteId, accentOverride }: Props) {
+export function PreviewFrame({ data, bootstrap, templateId, paletteId, accentOverride, rendering }: Props) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [root, setRoot] = useState<HTMLElement | null>(null);
   const lastTemplateRef = useRef<string | null>(null);
@@ -97,13 +98,25 @@ export function PreviewFrame({ data, bootstrap, templateId, paletteId, accentOve
   const filtered = applyHiddenSections(data);
 
   return (
-    <>
+    <div className="relative h-full overflow-auto bg-bg p-6">
       <iframe
         ref={iframeRef}
         title="CV Preview"
         sandbox="allow-same-origin"
-        className="h-full w-full bg-white"
+        className="mx-auto block w-full max-w-3xl rounded-md bg-white shadow-card"
       />
+      {rendering && (
+        <div
+          data-testid="preview-rendering"
+          className="pointer-events-none absolute inset-0 flex items-center justify-center"
+        >
+          <div className="flex gap-1.5 rounded-full bg-surface/90 px-3 py-2">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" />
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent [animation-delay:150ms]" />
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent [animation-delay:300ms]" />
+          </div>
+        </div>
+      )}
       {root && tplDef && palette
         ? createPortal(
             <tplDef.Component
@@ -115,6 +128,6 @@ export function PreviewFrame({ data, bootstrap, templateId, paletteId, accentOve
             root,
           )
         : null}
-    </>
+    </div>
   );
 }
