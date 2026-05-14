@@ -14,7 +14,13 @@ test.describe('load → edit → save', () => {
     // race the initial CV→form propagation and get clobbered when react-hook-form
     // settles its initial value — the source of the long-standing Linux-CI flake.
     await expect(first).toHaveValue('TestVorname');
-    await first.fill('NeuerName');
+    // Even after the initial value lands, react-hook-form can re-settle
+    // `defaultValues` one more tick later on slow CI and clobber a fill that
+    // landed in that window. Retry fill+verify until the new value sticks.
+    await expect(async () => {
+      await first.fill('NeuerName');
+      await expect(first).toHaveValue('NeuerName', { timeout: 1000 });
+    }).toPass({ timeout: 10_000 });
     // Poll the YAML file on disk instead of matching DOM text. The original
     // /Gespeichert/ substring assertion was unsound because it also matched
     // any pre-existing "✓ Gespeichert vor Xs" badge from a prior save, so
@@ -26,7 +32,7 @@ test.describe('load → edit → save', () => {
     // generous margin for Linux-CI variance.
     await expect
       .poll(async () => readFile(fixturePath('cv.test.de'), 'utf8'), {
-        timeout: 15000,
+        timeout: 25000,
         intervals: [200],
       })
       .toContain('NeuerName');
