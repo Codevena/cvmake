@@ -1,4 +1,5 @@
 'use client';
+import { exportPdf } from '@/lib/export-pdf';
 import type { CVData } from '@codevena/cvmake-schema';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -31,29 +32,11 @@ export function TopBar({
   const router = useRouter();
   const [exporting, setExporting] = useState(false);
 
-  async function exportPdf() {
+  async function handleExportPdf() {
     if (!formState.isValid || exporting) return;
     setExporting(true);
     try {
-      const data = getValues();
-      const res = await fetch('/api/export', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          data,
-          slug,
-          templateId: data.rendering.template,
-          paletteId: data.rendering.palette,
-        }),
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${slug}-${data.rendering.template}.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
+      await exportPdf({ data: getValues(), slug });
     } finally {
       setExporting(false);
     }
@@ -102,7 +85,7 @@ export function TopBar({
         <button
           type="button"
           disabled={!formState.isValid || exporting}
-          onClick={exportPdf}
+          onClick={handleExportPdf}
           className="rounded-md bg-accent px-4 py-1.5 text-sm font-semibold text-bg transition hover:-translate-y-0.5 hover:bg-accent-hover disabled:opacity-50"
         >
           {exporting ? 'Export…' : 'Export PDF'}
