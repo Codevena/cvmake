@@ -8,6 +8,8 @@ export interface PaletteCommands {
   allSlugs: string[];
   switchTemplate: (id: string) => void;
   templateIds: string[];
+  switchPalette: (id: string) => void;
+  paletteIds: string[];
   jumpToSection: (id: TabId) => void;
   exportPdf: () => void;
   // Present only in demo mode — when set, the palette shows a
@@ -97,6 +99,21 @@ export function CommandPalette({ open, onClose, commands }: Props) {
                   className="cursor-pointer rounded-md px-3 py-2 text-sm text-text aria-selected:bg-elevated aria-selected:text-accent"
                 >
                   Switch template: {id}
+                </Command.Item>
+              ))}
+            </Command.Group>
+
+            <Command.Group
+              heading="Palette"
+              className="px-2 py-1 text-xs uppercase tracking-wider text-text-subtle"
+            >
+              {commands.paletteIds.map((id) => (
+                <Command.Item
+                  key={id}
+                  onSelect={() => run(() => commands.switchPalette(id))}
+                  className="cursor-pointer rounded-md px-3 py-2 text-sm text-text aria-selected:bg-elevated aria-selected:text-accent"
+                >
+                  Switch palette: {id}
                 </Command.Item>
               ))}
             </Command.Group>

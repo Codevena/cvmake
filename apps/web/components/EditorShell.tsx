@@ -1,5 +1,6 @@
 'use client';
 import { isDemoMode } from '@/lib/demo-mode';
+import { downloadYaml as downloadYamlFile } from '@/lib/download-yaml';
 import { exportPdf } from '@/lib/export-pdf';
 import type { PreviewBootstrap } from '@/lib/preview-bootstrap';
 import { type ConflictPayload, useAutosave } from '@/lib/use-autosave';
@@ -7,9 +8,8 @@ import { useDebouncedValue } from '@/lib/use-debounced-value';
 import { useHotkey } from '@/lib/use-hotkey';
 import { applyZodIssues } from '@/lib/zod-issue-mapping';
 import { type CVData, CVDataSchema } from '@codevena/cvmake-schema';
-import { bootstrapTemplates, listTemplates } from '@codevena/cvmake-templates';
+import { bootstrapTemplates, getTemplate, listTemplates } from '@codevena/cvmake-templates';
 import { zodResolver } from '@hookform/resolvers/zod';
-import yaml from 'js-yaml';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
@@ -85,25 +85,20 @@ export function EditorShell({ initialData, initialMtime, slug, allSlugs, bootstr
     setPaletteOpen((prev) => !prev);
   });
 
+  const currentTemplateId = form.watch('rendering.template');
+
   const paletteCommands: PaletteCommands = {
     switchCv: (s) => router.push(`/cv/${encodeURIComponent(s)}`),
     allSlugs,
     switchTemplate: (id) => form.setValue('rendering.template', id, { shouldDirty: true }),
     templateIds: listTemplates().map((t) => t.meta.id),
+    switchPalette: (id) => form.setValue('rendering.palette', id, { shouldDirty: true }),
+    paletteIds: getTemplate(currentTemplateId)?.palettes.map((p) => p.id) ?? [],
     jumpToSection: (id) => setActiveTab(id),
     exportPdf: () => exportPdf({ data: form.getValues(), slug }),
     ...(demo
       ? {
-          downloadYaml: () => {
-            const text = yaml.dump(form.getValues(), { lineWidth: 100, noRefs: true });
-            const blob = new Blob([text], { type: 'text/yaml;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `${slug}.yaml`;
-            a.click();
-            URL.revokeObjectURL(url);
-          },
+          downloadYaml: () => downloadYamlFile({ data: form.getValues(), slug }),
         }
       : {}),
   };

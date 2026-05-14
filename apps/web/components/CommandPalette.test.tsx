@@ -7,6 +7,8 @@ const NOOP_COMMANDS = {
   allSlugs: ['cv.en', 'cv.de'],
   switchTemplate: vi.fn(),
   templateIds: ['classic-serif', 'swiss'],
+  switchPalette: vi.fn(),
+  paletteIds: ['classic-serif-default', 'classic-serif-mono'],
   jumpToSection: vi.fn(),
   exportPdf: vi.fn(),
 };
@@ -43,5 +45,20 @@ describe('CommandPalette', () => {
     );
     fireEvent.click(screen.getByText(/go to experience/i));
     expect(jumpToSection).toHaveBeenCalledWith('experience');
+  });
+
+  it('calls switchPalette and closes when a palette command is chosen', () => {
+    const switchPalette = vi.fn();
+    const onClose = vi.fn();
+    render(
+      <CommandPalette
+        open={true}
+        onClose={onClose}
+        commands={{ ...NOOP_COMMANDS, switchPalette }}
+      />,
+    );
+    fireEvent.click(screen.getByText(/switch palette: classic-serif-default/i));
+    expect(switchPalette).toHaveBeenCalledWith('classic-serif-default');
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
 });

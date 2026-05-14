@@ -1,6 +1,6 @@
 'use client';
+import { downloadYaml } from '@/lib/download-yaml';
 import type { CVData } from '@codevena/cvmake-schema';
-import yaml from 'js-yaml';
 
 interface Props {
   getData: () => CVData;
@@ -9,14 +9,7 @@ interface Props {
 
 export function DownloadYamlButton({ getData, slug }: Props) {
   function download() {
-    const text = yaml.dump(getData(), { lineWidth: 100, noRefs: true });
-    const blob = new Blob([text], { type: 'text/yaml;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${slug}.yaml`;
-    a.click();
-    URL.revokeObjectURL(url);
+    downloadYaml({ data: getData(), slug });
   }
 
   return (
