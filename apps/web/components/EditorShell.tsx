@@ -77,6 +77,8 @@ export function EditorShell({ initialData, initialMtime, slug, allSlugs, bootstr
           saveError={autosave.errorMessage}
           onRetry={autosave.retry}
           lastSavedAt={autosave.lastSavedAt}
+          onOpenPalette={() => {}}
+          isDemo={false}
         />
         <div className="flex flex-1 overflow-hidden">
           <Sidebar bootstrap={bootstrap} />
