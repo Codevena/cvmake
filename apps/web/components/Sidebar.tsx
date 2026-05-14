@@ -6,6 +6,7 @@ import { ColorPicker, PaletteSelector, TemplateCard } from '@codevena/cvmake-ui'
 import { useEffect, useRef } from 'react';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
 import { HiddenSectionsToggles } from './HiddenSectionsToggles';
+import { Popover } from './Popover';
 
 interface Props {
   bootstrap: PreviewBootstrap;
@@ -38,9 +39,28 @@ export function Sidebar(_props: Props) {
 
   return (
     // biome-ignore lint/a11y/noRedundantRoles: explicit complementary landmark for testability + intent
-    <aside role="complementary" className="w-80 shrink-0 overflow-y-auto border-r p-4">
-      <section>
-        <h2 className="mb-2 text-sm font-semibold">Template</h2>
+    <aside
+      role="complementary"
+      className="flex w-[72px] shrink-0 flex-col items-center border-r border-border bg-surface py-3"
+    >
+      <Popover
+        label="Template"
+        trigger={
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <rect x="2" y="2" width="7" height="7" rx="1" fill="currentColor" />
+            <rect x="11" y="2" width="7" height="7" rx="1" fill="currentColor" />
+            <rect x="2" y="11" width="7" height="7" rx="1" fill="currentColor" />
+            <rect x="11" y="11" width="7" height="7" rx="1" fill="currentColor" />
+          </svg>
+        }
+      >
         <Controller
           control={control}
           name="rendering.template"
@@ -60,9 +80,29 @@ export function Sidebar(_props: Props) {
             </div>
           )}
         />
-      </section>
-      <section className="mt-4">
-        <h2 className="mb-2 text-sm font-semibold">Palette</h2>
+      </Popover>
+
+      <Popover
+        label="Palette"
+        trigger={
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <circle cx="10" cy="10" r="8" stroke="currentColor" strokeWidth="1.5" />
+            <circle cx="10" cy="4" r="2" fill="currentColor" />
+            <circle cx="15.2" cy="7.5" r="2" fill="currentColor" />
+            <circle cx="15.2" cy="12.5" r="2" fill="currentColor" />
+            <circle cx="10" cy="16" r="2" fill="currentColor" />
+            <circle cx="4.8" cy="12.5" r="2" fill="currentColor" />
+            <circle cx="4.8" cy="7.5" r="2" fill="currentColor" />
+          </svg>
+        }
+      >
         <Controller
           control={control}
           name="rendering.palette"
@@ -74,14 +114,11 @@ export function Sidebar(_props: Props) {
             />
           )}
         />
-      </section>
-      <section className="mt-4">
-        <h2 className="mb-2 text-sm font-semibold">Accent-Override</h2>
         <Controller
           control={control}
           name="rendering.accentOverride"
           render={({ field }) => (
-            <div className="flex items-end gap-2">
+            <div className="mt-3 flex items-end gap-2">
               <ColorPicker label="Hex" value={field.value ?? ''} onChange={field.onChange} />
               <button
                 type="button"
@@ -95,11 +132,54 @@ export function Sidebar(_props: Props) {
             </div>
           )}
         />
-      </section>
-      <section className="mt-4">
-        <h2 className="mb-2 text-sm font-semibold">Sichtbare Sections</h2>
+      </Popover>
+
+      <Popover
+        label="Sections"
+        trigger={
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              d="M1 10C1 10 4.5 4 10 4C15.5 4 19 10 19 10C19 10 15.5 16 10 16C4.5 16 1 10 1 10Z"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinejoin="round"
+            />
+            <circle cx="10" cy="10" r="2.5" fill="currentColor" />
+          </svg>
+        }
+      >
         <HiddenSectionsToggles />
-      </section>
+      </Popover>
+
+      <div className="mt-auto">
+        <a
+          href="https://github.com/Codevena/cvmake"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="GitHub"
+          className="flex h-10 w-10 items-center justify-center rounded-md text-text-muted transition hover:bg-elevated hover:text-text"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <circle cx="10" cy="10" r="8" stroke="currentColor" strokeWidth="1.5" />
+            <line x1="10" y1="9" x2="10" y2="14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            <circle cx="10" cy="6.5" r="0.75" fill="currentColor" />
+          </svg>
+        </a>
+      </div>
     </aside>
   );
 }
