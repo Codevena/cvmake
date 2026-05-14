@@ -39,7 +39,7 @@ export function Textarea(props: TextareaProps): JSX.Element {
   const inputId = deriveId(props);
   const wrapperClass = ['flex flex-col gap-1', className].filter(Boolean).join(' ');
   const fieldClass = [
-    'resize-y rounded-md border bg-surface px-3 py-2 text-text',
+    'resize-y rounded-md border bg-elevated px-3 py-2 text-text',
     'focus:outline-none focus:ring-2 focus:ring-accent',
     'disabled:cursor-not-allowed disabled:opacity-60',
     error ? 'border-error' : 'border-border',
@@ -47,7 +47,7 @@ export function Textarea(props: TextareaProps): JSX.Element {
   return (
     <div className={wrapperClass}>
       {label && (
-        <label htmlFor={inputId} className="text-sm font-medium text-text">
+        <label htmlFor={inputId} className="text-sm font-medium text-text-muted">
           {label}
           {required && <span className="text-error"> *</span>}
         </label>

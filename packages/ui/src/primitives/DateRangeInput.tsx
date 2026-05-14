@@ -31,7 +31,7 @@ function joinYM(year: string, month: string): string {
 }
 
 const FIELD_BASE =
-  'rounded-md border bg-surface px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent disabled:cursor-not-allowed disabled:opacity-60';
+  'rounded-md border bg-elevated px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent disabled:cursor-not-allowed disabled:opacity-60';
 
 export function DateRangeInput(props: DateRangeInputProps): JSX.Element {
   const currentYear = new Date().getFullYear();
@@ -81,7 +81,7 @@ export function DateRangeInput(props: DateRangeInputProps): JSX.Element {
   return (
     <fieldset className={wrapperClass}>
       {label && (
-        <legend className="text-sm font-medium text-text mb-1">
+        <legend className="text-sm font-medium text-text-muted mb-1">
           {label}
           {required && <span className="text-error"> *</span>}
         </legend>
