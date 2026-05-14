@@ -9,6 +9,10 @@ import { bootstrapTemplates } from '@codevena/cvmake-templates';
 
 export const dynamic = 'force-dynamic';
 
+// In demo mode only the two tracked example CVs are reachable — one English,
+// one German — so the demo can show off the multilingual rendering.
+const DEMO_SLUGS = ['example.en', 'example.de'];
+
 async function listSlugs(): Promise<string[]> {
   try {
     const files = await readdir(dataDir());
@@ -26,15 +30,20 @@ function pickDefault(slugs: string[]): string | null {
   return slugs[0] ?? null;
 }
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ slug?: string }>;
+}) {
   bootstrapTemplates();
 
   let slug: string;
   let allSlugs: string[];
 
   if (isDemoMode()) {
-    slug = 'example.en';
-    allSlugs = ['example.en'];
+    allSlugs = DEMO_SLUGS;
+    const requested = (await searchParams).slug;
+    slug = requested && DEMO_SLUGS.includes(requested) ? requested : 'example.en';
   } else {
     const slugs = await listSlugs();
     const picked = pickDefault(slugs);

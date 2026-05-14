@@ -1,4 +1,5 @@
 'use client';
+import { cvRoute } from '@/lib/cv-route';
 import { isDemoMode } from '@/lib/demo-mode';
 import { downloadYaml as downloadYamlFile } from '@/lib/download-yaml';
 import { exportPdf } from '@/lib/export-pdf';
@@ -88,7 +89,7 @@ export function EditorShell({ initialData, initialMtime, slug, allSlugs, bootstr
   const currentTemplateId = form.watch('rendering.template');
 
   const paletteCommands: PaletteCommands = {
-    switchCv: (s) => router.push(`/cv/${encodeURIComponent(s)}`),
+    switchCv: (s) => router.push(cvRoute(s, demo)),
     allSlugs,
     switchTemplate: (id) => form.setValue('rendering.template', id, { shouldDirty: true }),
     templateIds: listTemplates().map((t) => t.meta.id),

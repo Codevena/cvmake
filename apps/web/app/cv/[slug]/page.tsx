@@ -26,9 +26,12 @@ async function listSlugs(): Promise<string[]> {
 }
 
 export default async function CvPage({ params }: Ctx) {
-  if (isDemoMode()) redirect('/');
-  bootstrapTemplates();
   const { slug } = await params;
+  // In demo mode the editor lives at `/`; bounce `/cv/<slug>` there,
+  // preserving the slug so a deep-linked demo CV still loads (page.tsx
+  // validates it against the allowed demo slugs).
+  if (isDemoMode()) redirect(`/?slug=${encodeURIComponent(slug)}`);
+  bootstrapTemplates();
 
   let target: string;
   try {

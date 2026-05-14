@@ -1,4 +1,5 @@
 'use client';
+import { cvRoute } from '@/lib/cv-route';
 import { exportPdf } from '@/lib/export-pdf';
 import type { CVData } from '@codevena/cvmake-schema';
 import { useRouter } from 'next/navigation';
@@ -53,8 +54,7 @@ export function TopBar({
         <select
           aria-label="Select CV"
           value={slug}
-          onChange={(e) => router.push(`/cv/${e.target.value}`)}
-          disabled={isDemo}
+          onChange={(e) => router.push(cvRoute(e.target.value, isDemo))}
           className="rounded-md border border-border bg-elevated px-2 py-1 text-sm text-text"
         >
           {allSlugs.map((s) => (
