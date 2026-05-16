@@ -1,13 +1,22 @@
-import type { Browser } from 'puppeteer';
+import type { Browser, Page } from 'puppeteer';
 import puppeteer from 'puppeteer';
 
 let browserPromise: Promise<Browser> | null = null;
 
 async function getBrowser(): Promise<Browser> {
   if (!browserPromise) {
-    browserPromise = puppeteer.launch({
+    // Cache the launch promise so concurrent callers share one browser.
+    // Critically: if the launch fails (e.g. transient Chromium crash, OOM
+    // during sandbox init), reset the cache so the NEXT call retries — the
+    // alternative (leaving a permanently-rejected promise here) would brick
+    // every subsequent PDF export until the Node process restarts.
+    const p = puppeteer.launch({
       headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox', '--font-render-hinting=none'],
+    });
+    browserPromise = p;
+    p.catch(() => {
+      if (browserPromise === p) browserPromise = null;
     });
   }
   return browserPromise;
@@ -23,19 +32,67 @@ export async function shutdownPdfBrowser(): Promise<void> {
 export interface GeneratePDFOptions {
   format?: 'A4' | 'Letter' | undefined;
   margin?: { top: string; right: string; bottom: string; left: string } | undefined;
+  /**
+   * Ceiling on how long to wait for `document.fonts.ready` before rendering.
+   * With `waitUntil: 'load'` (puppeteer 24+), `setContent` returns before web
+   * fonts are guaranteed to have loaded — a generous default gives templates
+   * that @import Google Fonts enough time to fetch and decode font files
+   * before the PDF is rasterized.
+   */
   fontTimeoutMs?: number | undefined;
+  /**
+   * Optional cancellation. When aborted (e.g. the caller hit a render-timeout
+   * budget), the underlying Puppeteer page is closed which surfaces a
+   * "Target closed" rejection from the in-flight `page.pdf()` / `page.evaluate`.
+   * The semaphore in the caller can therefore release synchronously with the
+   * generatePDF promise settling.
+   */
+  signal?: AbortSignal | undefined;
 }
 
 export async function generatePDF(html: string, opts: GeneratePDFOptions = {}): Promise<Buffer> {
-  const browser = await getBrowser();
-  const page = await browser.newPage();
+  // Wire abort handling BEFORE any async work so a timeout that fires while
+  // the browser is still launching or the page is being created is observed
+  // (and so the abort handler closes whatever page exists at that moment).
+  let page: Page | null = null;
+  const onAbort = () => {
+    page?.close().catch(() => {
+      /* page may already be closed by the finally */
+    });
+  };
+  opts.signal?.addEventListener('abort', onAbort, { once: true });
   try {
+    if (opts.signal?.aborted) {
+      throw new Error('aborted before start');
+    }
+    const browser = await getBrowser();
+    if (opts.signal?.aborted) {
+      throw new Error('aborted during browser launch');
+    }
+    page = await browser.newPage();
+    if (opts.signal?.aborted) {
+      throw new Error('aborted during page creation');
+    }
     await page.emulateMediaType('print');
-    await page.setContent(html, { waitUntil: 'networkidle0' });
-    await Promise.race([
-      page.evaluate(() => (document as unknown as { fonts: { ready: Promise<void> } }).fonts.ready),
-      new Promise((resolve) => setTimeout(resolve, opts.fontTimeoutMs ?? 5000)),
-    ]);
+    await page.setContent(html, { waitUntil: 'load' });
+    // Wait for fonts to be ready, with a generous ceiling.  Clear the timer
+    // when fonts resolve early so the export load doesn't accumulate stale
+    // setTimeout handles under high RPS.
+    let fontTimer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      await Promise.race([
+        page
+          .evaluate(() => (document as unknown as { fonts: { ready: Promise<void> } }).fonts.ready)
+          .finally(() => {
+            if (fontTimer !== undefined) clearTimeout(fontTimer);
+          }),
+        new Promise<void>((resolve) => {
+          fontTimer = setTimeout(resolve, opts.fontTimeoutMs ?? 10_000);
+        }),
+      ]);
+    } finally {
+      if (fontTimer !== undefined) clearTimeout(fontTimer);
+    }
 
     // Inject ~16pt top breathing-space onto every page after page 1.
     // We measure where natural page breaks fall in the printed flow and insert
@@ -196,6 +253,9 @@ export async function generatePDF(html: string, opts: GeneratePDFOptions = {}): 
     });
     return Buffer.from(pdf);
   } finally {
-    await page.close();
+    opts.signal?.removeEventListener('abort', onAbort);
+    await page?.close().catch(() => {
+      /* may already be closed by onAbort, or never created if abort was early */
+    });
   }
 }

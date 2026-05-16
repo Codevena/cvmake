@@ -43,6 +43,7 @@ export async function runBuild(args: BuildArgs): Promise<void> {
     title: `${data.personal.firstName} ${data.personal.lastName} — CV`,
     html: rendered.html,
     css,
+    lang: rendered.locale,
   });
   const pdf = await generatePDF(html);
   const outPath = path.resolve(args.output);

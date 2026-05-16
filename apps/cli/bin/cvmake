@@ -1,2 +1,5 @@
 #!/usr/bin/env node
-import('../dist/index.js');
+import('../dist/index.js').catch((err) => {
+  process.stderr.write(`cvmake: failed to load: ${err.message}\n`);
+  process.exit(1);
+});

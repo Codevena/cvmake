@@ -1,4 +1,4 @@
-import type { CVData, TemplateDefinition } from '@codevena/cvmake-schema';
+import type { CVData, Locale, TemplateDefinition } from '@codevena/cvmake-schema';
 
 export interface RenderInput {
   data: CVData;
@@ -9,5 +9,5 @@ export interface RenderInput {
 export interface RenderOutput {
   html: string;
   css: string;
-  locale: 'de' | 'en';
+  locale: Locale;
 }
