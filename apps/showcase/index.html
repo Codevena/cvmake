@@ -31,6 +31,8 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Umami analytics origin — preconnect saves ~50-150 ms on first event. -->
+    <link rel="preconnect" href="https://analytics.codevena.dev" />
     <link
       href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
@@ -181,14 +183,19 @@
           </p>
         </div>
         <figure class="mt-12">
-          <img
-            src="collage-4templates.png"
-            alt="The same CV (Adam Reyes) rendered through four visually distinct templates: classic-serif on parchment, swiss with red accent, bauhaus with yellow primary palette, and noir on black with gold accent"
-            class="mx-auto w-full max-w-4xl rounded-xl border border-ink-line shadow-card"
-            loading="lazy"
-            width="1304"
-            height="1800"
-          />
+          <picture>
+            <source srcset="collage-4templates.avif" type="image/avif" />
+            <source srcset="collage-4templates.webp" type="image/webp" />
+            <img
+              src="collage-4templates.png"
+              alt="The same CV (Adam Reyes) rendered through four visually distinct templates: classic-serif on parchment, swiss with red accent, bauhaus with yellow primary palette, and noir on black with gold accent"
+              class="mx-auto w-full max-w-4xl rounded-xl border border-ink-line shadow-card"
+              loading="lazy"
+              decoding="async"
+              width="1304"
+              height="1800"
+            />
+          </picture>
         </figure>
       </div>
     </section>

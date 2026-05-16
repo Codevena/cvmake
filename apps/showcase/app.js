@@ -66,8 +66,18 @@ function renderTemplateGrid() {
   const grid = document.getElementById('template-grid');
   if (!grid) return;
 
-  const html = TEMPLATES.map(
-    (t) => `
+  // Above-the-fold rule of thumb for desktop 4-column grid: the first 4
+  // cards render in the initial viewport. Eager-load them with fetchpriority
+  // high; the rest get the default loading="lazy" + low priority.
+  // Mobile (1 col) shows only the very first card above the fold, but
+  // eager-loading the next few is still a perf win because they'll be
+  // requested as soon as scrolling starts.
+  const EAGER_COUNT = 4;
+  const html = TEMPLATES.map((t, i) => {
+    const eager = i < EAGER_COUNT;
+    const loading = eager ? 'eager' : 'lazy';
+    const fetchPriority = eager ? 'high' : 'auto';
+    return `
       <button
         type="button"
         class="template-card group flex flex-col overflow-hidden rounded-xl border border-ink-line bg-ink text-left shadow-card transition hover:-translate-y-1 hover:border-sand/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-sand"
@@ -76,22 +86,28 @@ function renderTemplateGrid() {
         aria-label="Preview ${t.name}"
       >
         <div class="aspect-[1/1.414] overflow-hidden bg-ink-soft">
-          <img
-            src="screenshots/${t.id}.png"
-            alt="${t.name} template preview"
-            loading="lazy"
-            width="1242"
-            height="1754"
-            class="h-full w-full object-cover object-top transition duration-500 group-hover:scale-[1.02]"
-          />
+          <picture>
+            <source srcset="screenshots/${t.id}.avif" type="image/avif" />
+            <source srcset="screenshots/${t.id}.webp" type="image/webp" />
+            <img
+              src="screenshots/${t.id}.png"
+              alt="${t.name} template preview"
+              loading="${loading}"
+              fetchpriority="${fetchPriority}"
+              decoding="async"
+              width="1242"
+              height="1754"
+              class="h-full w-full object-cover object-top transition duration-500 group-hover:scale-[1.02]"
+            />
+          </picture>
         </div>
         <div class="flex flex-1 flex-col gap-1 border-t border-ink-line bg-ink-soft/60 p-4">
           <span class="font-display text-base font-medium text-parchment">${t.name}</span>
           <span class="text-xs text-parchment/60">${t.blurb}</span>
         </div>
       </button>
-    `,
-  ).join('');
+    `;
+  }).join('');
 
   grid.innerHTML = html;
 
@@ -110,7 +126,10 @@ function openLightbox(templateId, templateName) {
   const caption = document.getElementById('lightbox-caption');
   if (!lightbox || !img || !caption) return;
 
-  img.src = `screenshots/${templateId}.png`;
+  // Prefer WebP for the lightbox — it's the single dynamically-swapped <img>
+  // (not a <picture>) so we just pick one efficient format. WebP is in
+  // Safari 14+, Firefox 65+, all Chromium for years; ~98% of real browsers.
+  img.src = `screenshots/${templateId}.webp`;
   img.alt = `${templateName} template, full preview`;
   caption.textContent = `${templateName} · template id "${templateId}"`;
   lightbox.classList.remove('hidden');

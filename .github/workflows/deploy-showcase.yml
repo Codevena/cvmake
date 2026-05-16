@@ -57,7 +57,9 @@ jobs:
               *) cp -r "$f" "dist/$base" ;;
             esac
           done
-          cp docs/screenshots/*.png dist/screenshots/
+          # Copy every PNG / WebP / AVIF in docs/screenshots/ — apps/showcase
+          # references the .png src in <img> and avif/webp via <picture><source>.
+          cp docs/screenshots/*.{png,webp,avif} dist/screenshots/ 2>/dev/null || true
 
       - name: configure pages
         uses: actions/configure-pages@v5
