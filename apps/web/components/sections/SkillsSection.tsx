@@ -1,8 +1,9 @@
 'use client';
 import type { CVData } from '@codevena/cvmake-schema';
 import { Input } from '@codevena/cvmake-ui';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
+import { ConfirmDialog } from '../ConfirmDialog';
 import { TagInput } from '../TagInput';
 
 const t = {
@@ -10,9 +11,12 @@ const t = {
   tabList: 'List',
   tabCategories: 'Categories',
   category: 'Category',
-  confirmDeleteCategory: (name: string) => `Delete category ${name}?`,
+  confirmDeleteCategory: (name: string) => `Delete category "${name}"?`,
   deleteCategory: (name: string) => `Delete category ${name}`,
   addCategory: '+ Add category',
+  newCategoryPlaceholder: 'Category name',
+  newCategoryConfirm: 'Add',
+  newCategoryCancel: 'Cancel',
 } as const;
 
 type Tab = 'stack' | 'categorized';
@@ -25,13 +29,23 @@ export function SkillsSection() {
   const cats = watch('skills.categorized') ?? {};
   const catEntries = Object.entries(cats);
 
-  function addCategory() {
-    const name = prompt('Category name?');
+  // Inline "add category" state — replaces window.prompt
+  const [addingCategory, setAddingCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const newCategoryInputRef = useRef<HTMLInputElement>(null);
+
+  // Pending delete state — replaces window.confirm
+  const [pendingDeleteCategory, setPendingDeleteCategory] = useState<string | null>(null);
+
+  function commitNewCategory() {
+    const name = newCategoryName.trim();
     if (!name) return;
     setValue('skills.categorized', { ...cats, [name]: [] }, { shouldDirty: true });
+    setNewCategoryName('');
+    setAddingCategory(false);
   }
+
   function removeCategory(name: string) {
-    if (!confirm(t.confirmDeleteCategory(name))) return;
     const { [name]: _omitted, ...rest } = cats;
     setValue('skills.categorized', rest, { shouldDirty: true });
   }
@@ -84,7 +98,7 @@ export function SkillsSection() {
                 />
                 <button
                   type="button"
-                  onClick={() => removeCategory(name)}
+                  onClick={() => setPendingDeleteCategory(name)}
                   aria-label={t.deleteCategory(name)}
                 >
                   🗑
@@ -99,15 +113,68 @@ export function SkillsSection() {
               />
             </div>
           ))}
-          <button
-            type="button"
-            onClick={addCategory}
-            className="rounded border border-dashed border-border p-2 text-sm text-text-muted hover:bg-elevated"
-          >
-            {t.addCategory}
-          </button>
+          {addingCategory ? (
+            <div className="flex items-center gap-2 rounded border border-dashed border-border p-2">
+              <input
+                ref={newCategoryInputRef}
+                // biome-ignore lint/a11y/noAutofocus: intentionally focused when the inline add form opens
+                autoFocus
+                type="text"
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+                placeholder={t.newCategoryPlaceholder}
+                className="flex-1 rounded border border-border bg-bg px-2 py-1 text-sm text-text outline-none focus:ring-1 focus:ring-accent"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    commitNewCategory();
+                  } else if (e.key === 'Escape') {
+                    setAddingCategory(false);
+                    setNewCategoryName('');
+                  }
+                }}
+              />
+              <button
+                type="button"
+                onClick={commitNewCategory}
+                className="rounded border border-border px-2 py-1 text-sm hover:bg-elevated"
+              >
+                {t.newCategoryConfirm}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setAddingCategory(false);
+                  setNewCategoryName('');
+                }}
+                className="rounded border border-border px-2 py-1 text-sm text-text-muted hover:bg-elevated"
+              >
+                {t.newCategoryCancel}
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setAddingCategory(true)}
+              className="rounded border border-dashed border-border p-2 text-sm text-text-muted hover:bg-elevated"
+            >
+              {t.addCategory}
+            </button>
+          )}
         </div>
       )}
+      <ConfirmDialog
+        open={pendingDeleteCategory !== null}
+        title="Delete category"
+        message={pendingDeleteCategory ? t.confirmDeleteCategory(pendingDeleteCategory) : ''}
+        confirmLabel="Delete"
+        tone="danger"
+        onConfirm={() => {
+          if (pendingDeleteCategory) removeCategory(pendingDeleteCategory);
+          setPendingDeleteCategory(null);
+        }}
+        onCancel={() => setPendingDeleteCategory(null)}
+      />
     </fieldset>
   );
 }

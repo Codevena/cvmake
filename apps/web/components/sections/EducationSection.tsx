@@ -1,7 +1,10 @@
 'use client';
+import { errProp } from '@/lib/form-utils';
 import type { CVData } from '@codevena/cvmake-schema';
 import { BulletListEditor, DateRangeInput, Input } from '@codevena/cvmake-ui';
+import { useState } from 'react';
 import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
+import { ConfirmDialog } from '../ConfirmDialog';
 
 const t = {
   heading: 'Education',
@@ -13,19 +16,14 @@ const t = {
   moveUp: 'Move up',
   moveDown: 'Move down',
   deleteEntry: 'Delete entry',
-  confirmDelete: 'Delete entry?',
+  confirmDelete: 'Delete this education entry?',
   addEntry: '+ Add entry',
 } as const;
-
-// With exactOptionalPropertyTypes:true the Phase-7 <Input> rejects an
-// explicit `error: undefined`. Spread the prop only when a message exists.
-function errProp(message: string | undefined): { error: string } | Record<string, never> {
-  return message ? { error: message } : {};
-}
 
 export function EducationSection() {
   const { control } = useFormContext<CVData>();
   const { fields, append, remove, swap } = useFieldArray({ control, name: 'education' });
+  const [pendingDelete, setPendingDelete] = useState<number | null>(null);
 
   return (
     <fieldset className="mt-6 flex flex-col gap-3">
@@ -53,9 +51,7 @@ export function EducationSection() {
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  if (confirm(t.confirmDelete)) remove(idx);
-                }}
+                onClick={() => setPendingDelete(idx)}
                 aria-label={t.deleteEntry}
               >
                 🗑
@@ -151,6 +147,18 @@ export function EducationSection() {
       >
         {t.addEntry}
       </button>
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        title={t.deleteEntry}
+        message={t.confirmDelete}
+        confirmLabel="Delete"
+        tone="danger"
+        onConfirm={() => {
+          if (pendingDelete !== null) remove(pendingDelete);
+          setPendingDelete(null);
+        }}
+        onCancel={() => setPendingDelete(null)}
+      />
     </fieldset>
   );
 }

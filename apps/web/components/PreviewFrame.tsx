@@ -47,8 +47,12 @@ function writeInitialDoc(
   // the editor serves fixture photos, regardless of the editor's own URL
   // (`/` in demo mode, `/cv/<slug>` otherwise). Absolute upload URLs
   // (`/photos/<slug>.webp`) ignore <base> and keep resolving as-is.
+  // Defense-in-depth: `locale` today comes from the Zod-validated CV schema
+  // (`'de' | 'en'`), but defense-in-depth escaping ensures a future code path
+  // passing unsanitized input cannot inject HTML attributes via the lang slot.
+  const safeLocale = String(locale).replace(/[^a-z0-9-]/gi, '');
   doc.write(`<!doctype html>
-<html lang="${locale}">
+<html lang="${safeLocale}">
 <head>
 <meta charset="utf-8">
 <base href="/cv/">

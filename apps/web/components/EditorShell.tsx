@@ -62,6 +62,9 @@ export function EditorShell({ initialData, initialMtime, slug, allSlugs, bootstr
   // until the user resolves the conflict. Only an explicit Reload or a
   // successful Overwrite is allowed to resume autosave.
   const [conflictPaused, setConflictPaused] = useState(false);
+  // Overwrite error — shown as an inline banner inside the conflict modal
+  // area instead of a blocking window.alert.
+  const [overwriteError, setOverwriteError] = useState<string | null>(null);
 
   const [activeTab, setActiveTab] = useState<TabId>('personal');
   const [paletteOpen, setPaletteOpen] = useState(false);
@@ -123,6 +126,8 @@ export function EditorShell({ initialData, initialMtime, slug, allSlugs, bootstr
             <TabNav active={activeTab} onSelect={setActiveTab} />
             {/* biome-ignore lint/a11y/useSemanticElements: explicit role="form" is needed — <form> only carries an implicit role when given an accessible name via aria-label/aria-labelledby */}
             <div role="form" className="flex-1 overflow-y-auto p-6">
+              {/* sr-only h1 gives screen readers and SEO an accessible heading without affecting layout */}
+              <h1 className="sr-only">cvmake CV Editor{slug ? ` — ${slug}` : ''}</h1>
               {activeTab === 'personal' && <PersonalSection slug={slug} />}
               {activeTab === 'experience' && <ExperienceSection />}
               {activeTab === 'education' && <EducationSection />}
@@ -164,56 +169,75 @@ export function EditorShell({ initialData, initialMtime, slug, allSlugs, bootstr
         />
       </div>
       {conflict && (
-        <ConflictModal
-          slug={slug}
-          currentData={conflict.currentData}
-          currentMtime={conflict.currentMtime}
-          isFormDirty={form.formState.isDirty}
-          onReload={(data, mtime) => {
-            form.reset(data);
-            autosave.expectedMtimeRef.current = mtime;
-            setConflict(null);
-            // Reload resolved the conflict — resume autosave.
-            setConflictPaused(false);
-          }}
-          onOverwrite={async (mtime) => {
-            // Await the response BEFORE dismissing the modal so a failed
-            // overwrite stays visible for the user to retry. Previously we
-            // closed the modal optimistically and a network/server error
-            // would silently drop the user's intent.
-            try {
-              const res = await fetch('/api/save', {
-                method: 'POST',
-                headers: { 'content-type': 'application/json' },
-                body: JSON.stringify({
-                  slug,
-                  data: form.getValues(),
-                  expectedMtime: mtime,
-                }),
-              });
-              if (!res.ok) {
-                const text = await res.text().catch(() => '');
-                window.alert(`Overwrite failed (HTTP ${res.status})${text ? `:\n${text}` : ''}`);
-                return;
-              }
-              const body = (await res.json()) as { mtime: number };
-              autosave.expectedMtimeRef.current = body.mtime;
+        <>
+          <ConflictModal
+            slug={slug}
+            currentData={conflict.currentData}
+            currentMtime={conflict.currentMtime}
+            isFormDirty={form.formState.isDirty}
+            onReload={(data, mtime) => {
+              form.reset(data);
+              autosave.expectedMtimeRef.current = mtime;
               setConflict(null);
-              // Successful overwrite resolves the conflict — resume autosave.
+              // Reload resolved the conflict — resume autosave.
               setConflictPaused(false);
-            } catch (err) {
-              window.alert(`Overwrite failed: ${(err as Error).message}`);
-            }
-          }}
-          onCancel={() => {
-            // Per spec §10.2: closing the modal without resolving must keep
-            // autosave paused. The user has to pick Reload or Overwrite next
-            // time the conflict surfaces (or fix the file by hand) — we must
-            // not silently start 409-looping again in the background.
-            setConflictPaused(true);
-            setConflict(null);
-          }}
-        />
+            }}
+            onOverwrite={async (mtime) => {
+              // Await the response BEFORE dismissing the modal so a failed
+              // overwrite stays visible for the user to retry. Previously we
+              // closed the modal optimistically and a network/server error
+              // would silently drop the user's intent.
+              setOverwriteError(null);
+              try {
+                const res = await fetch('/api/save', {
+                  method: 'POST',
+                  headers: { 'content-type': 'application/json' },
+                  body: JSON.stringify({
+                    slug,
+                    data: form.getValues(),
+                    expectedMtime: mtime,
+                  }),
+                });
+                if (!res.ok) {
+                  const text = await res.text().catch(() => '');
+                  setOverwriteError(
+                    `Overwrite failed (HTTP ${res.status})${text ? `: ${text}` : ''}`,
+                  );
+                  return;
+                }
+                const body = (await res.json()) as { mtime: number };
+                autosave.expectedMtimeRef.current = body.mtime;
+                setConflict(null);
+                setOverwriteError(null);
+                // Successful overwrite resolves the conflict — resume autosave.
+                setConflictPaused(false);
+              } catch (err) {
+                setOverwriteError(`Overwrite failed: ${(err as Error).message}`);
+              }
+            }}
+            onCancel={() => {
+              // Per spec §10.2: closing the modal without resolving must keep
+              // autosave paused. The user has to pick Reload or Overwrite next
+              // time the conflict surfaces (or fix the file by hand) — we must
+              // not silently start 409-looping again in the background.
+              setConflictPaused(true);
+              setConflict(null);
+              setOverwriteError(null);
+            }}
+          />
+          {overwriteError && (
+            // Inline error banner layered above the conflict modal, replacing
+            // the previous window.alert for overwrite failures.
+            <div className="pointer-events-none fixed inset-0 z-[60] flex items-end justify-center pb-8">
+              <p
+                role="alert"
+                className="pointer-events-auto max-w-lg rounded border border-error bg-surface px-4 py-3 text-sm text-error shadow-card"
+              >
+                {overwriteError}
+              </p>
+            </div>
+          )}
+        </>
       )}
     </FormProvider>
   );

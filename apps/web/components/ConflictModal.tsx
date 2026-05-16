@@ -1,4 +1,6 @@
 'use client';
+import { useEscapeClose } from '@/lib/use-escape-close';
+import { useFocusTrap } from '@/lib/use-focus-trap';
 import type { CVData } from '@codevena/cvmake-schema';
 import { useState } from 'react';
 
@@ -27,6 +29,9 @@ export function ConflictModal({
   const [confirmReload, setConfirmReload] = useState(false);
   const fileDeleted = currentData === null;
   const reloadDisabledTitle = fileDeleted ? 'File no longer exists' : undefined;
+  // Modal is always open when rendered — the parent controls mounting.
+  useEscapeClose(true, onCancel);
+  const trapRef = useFocusTrap(true);
   return (
     // biome-ignore lint/a11y/useSemanticElements: native <dialog> requires showModal()/close() imperative APIs; explicit role="dialog" on a controlled overlay is the React-friendly pattern here
     <div
@@ -35,7 +40,10 @@ export function ConflictModal({
       aria-labelledby="conflict-title"
       className="fixed inset-0 z-50 flex items-center justify-center bg-bg/80"
     >
-      <div className="max-w-lg rounded bg-surface border border-border p-6 text-text shadow-card">
+      <div
+        ref={trapRef}
+        className="max-w-lg rounded bg-surface border border-border p-6 text-text shadow-card"
+      >
         <h2 id="conflict-title" className="text-lg font-semibold">
           {fileDeleted ? 'File was deleted externally' : 'File was modified externally'}
         </h2>

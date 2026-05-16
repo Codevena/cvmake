@@ -1,4 +1,5 @@
 'use client';
+import { errProp } from '@/lib/form-utils';
 import type { CVData } from '@codevena/cvmake-schema';
 import { Input } from '@codevena/cvmake-ui';
 import { Controller, useFormContext } from 'react-hook-form';
@@ -14,12 +15,6 @@ const t = {
   drivingLicense: 'Driving licence',
   contact: 'Contact',
 } as const;
-
-// With exactOptionalPropertyTypes:true the Phase-7 <Input> rejects an
-// explicit `error: undefined`. Spread the prop only when a message exists.
-function errProp(message: string | undefined): { error: string } | Record<string, never> {
-  return message ? { error: message } : {};
-}
 
 export function PersonalSection({ slug }: { slug: string }) {
   const { control } = useFormContext<CVData>();

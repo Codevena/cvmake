@@ -1,7 +1,10 @@
 'use client';
+import { errProp } from '@/lib/form-utils';
 import type { CVData } from '@codevena/cvmake-schema';
 import { BulletListEditor, Input } from '@codevena/cvmake-ui';
+import { useState } from 'react';
 import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
+import { ConfirmDialog } from '../ConfirmDialog';
 
 const t = {
   heading: 'Custom sections',
@@ -10,20 +13,14 @@ const t = {
   itemDate: 'Date',
   itemDescription: 'Description',
   deleteItem: 'Delete item',
-  confirmDeleteItem: 'Delete item?',
+  confirmDeleteItem: 'Delete this item?',
   addItem: '+ Item',
   sectionIdSlug: 'ID (slug)',
   sectionTitle: 'Title',
   deleteSection: 'Delete section',
-  confirmDeleteSection: 'Delete section?',
+  confirmDeleteSection: 'Delete this section?',
   addSection: '+ Add section',
 } as const;
-
-// With exactOptionalPropertyTypes:true the Phase-7 <Input> rejects an explicit
-// `error: undefined`. Spread the prop only when a message exists.
-function errProp(message: string | undefined): { error: string } | Record<string, never> {
-  return message ? { error: message } : {};
-}
 
 function ItemsArray({ outerIdx }: { outerIdx: number }) {
   const { control } = useFormContext<CVData>();
@@ -31,6 +28,8 @@ function ItemsArray({ outerIdx }: { outerIdx: number }) {
     control,
     name: `customSections.${outerIdx}.items`,
   });
+  const [pendingDeleteItem, setPendingDeleteItem] = useState<number | null>(null);
+
   return (
     <div className="mt-2 flex flex-col gap-2 pl-4">
       {fields.map((f, idx) => (
@@ -39,9 +38,7 @@ function ItemsArray({ outerIdx }: { outerIdx: number }) {
             <span className="text-xs text-text-muted">Item #{idx + 1}</span>
             <button
               type="button"
-              onClick={() => {
-                if (confirm(t.confirmDeleteItem)) remove(idx);
-              }}
+              onClick={() => setPendingDeleteItem(idx)}
               aria-label={t.deleteItem}
             >
               🗑
@@ -118,6 +115,18 @@ function ItemsArray({ outerIdx }: { outerIdx: number }) {
       >
         {t.addItem}
       </button>
+      <ConfirmDialog
+        open={pendingDeleteItem !== null}
+        title={t.deleteItem}
+        message={t.confirmDeleteItem}
+        confirmLabel="Delete"
+        tone="danger"
+        onConfirm={() => {
+          if (pendingDeleteItem !== null) remove(pendingDeleteItem);
+          setPendingDeleteItem(null);
+        }}
+        onCancel={() => setPendingDeleteItem(null)}
+      />
     </div>
   );
 }
@@ -125,6 +134,8 @@ function ItemsArray({ outerIdx }: { outerIdx: number }) {
 export function CustomSectionsSection() {
   const { control } = useFormContext<CVData>();
   const { fields, append, remove } = useFieldArray({ control, name: 'customSections' });
+  const [pendingDeleteSection, setPendingDeleteSection] = useState<number | null>(null);
+
   return (
     <fieldset className="mt-6 flex flex-col gap-3">
       <legend className="font-display text-base font-semibold">{t.heading}</legend>
@@ -134,9 +145,7 @@ export function CustomSectionsSection() {
             <span className="font-medium">Section #{idx + 1}</span>
             <button
               type="button"
-              onClick={() => {
-                if (confirm(t.confirmDeleteSection)) remove(idx);
-              }}
+              onClick={() => setPendingDeleteSection(idx)}
               aria-label={t.deleteSection}
             >
               🗑
@@ -180,6 +189,18 @@ export function CustomSectionsSection() {
       >
         {t.addSection}
       </button>
+      <ConfirmDialog
+        open={pendingDeleteSection !== null}
+        title={t.deleteSection}
+        message={t.confirmDeleteSection}
+        confirmLabel="Delete"
+        tone="danger"
+        onConfirm={() => {
+          if (pendingDeleteSection !== null) remove(pendingDeleteSection);
+          setPendingDeleteSection(null);
+        }}
+        onCancel={() => setPendingDeleteSection(null)}
+      />
     </fieldset>
   );
 }
