@@ -21,6 +21,22 @@ section#top::before {
   z-index: -1;
 }
 
+/* Light-mode polish — keeps the hero glow visible against parchment. */
+@media (prefers-color-scheme: light) {
+  html {
+    background-color: #fafaf6;
+  }
+  section#top::before {
+    /* Darker sand at lower opacity reads as warmth against light parchment
+       instead of a washed-out blob like the dark-mode glow would on white. */
+    background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(139, 96, 51, 0.1), transparent 70%);
+  }
+  /* Scrollbar in light mode — bump contrast against parchment. */
+  pre::-webkit-scrollbar-thumb {
+    background: rgba(139, 96, 51, 0.4);
+  }
+}
+
 /* Tailwind utilities aren't a perfect fit for the slightly-tighter scrollbar
    we want on code blocks inside cards, so override here. */
 pre::-webkit-scrollbar {

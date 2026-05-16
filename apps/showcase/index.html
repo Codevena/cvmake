@@ -153,15 +153,15 @@
 
           <!-- terminal preview -->
           <div class="mx-auto mt-16 max-w-2xl text-left">
-            <div class="overflow-hidden rounded-xl border border-ink-line bg-ink-soft shadow-card">
+            <div class="group relative overflow-hidden rounded-xl border border-ink-line bg-ink-soft shadow-card">
               <div class="flex items-center gap-2 border-b border-ink-line px-4 py-2.5">
                 <span class="h-3 w-3 rounded-full bg-[#ff5f56]"></span>
                 <span class="h-3 w-3 rounded-full bg-[#ffbd2e]"></span>
                 <span class="h-3 w-3 rounded-full bg-[#27c93f]"></span>
                 <span class="ml-3 text-xs text-parchment/50">~/cvmake</span>
               </div>
-              <pre class="overflow-x-auto px-5 py-4 font-mono text-sm leading-7 text-parchment/90"><span class="text-sand">$</span> pnpm cvmake build data/cvs/cv.de.yaml
-<span class="text-parchment/50">→ rendering with template "classic-serif"</span>
+              <pre class="overflow-x-auto px-5 py-4 font-mono text-sm leading-7 text-parchment/90" data-copy><span class="text-sand">$</span> pnpm cvmake build data/cvs/cv.de.yaml
+<span class="text-parchment/50">→ rendering with template "<span id="terminal-template" class="text-sand transition-opacity duration-200">classic-serif</span>"</span>
 <span class="text-parchment/50">→ writing out/cv.pdf</span>
 <span class="text-emerald-400">✓ done in 1.4s</span></pre>
             </div>
@@ -240,32 +240,32 @@
         </div>
 
         <ol class="mt-14 grid gap-6 md:grid-cols-3">
-          <li class="rounded-xl border border-ink-line bg-ink-soft p-6 shadow-card">
+          <li class="group relative rounded-xl border border-ink-line bg-ink-soft p-6 shadow-card">
             <div class="flex items-center gap-3 text-sand">
               <span class="font-display text-2xl">01</span>
               <span class="text-xs uppercase tracking-[0.18em]">Clone</span>
             </div>
-            <pre class="mt-5 overflow-x-auto rounded-md bg-ink/80 p-4 font-mono text-[13px] leading-6 text-parchment/90"><code>git clone https://github.com/Codevena/cvmake
+            <pre class="mt-5 overflow-x-auto rounded-md bg-ink/80 p-4 font-mono text-[13px] leading-6 text-parchment/90" data-copy><code>git clone https://github.com/Codevena/cvmake
 cd cvmake
 pnpm install
 pnpm build</code></pre>
           </li>
-          <li class="rounded-xl border border-ink-line bg-ink-soft p-6 shadow-card">
+          <li class="group relative rounded-xl border border-ink-line bg-ink-soft p-6 shadow-card">
             <div class="flex items-center gap-3 text-sand">
               <span class="font-display text-2xl">02</span>
               <span class="text-xs uppercase tracking-[0.18em]">Edit YAML</span>
             </div>
-            <pre class="mt-5 overflow-x-auto rounded-md bg-ink/80 p-4 font-mono text-[13px] leading-6 text-parchment/90"><code>cp data/cvs/example.de.yaml \
+            <pre class="mt-5 overflow-x-auto rounded-md bg-ink/80 p-4 font-mono text-[13px] leading-6 text-parchment/90" data-copy><code>cp data/cvs/example.de.yaml \
    data/cvs/cv.de.yaml
 
 # open in any editor</code></pre>
           </li>
-          <li class="rounded-xl border border-ink-line bg-ink-soft p-6 shadow-card">
+          <li class="group relative rounded-xl border border-ink-line bg-ink-soft p-6 shadow-card">
             <div class="flex items-center gap-3 text-sand">
               <span class="font-display text-2xl">03</span>
               <span class="text-xs uppercase tracking-[0.18em]">Render</span>
             </div>
-            <pre class="mt-5 overflow-x-auto rounded-md bg-ink/80 p-4 font-mono text-[13px] leading-6 text-parchment/90"><code>pnpm cvmake build \
+            <pre class="mt-5 overflow-x-auto rounded-md bg-ink/80 p-4 font-mono text-[13px] leading-6 text-parchment/90" data-copy><code>pnpm cvmake build \
    data/cvs/cv.de.yaml
 
 # → out/cv.pdf</code></pre>

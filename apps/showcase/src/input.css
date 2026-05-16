@@ -24,3 +24,23 @@
   --shadow-card: 0 30px 60px -30px rgba(0, 0, 0, 0.5);
   --shadow-ring: 0 0 0 1px rgba(212, 165, 116, 0.25);
 }
+
+/* Light-mode — respects the OS / browser setting via prefers-color-scheme.
+   No manual toggle (state machine + persistence is more bytes than this
+   site needs; OS-level themeing is the right default for a content site).
+   Token NAMES stay the same; values invert. Anything in index.html that
+   uses bg-ink / text-parchment / border-ink-line etc. auto-adapts. */
+@media (prefers-color-scheme: light) {
+  :root {
+    --color-ink: #fafaf6;
+    --color-ink-soft: #f0eee6;
+    --color-ink-line: #d6cfbe;
+    --color-parchment: #1a1f28;
+    /* sand is the accent — needs to darken for AA contrast on light bg */
+    --color-sand: #8b6033;
+    --color-sand-muted: #6e4720;
+
+    --shadow-card: 0 20px 40px -20px rgba(26, 31, 40, 0.15);
+    --shadow-ring: 0 0 0 1px rgba(139, 96, 51, 0.28);
+  }
+}

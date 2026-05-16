@@ -186,9 +186,73 @@ function wireCtaTracking() {
   }
 }
 
+function wireCopyButtons() {
+  // Progressive-enhancement copy button on every <pre data-copy> block.
+  // The button only appears on hover/focus-within of the wrapping `group`
+  // ancestor; on touch it stays visible via the active style.
+  for (const pre of document.querySelectorAll('pre[data-copy]')) {
+    const wrapper = pre.parentElement;
+    if (!wrapper) continue;
+    if (!wrapper.classList.contains('relative')) wrapper.classList.add('relative');
+    if (!wrapper.classList.contains('group')) wrapper.classList.add('group');
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.setAttribute('aria-label', 'Copy code to clipboard');
+    btn.textContent = 'Copy';
+    btn.className =
+      'absolute right-2 top-2 rounded-md bg-ink/80 px-2 py-1 text-[11px] font-mono uppercase tracking-wider text-parchment/60 opacity-0 transition-opacity hover:bg-ink hover:text-parchment group-hover:opacity-100 group-focus-within:opacity-100 focus:opacity-100';
+
+    btn.addEventListener('click', async () => {
+      const text = (pre.textContent ?? '').trim();
+      try {
+        await navigator.clipboard.writeText(text);
+        track('showcase.code_copy', { length: text.length });
+        const prev = btn.textContent;
+        btn.textContent = 'Copied';
+        btn.classList.add('text-sand');
+        setTimeout(() => {
+          btn.textContent = prev;
+          btn.classList.remove('text-sand');
+        }, 1400);
+      } catch {
+        btn.textContent = 'Error';
+        setTimeout(() => {
+          btn.textContent = 'Copy';
+        }, 1400);
+      }
+    });
+
+    wrapper.appendChild(btn);
+  }
+}
+
+function animateTerminal() {
+  // Cycle the template name in the hero terminal preview to show off the
+  // "switch by changing one line" claim. Static if the user prefers reduced
+  // motion — respects the OS / browser accessibility setting via matchMedia.
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const el = document.getElementById('terminal-template');
+  if (!el) return;
+  // Templates picked to give maximum visual variety in the rotation — same
+  // selection as the hero collage so the brand story stays consistent.
+  const names = ['classic-serif', 'swiss', 'bauhaus', 'noir', 'modern-minimal'];
+  let i = 0;
+  setInterval(() => {
+    i = (i + 1) % names.length;
+    el.style.opacity = '0';
+    setTimeout(() => {
+      el.textContent = names[i];
+      el.style.opacity = '1';
+    }, 200);
+  }, 2400);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   loadUmami();
   renderTemplateGrid();
   wireLightboxControls();
   wireCtaTracking();
+  wireCopyButtons();
+  animateTerminal();
 });
