@@ -65,7 +65,7 @@ jobs:
         run: pnpm --filter @codevena/cvmake-templates test:visual
 
       - name: upload baselines (artifact fallback)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: visual-baselines-linux-${{ github.run_id }}
           path: packages/templates/__tests__/__visual__/**/*.page*.png
