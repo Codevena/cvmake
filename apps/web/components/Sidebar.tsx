@@ -1,4 +1,5 @@
 'use client';
+import { track } from '@/lib/analytics';
 import type { PreviewBootstrap } from '@/lib/preview-bootstrap';
 import type { CVData } from '@codevena/cvmake-schema';
 import { getTemplate, listTemplates } from '@codevena/cvmake-templates';
@@ -70,7 +71,10 @@ export function Sidebar(_props: Props) {
                   description={t.meta.description}
                   thumbnailSrc={`/template-thumbnails/${t.meta.id}.png`}
                   selected={field.value === t.meta.id}
-                  onSelect={() => field.onChange(t.meta.id)}
+                  onSelect={() => {
+                    track('editor.template_change', { template: t.meta.id });
+                    field.onChange(t.meta.id);
+                  }}
                 />
               ))}
             </div>

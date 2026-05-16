@@ -17,8 +17,11 @@ export default {
               "img-src 'self' data: blob:",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
-              "script-src 'self' 'unsafe-inline'",
-              "connect-src 'self'",
+              // analytics.codevena.dev = self-hosted Umami (apps/web/components/UmamiScript.tsx).
+              // If you point NEXT_PUBLIC_UMAMI_SRC at a different host, update
+              // both script-src AND connect-src below to match.
+              "script-src 'self' 'unsafe-inline' https://analytics.codevena.dev",
+              "connect-src 'self' https://analytics.codevena.dev",
               "frame-ancestors 'none'",
               "base-uri 'self'",
               "form-action 'self'",

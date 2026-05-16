@@ -1,4 +1,5 @@
 'use client';
+import { track } from '@/lib/analytics';
 import { downloadYaml } from '@/lib/download-yaml';
 import type { CVData } from '@codevena/cvmake-schema';
 
@@ -9,6 +10,7 @@ interface Props {
 
 export function DownloadYamlButton({ getData, slug }: Props) {
   function download() {
+    track('editor.download_yaml', { slug });
     downloadYaml({ data: getData(), slug });
   }
 

@@ -1,3 +1,4 @@
+import { UmamiScript } from '@/components/UmamiScript';
 import type { Metadata, Viewport } from 'next';
 import { Fraunces, Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
@@ -59,7 +60,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${fraunces.variable} ${jetbrainsMono.variable}`}>
-      <body className="bg-bg text-text font-sans antialiased">{children}</body>
+      <body className="bg-bg text-text font-sans antialiased">
+        {children}
+        <UmamiScript />
+      </body>
     </html>
   );
 }

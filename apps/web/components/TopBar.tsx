@@ -1,6 +1,7 @@
 'use client';
 // ConfirmDialog is provided by Agent 5 — import will resolve once that file lands.
 import { ConfirmDialog } from '@/components/ConfirmDialog';
+import { track } from '@/lib/analytics';
 import { cvRoute } from '@/lib/cv-route';
 import { exportPdf } from '@/lib/export-pdf';
 import type { CVData } from '@codevena/cvmake-schema';
@@ -55,6 +56,7 @@ export function TopBar({
     if (isDemo && formState.isDirty) {
       setPendingSwitch({ targetSlug: newSlug });
     } else {
+      track('editor.locale_switch', { from: slug, to: newSlug });
       router.push(cvRoute(newSlug, isDemo));
     }
   }
@@ -62,8 +64,14 @@ export function TopBar({
   async function handleExportPdf() {
     if (!formState.isValid || exporting) return;
     setExporting(true);
+    const values = getValues();
+    track('editor.export_pdf', {
+      slug,
+      template: values.rendering?.template,
+      palette: values.rendering?.palette,
+    });
     try {
-      await exportPdf({ data: getValues(), slug });
+      await exportPdf({ data: values, slug });
     } finally {
       setExporting(false);
     }

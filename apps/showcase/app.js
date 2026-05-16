@@ -140,7 +140,39 @@ function wireLightboxControls() {
   });
 }
 
+function loadUmami() {
+  const cfg = window.CVMAKE_UMAMI;
+  if (!cfg || !cfg.src || !cfg.websiteId || cfg.websiteId === 'WEBSITE_ID_PLACEHOLDER') return;
+  const s = document.createElement('script');
+  s.defer = true;
+  s.src = cfg.src;
+  s.dataset.websiteId = cfg.websiteId;
+  document.head.appendChild(s);
+}
+
+function track(event, props) {
+  try {
+    window.umami?.track(event, props);
+  } catch {
+    // never let analytics break user interaction
+  }
+}
+
+function wireCtaTracking() {
+  // Track every CTA click in nav / hero / footer with the visible button label
+  // so the dashboard shows which copy converts (Open editor vs Browse templates
+  // vs GitHub etc.). Generic enough that future CTAs auto-track without code
+  // changes — just add `data-cta="<label>"` to the new element.
+  for (const el of document.querySelectorAll('[data-cta]')) {
+    el.addEventListener('click', () => {
+      track('showcase.cta_click', { cta: el.dataset.cta });
+    });
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  loadUmami();
   renderTemplateGrid();
   wireLightboxControls();
+  wireCtaTracking();
 });
