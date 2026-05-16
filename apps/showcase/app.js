@@ -80,6 +80,8 @@ function renderTemplateGrid() {
             src="screenshots/${t.id}.png"
             alt="${t.name} template preview"
             loading="lazy"
+            width="1242"
+            height="1754"
             class="h-full w-full object-cover object-top transition duration-500 group-hover:scale-[1.02]"
           />
         </div>
@@ -93,13 +95,13 @@ function renderTemplateGrid() {
 
   grid.innerHTML = html;
 
-  grid.querySelectorAll('.template-card').forEach((card) => {
+  for (const card of grid.querySelectorAll('.template-card')) {
     card.addEventListener('click', () => {
       const id = card.dataset.template;
       const name = card.dataset.name;
       if (id && name) openLightbox(id, name);
     });
-  });
+  }
 }
 
 function openLightbox(templateId, templateName) {

@@ -15,8 +15,17 @@
     />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://cvmake.codevena.dev" />
-    <meta property="og:image" content="https://cvmake.codevena.dev/screenshots/classic-serif.png" />
+    <meta property="og:image" content="https://cvmake.codevena.dev/og-card.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="cvmake — CV builder: YAML in, PDF out. 12 templates." />
+    <meta property="og:site_name" content="cvmake" />
+    <meta property="og:locale" content="en_US" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@codevena" />
+    <meta name="twitter:image" content="https://cvmake.codevena.dev/og-card.png" />
+    <meta name="twitter:image:alt" content="cvmake — YAML CV builder, 12 polished templates" />
+    <link rel="canonical" href="https://cvmake.codevena.dev/" />
     <meta name="theme-color" content="#0b0f17" />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
 
@@ -32,6 +41,8 @@
   </head>
 
   <body class="bg-ink text-parchment font-body antialiased selection:bg-sand selection:text-ink">
+    <a href="#content" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:px-3 focus:py-2 focus:rounded-md focus:bg-sand focus:text-ink focus:text-sm focus:font-semibold">Skip to content</a>
+
     <!-- subtle grid backdrop -->
     <div aria-hidden="true" class="pointer-events-none fixed inset-0 -z-10 opacity-[0.06]">
       <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
@@ -71,6 +82,8 @@
       </nav>
     </header>
 
+    <main id="content">
+
     <!-- hero -->
     <section id="top" class="relative pt-40 pb-28 lg:pt-48 lg:pb-36">
       <div class="mx-auto max-w-6xl px-6">
@@ -100,12 +113,9 @@
             </a>
             <a
               href="#templates"
-              class="inline-flex items-center gap-2 rounded-md bg-sand px-5 py-3 text-sm font-semibold text-ink shadow-card transition hover:-translate-y-0.5 hover:bg-sand/90"
+              class="inline-flex items-center gap-2 rounded-md border border-ink-line bg-ink-soft px-5 py-3 text-sm font-semibold text-parchment transition hover:border-sand/40 hover:bg-ink"
             >
               Browse templates
-              <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path d="M10 3a1 1 0 0 1 1 1v9.586l3.293-3.293a1 1 0 1 1 1.414 1.414l-5 5a1 1 0 0 1-1.414 0l-5-5a1 1 0 1 1 1.414-1.414L9 13.586V4a1 1 0 0 1 1-1Z" />
-              </svg>
             </a>
             <a
               href="https://github.com/Codevena/cvmake"
@@ -163,7 +173,7 @@
 
         <div
           id="template-grid"
-          class="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+          class="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
         ></div>
       </div>
     </section>
@@ -305,6 +315,8 @@ pnpm build</code></pre>
       </div>
     </section>
 
+    </main><!-- /#content -->
+
     <!-- footer -->
     <footer class="border-t border-ink-line py-10 text-sm text-parchment/60">
       <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 md:flex-row">
@@ -345,5 +357,20 @@ pnpm build</code></pre>
     </div>
 
     <script src="app.js"></script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "cvmake",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web, Linux, macOS, Windows",
+      "description": "Open-source CV builder. YAML in, PDF out. Twelve polished templates, multilingual, CLI + web editor.",
+      "url": "https://cvmake.codevena.dev",
+      "downloadUrl": "https://www.npmjs.com/package/@codevena/cvmake-cli",
+      "license": "https://opensource.org/licenses/MIT",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "author": { "@type": "Organization", "name": "Codevena", "url": "https://github.com/Codevena" }
+    }
+    </script>
   </body>
 </html>

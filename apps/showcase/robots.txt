@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://cvmake.codevena.dev/sitemap.xml

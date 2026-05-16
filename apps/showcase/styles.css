@@ -13,15 +13,10 @@ body {
 
 /* Subtle radial glow behind the hero, just enough to lift it off the grid. */
 section#top::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(
-      ellipse 60% 50% at 50% 0%,
-      rgba(212, 165, 116, 0.18),
-      transparent 70%
-    );
+  background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(212, 165, 116, 0.18), transparent 70%);
   pointer-events: none;
   z-index: -1;
 }
