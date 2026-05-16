@@ -68,8 +68,12 @@ COPY --from=build /app ./
 COPY --from=build /home/nodejs/.cache/puppeteer /home/nodejs/.cache/puppeteer
 
 # Drop to non-root user (C5).
-RUN chown -R nodejs:nodejs /app \
- && chown -R nodejs:nodejs /home/nodejs/.cache/puppeteer
+# Chown the ENTIRE nodejs home so Node (which is now node 25 on the bundled
+# Next.js runtime) can mkdir its own module-resolution cache at
+# /home/nodejs/.cache/node — chowning only the puppeteer subdir leaves
+# /home/nodejs/.cache itself root-owned (created by the COPY above), and
+# EACCES on cache mkdir kills the runtime on first request.
+RUN chown -R nodejs:nodejs /app /home/nodejs
 
 USER nodejs
 
