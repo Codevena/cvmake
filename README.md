@@ -10,6 +10,12 @@
 
 **→ Live demo: [cvmake.codevena.dev](https://cvmake.codevena.dev)**
 
+<p align="center">
+  <img src="docs/collage-4templates.png" width="800" alt="One YAML, four templates — classic-serif, swiss, bauhaus, noir all rendered from the same example.en.yaml" />
+  <br/>
+  <em>One YAML file. Four templates. Switch by changing one line.</em>
+</p>
+
 ---
 
 ## Showcase

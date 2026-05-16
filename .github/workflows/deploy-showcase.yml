@@ -40,14 +40,23 @@ jobs:
       - name: assemble showcase output
         run: |
           set -euo pipefail
-          mkdir -p dist
-          cp apps/showcase/index.html dist/
-          cp apps/showcase/styles.css dist/
-          cp apps/showcase/tailwind.css dist/
-          cp apps/showcase/app.js dist/
-          cp apps/showcase/favicon.svg dist/
-          cp apps/showcase/CNAME dist/
-          mkdir -p dist/screenshots
+          mkdir -p dist dist/screenshots
+          # Copy every top-level file from the showcase directory EXCEPT the
+          # build inputs (src/, package.json, node_modules, etc.).  This is
+          # a "list what's NOT a build artifact" approach so future assets
+          # (og-card, collage, robots/sitemap, additional PNGs) land in dist
+          # without another workflow edit.
+          for f in apps/showcase/*; do
+            base="$(basename "$f")"
+            case "$base" in
+              # build inputs / local-dev artifacts that should not ship
+              src|node_modules|package.json|tsconfig*.json|README.md) ;;
+              # screenshots/ is a local sync mirror of docs/screenshots — the
+              # canonical copy comes from docs/ below.
+              screenshots) ;;
+              *) cp -r "$f" "dist/$base" ;;
+            esac
+          done
           cp docs/screenshots/*.png dist/screenshots/
 
       - name: configure pages
