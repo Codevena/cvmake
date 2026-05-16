@@ -12,7 +12,7 @@ import { type CVData, CVDataSchema } from '@codevena/cvmake-schema';
 import { bootstrapTemplates, getTemplate, listTemplates } from '@codevena/cvmake-templates';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import type { ZodIssue } from 'zod';
 import { CommandPalette, type PaletteCommands } from './CommandPalette';
@@ -93,6 +93,24 @@ export function EditorShell({ initialData, initialMtime, slug, allSlugs, bootstr
     e.preventDefault();
     setPaletteOpen((prev) => !prev);
   });
+
+  // beforeunload guard (audit C11 sibling — covers the "close tab / refresh /
+  // navigate to external URL" case that the in-app ConfirmDialog can't reach).
+  // Only enabled in demo mode: non-demo deploys autosave every 2 s so unsaved
+  // work is already protected; demo deploys explicitly don't save and a
+  // closed tab would lose the user's edits silently.
+  // Browsers ignore custom returnValue strings since Chrome 51 — setting any
+  // string (or just calling preventDefault) triggers the native "Leave site?"
+  // prompt. The empty string + preventDefault is the spec-compliant idiom.
+  useEffect(() => {
+    if (!demo || !form.formState.isDirty) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = '';
+    };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [demo, form.formState.isDirty]);
 
   const currentTemplateId = form.watch('rendering.template');
 
