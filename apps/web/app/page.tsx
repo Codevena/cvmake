@@ -1,7 +1,6 @@
 import { stat } from 'node:fs/promises';
-import { readdir } from 'node:fs/promises';
 import { EditorShell } from '@/components/EditorShell';
-import { dataDir, resolveCvPath } from '@/lib/data-paths';
+import { listSlugs, resolveCvPath } from '@/lib/data-paths';
 import { isDemoMode } from '@/lib/demo-mode';
 import { getPreviewBootstrap } from '@/lib/preview-bootstrap';
 import { loadCV } from '@codevena/cvmake-core/loader';
@@ -9,21 +8,11 @@ import { bootstrapTemplates } from '@codevena/cvmake-templates';
 
 export const dynamic = 'force-dynamic';
 
+export const metadata = { robots: { index: false, follow: false } };
+
 // In demo mode only the two tracked example CVs are reachable — one English,
 // one German — so the demo can show off the multilingual rendering.
 const DEMO_SLUGS = ['example.en', 'example.de'];
-
-async function listSlugs(): Promise<string[]> {
-  try {
-    const files = await readdir(dataDir());
-    return files
-      .filter((f) => f.endsWith('.yaml'))
-      .map((f) => f.slice(0, -'.yaml'.length))
-      .sort();
-  } catch {
-    return [];
-  }
-}
 
 function pickDefault(slugs: string[]): string | null {
   if (slugs.includes('cv.de')) return 'cv.de';

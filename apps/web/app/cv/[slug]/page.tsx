@@ -1,6 +1,6 @@
-import { readdir, stat } from 'node:fs/promises';
+import { stat } from 'node:fs/promises';
 import { EditorShell } from '@/components/EditorShell';
-import { dataDir, resolveCvPath } from '@/lib/data-paths';
+import { listSlugs, resolveCvPath } from '@/lib/data-paths';
 import { isDemoMode } from '@/lib/demo-mode';
 import { getPreviewBootstrap } from '@/lib/preview-bootstrap';
 import { loadCV } from '@codevena/cvmake-core/loader';
@@ -9,20 +9,10 @@ import { notFound, redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
+export const metadata = { robots: { index: false, follow: false } };
+
 interface Ctx {
   params: Promise<{ slug: string }>;
-}
-
-async function listSlugs(): Promise<string[]> {
-  try {
-    const files = await readdir(dataDir());
-    return files
-      .filter((f) => f.endsWith('.yaml'))
-      .map((f) => f.slice(0, -'.yaml'.length))
-      .sort();
-  } catch {
-    return [];
-  }
 }
 
 export default async function CvPage({ params }: Ctx) {

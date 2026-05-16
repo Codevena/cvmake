@@ -1,4 +1,5 @@
 import { existsSync } from 'node:fs';
+import { readdir } from 'node:fs/promises';
 import path from 'node:path';
 
 const SLUG_RE = /^(?!\.+$)[a-z0-9.-]+$/;
@@ -39,6 +40,18 @@ export function photoDir(): string {
 
 export function uploadStagingDir(): string {
   return path.resolve(repoRoot(), 'data', 'cvs', 'photos');
+}
+
+export async function listSlugs(): Promise<string[]> {
+  try {
+    const files = await readdir(dataDir());
+    return files
+      .filter((f) => f.endsWith('.yaml'))
+      .map((f) => f.slice(0, -'.yaml'.length))
+      .sort();
+  } catch {
+    return [];
+  }
 }
 
 export function resolveCvPath(slug: string): string {

@@ -1,16 +1,64 @@
+import type { Metadata, Viewport } from 'next';
+import { Fraunces, Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-sans',
+  display: 'swap',
+});
+
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  variable: '--font-display',
+  display: 'swap',
+  axes: ['opsz'],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+  display: 'swap',
+});
+
+export const metadata: Metadata = {
+  metadataBase: new URL('https://editor.cvmake.codevena.dev'),
+  title: { default: 'cvmake — CV editor', template: '%s | cvmake' },
+  description:
+    'Open-source CV builder. Edit your YAML CV in the browser and export a polished PDF in seconds.',
+  robots: { index: false, follow: false },
+  alternates: { canonical: '/' },
+  openGraph: {
+    title: 'cvmake — CV editor',
+    description: 'Open-source CV builder. YAML in, PDF out.',
+    url: 'https://editor.cvmake.codevena.dev',
+    siteName: 'cvmake',
+    type: 'website',
+    images: [
+      {
+        url: 'https://cvmake.codevena.dev/og-card.png',
+        width: 1200,
+        height: 630,
+        alt: 'cvmake — CV builder',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'cvmake — CV editor',
+    description: 'Open-source CV builder. YAML in, PDF out.',
+  },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#0b0f17',
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html lang="en" className={`${inter.variable} ${fraunces.variable} ${jetbrainsMono.variable}`}>
       <body className="bg-bg text-text font-sans antialiased">{children}</body>
     </html>
   );
