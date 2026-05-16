@@ -76,8 +76,10 @@ USER nodejs
 EXPOSE 3000
 
 # M2: health-check so Coolify/Docker can detect a hung Next.js / Puppeteer process.
+# Probes the dedicated /api/health liveness endpoint (apps/web/app/api/health/route.ts)
+# — minimal handler, no I/O, no template bootstrap, returns JSON {status:'ok',...}.
 # wget is installed in the base stage.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-  CMD wget -qO- http://127.0.0.1:3000/ || exit 1
+  CMD wget -qO- http://127.0.0.1:3000/api/health || exit 1
 
 CMD ["pnpm", "--filter", "@codevena/cvmake-web", "start"]
