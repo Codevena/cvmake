@@ -22,6 +22,22 @@ describe('<Input>', () => {
     expect(screen.getByText('Required')).toBeInTheDocument();
   });
 
+  it('sets aria-invalid and aria-describedby when error is set', () => {
+    render(<Input label="Name" value="" onChange={() => {}} error="Required" />);
+    const input = screen.getByLabelText('Name');
+    expect(input).toHaveAttribute('aria-invalid', 'true');
+    const errorEl = screen.getByRole('alert');
+    expect(errorEl).toHaveTextContent('Required');
+    expect(input).toHaveAttribute('aria-describedby', errorEl.id);
+  });
+
+  it('does not set aria-invalid when no error', () => {
+    render(<Input label="Name" value="" onChange={() => {}} />);
+    const input = screen.getByLabelText('Name');
+    expect(input).not.toHaveAttribute('aria-invalid');
+    expect(input).not.toHaveAttribute('aria-describedby');
+  });
+
   it('respects disabled prop', () => {
     render(<Input label="Name" value="" onChange={() => {}} disabled />);
     expect(screen.getByLabelText('Name')).toBeDisabled();

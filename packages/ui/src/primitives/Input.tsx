@@ -1,4 +1,4 @@
-import type { ChangeEvent } from 'react';
+import { type ChangeEvent, useId } from 'react';
 
 export interface InputProps {
   id?: string;
@@ -16,15 +16,9 @@ export interface InputProps {
   autoComplete?: string;
 }
 
-function deriveId(props: Pick<InputProps, 'id' | 'name' | 'label'>): string {
-  if (props.id) return props.id;
-  if (props.name) return props.name;
-  if (props.label) return `input-${props.label.replace(/\s+/g, '-').toLowerCase()}`;
-  return 'input-field';
-}
-
 export function Input(props: InputProps): JSX.Element {
   const {
+    id,
     name,
     label,
     value,
@@ -38,7 +32,12 @@ export function Input(props: InputProps): JSX.Element {
     placeholder,
     autoComplete,
   } = props;
-  const inputId = deriveId(props);
+  // useId() guarantees a unique ID per component instance, preventing collisions
+  // when the same label appears in multiple sections (e.g. "Location" in Experience
+  // and Education). The caller-supplied `id` takes precedence for test stability.
+  const uid = useId();
+  const inputId = id ?? uid;
+  const errorId = `${inputId}-err`;
   const wrapperClass = ['flex flex-col gap-1', className].filter(Boolean).join(' ');
   const inputClass = [
     'rounded-md border bg-elevated px-3 py-2 text-text',
@@ -66,8 +65,14 @@ export function Input(props: InputProps): JSX.Element {
         placeholder={placeholder}
         autoComplete={autoComplete}
         className={inputClass}
+        aria-invalid={error ? 'true' : undefined}
+        aria-describedby={error ? errorId : undefined}
       />
-      {error && <p className="text-sm text-error">{error}</p>}
+      {error && (
+        <p id={errorId} role="alert" className="text-sm text-error">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

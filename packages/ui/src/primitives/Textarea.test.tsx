@@ -22,6 +22,22 @@ describe('<Textarea>', () => {
     expect(screen.getByText('Too short')).toBeInTheDocument();
   });
 
+  it('sets aria-invalid and aria-describedby when error is set', () => {
+    render(<Textarea label="Summary" value="" onChange={() => {}} error="Too short" />);
+    const textarea = screen.getByLabelText('Summary');
+    expect(textarea).toHaveAttribute('aria-invalid', 'true');
+    const errorEl = screen.getByRole('alert');
+    expect(errorEl).toHaveTextContent('Too short');
+    expect(textarea).toHaveAttribute('aria-describedby', errorEl.id);
+  });
+
+  it('does not set aria-invalid when no error', () => {
+    render(<Textarea label="Summary" value="" onChange={() => {}} />);
+    const textarea = screen.getByLabelText('Summary');
+    expect(textarea).not.toHaveAttribute('aria-invalid');
+    expect(textarea).not.toHaveAttribute('aria-describedby');
+  });
+
   it('respects rows prop', () => {
     render(<Textarea label="Summary" value="" onChange={() => {}} rows={8} />);
     expect(screen.getByLabelText('Summary')).toHaveAttribute('rows', '8');

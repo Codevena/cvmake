@@ -1,4 +1,4 @@
-import type { ChangeEvent } from 'react';
+import { type ChangeEvent, useId } from 'react';
 
 export interface TextareaProps {
   id?: string;
@@ -15,15 +15,9 @@ export interface TextareaProps {
   rows?: number;
 }
 
-function deriveId(props: Pick<TextareaProps, 'id' | 'name' | 'label'>): string {
-  if (props.id) return props.id;
-  if (props.name) return props.name;
-  if (props.label) return `textarea-${props.label.replace(/\s+/g, '-').toLowerCase()}`;
-  return 'textarea-field';
-}
-
 export function Textarea(props: TextareaProps): JSX.Element {
   const {
+    id,
     name,
     label,
     value,
@@ -36,7 +30,10 @@ export function Textarea(props: TextareaProps): JSX.Element {
     placeholder,
     rows = 4,
   } = props;
-  const inputId = deriveId(props);
+  // useId() ensures unique IDs per instance; caller-supplied `id` takes precedence.
+  const uid = useId();
+  const inputId = id ?? uid;
+  const errorId = `${inputId}-err`;
   const wrapperClass = ['flex flex-col gap-1', className].filter(Boolean).join(' ');
   const fieldClass = [
     'resize-y rounded-md border bg-elevated px-3 py-2 text-text',
@@ -63,8 +60,14 @@ export function Textarea(props: TextareaProps): JSX.Element {
         placeholder={placeholder}
         rows={rows}
         className={fieldClass}
+        aria-invalid={error ? 'true' : undefined}
+        aria-describedby={error ? errorId : undefined}
       />
-      {error && <p className="text-sm text-error">{error}</p>}
+      {error && (
+        <p id={errorId} role="alert" className="text-sm text-error">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

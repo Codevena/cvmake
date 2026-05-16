@@ -1,4 +1,4 @@
-import type { ChangeEvent } from 'react';
+import { type ChangeEvent, useId } from 'react';
 
 export interface SelectOption {
   value: string;
@@ -20,15 +20,9 @@ export interface SelectProps {
   placeholder?: string;
 }
 
-function deriveId(props: Pick<SelectProps, 'id' | 'name' | 'label'>): string {
-  if (props.id) return props.id;
-  if (props.name) return props.name;
-  if (props.label) return `select-${props.label.replace(/\s+/g, '-').toLowerCase()}`;
-  return 'select-field';
-}
-
 export function Select(props: SelectProps): JSX.Element {
   const {
+    id,
     name,
     label,
     value,
@@ -41,7 +35,10 @@ export function Select(props: SelectProps): JSX.Element {
     options,
     placeholder,
   } = props;
-  const inputId = deriveId(props);
+  // useId() ensures unique IDs per instance; caller-supplied `id` takes precedence.
+  const uid = useId();
+  const inputId = id ?? uid;
+  const errorId = `${inputId}-err`;
   const wrapperClass = ['flex flex-col gap-1', className].filter(Boolean).join(' ');
   const fieldClass = [
     'rounded-md border bg-elevated px-3 py-2 text-text',
@@ -66,6 +63,8 @@ export function Select(props: SelectProps): JSX.Element {
         disabled={disabled}
         required={required}
         className={fieldClass}
+        aria-invalid={error ? 'true' : undefined}
+        aria-describedby={error ? errorId : undefined}
       >
         {placeholder !== undefined && <option value="">{placeholder}</option>}
         {options.map((opt) => (
@@ -74,7 +73,11 @@ export function Select(props: SelectProps): JSX.Element {
           </option>
         ))}
       </select>
-      {error && <p className="text-sm text-error">{error}</p>}
+      {error && (
+        <p id={errorId} role="alert" className="text-sm text-error">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

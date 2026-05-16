@@ -36,4 +36,22 @@ describe('<Select>', () => {
     );
     expect(screen.getByRole('option', { name: 'Choose…' })).toBeInTheDocument();
   });
+
+  it('sets aria-invalid and aria-describedby when error is set', () => {
+    render(
+      <Select label="Locale" options={OPTIONS} value="en" onChange={() => {}} error="Invalid" />,
+    );
+    const select = screen.getByLabelText('Locale');
+    expect(select).toHaveAttribute('aria-invalid', 'true');
+    const errorEl = screen.getByRole('alert');
+    expect(errorEl).toHaveTextContent('Invalid');
+    expect(select).toHaveAttribute('aria-describedby', errorEl.id);
+  });
+
+  it('does not set aria-invalid when no error', () => {
+    render(<Select label="Locale" options={OPTIONS} value="en" onChange={() => {}} />);
+    const select = screen.getByLabelText('Locale');
+    expect(select).not.toHaveAttribute('aria-invalid');
+    expect(select).not.toHaveAttribute('aria-describedby');
+  });
 });

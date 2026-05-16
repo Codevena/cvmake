@@ -40,4 +40,35 @@ describe('<DateRangeInput>', () => {
     render(<DateRangeInput value={value} onChange={() => {}} />);
     expect(screen.getByText(/end must be after start/i)).toBeInTheDocument();
   });
+
+  it('aria-invalid lives on each <select> (WAI-ARIA), aria-describedby on fieldset', () => {
+    // claude-A pass: aria-invalid only applies to form controls per WAI-ARIA,
+    // not to grouping elements like <fieldset>; it's wired onto each <select>.
+    // The <fieldset> still carries aria-describedby (which IS valid on
+    // groupings) so AT reads the error along with the legend.
+    const value: DateRangeValue = { start: '2020-03', end: '2024-06' };
+    render(<DateRangeInput label="Range" value={value} onChange={() => {}} error="Custom error" />);
+    const errorEl = screen.getByRole('alert');
+    expect(errorEl).toHaveTextContent('Custom error');
+    const fieldset = errorEl.closest('fieldset');
+    expect(fieldset).not.toHaveAttribute('aria-invalid');
+    expect(fieldset).toHaveAttribute('aria-describedby', errorEl.id);
+    // Every <select> child gets aria-invalid="true".
+    const selects = screen.getAllByRole('combobox');
+    expect(selects.length).toBeGreaterThan(0);
+    for (const s of selects) {
+      expect(s).toHaveAttribute('aria-invalid', 'true');
+    }
+  });
+
+  it('no aria-invalid anywhere when there is no error', () => {
+    const value: DateRangeValue = { start: '2020-03', end: '2024-06' };
+    render(<DateRangeInput label="Range" value={value} onChange={() => {}} />);
+    const fieldset = document.querySelector('fieldset');
+    expect(fieldset).not.toHaveAttribute('aria-invalid');
+    expect(fieldset).not.toHaveAttribute('aria-describedby');
+    for (const s of screen.getAllByRole('combobox')) {
+      expect(s).not.toHaveAttribute('aria-invalid');
+    }
+  });
 });

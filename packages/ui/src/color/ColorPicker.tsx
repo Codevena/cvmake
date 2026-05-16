@@ -1,4 +1,4 @@
-import type { ChangeEvent } from 'react';
+import { type ChangeEvent, useId } from 'react';
 
 export interface ColorPickerProps {
   id?: string;
@@ -16,13 +16,6 @@ export interface ColorPickerProps {
 
 const HEX_RE = /^#[0-9a-f]{6}$/i;
 
-function deriveId(props: Pick<ColorPickerProps, 'id' | 'name' | 'label'>): string {
-  if (props.id) return props.id;
-  if (props.name) return props.name;
-  if (props.label) return `color-${props.label.replace(/\s+/g, '-').toLowerCase()}`;
-  return 'color-field';
-}
-
 export function ColorPicker(props: ColorPickerProps): JSX.Element {
   const {
     name,
@@ -36,7 +29,15 @@ export function ColorPicker(props: ColorPickerProps): JSX.Element {
     className,
     resetLabel = 'Reset',
   } = props;
-  const inputId = deriveId(props);
+  // Only `id` opts the caller into controlled-id linkage (for `<label htmlFor>`
+  // pairing in form-builder contexts). `name`/`label` are NOT promoted to
+  // DOM ids because two ColorPicker instances with the same label
+  // (`<ColorPicker label="Hex" />` × 2) would emit duplicate ids, breaking
+  // accessibility AT pairings. useId guarantees uniqueness across instances
+  // and is the safe default (claude-A pass tightening of H16).
+  const reactId = useId();
+  const inputId = props.id ?? `color-${reactId}`;
+  const errorId = `${inputId}-err`;
   const hexValid = value === '' || HEX_RE.test(value);
   const errorText = error ?? (hexValid ? undefined : 'Invalid hex color');
 
@@ -79,6 +80,8 @@ export function ColorPicker(props: ColorPickerProps): JSX.Element {
           required={required}
           placeholder="#rrggbb"
           className={textClass}
+          aria-invalid={errorText ? 'true' : undefined}
+          aria-describedby={errorText ? errorId : undefined}
         />
         <button
           type="button"
@@ -89,7 +92,11 @@ export function ColorPicker(props: ColorPickerProps): JSX.Element {
           {resetLabel}
         </button>
       </div>
-      {errorText && <p className="text-sm text-error">{errorText}</p>}
+      {errorText && (
+        <p id={errorId} role="alert" className="text-sm text-error">
+          {errorText}
+        </p>
+      )}
     </div>
   );
 }

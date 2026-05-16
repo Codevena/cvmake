@@ -1,4 +1,4 @@
-import type { ChangeEvent } from 'react';
+import { type ChangeEvent, useId } from 'react';
 
 export interface DateRangeValue {
   start: string;
@@ -47,6 +47,9 @@ export function DateRangeInput(props: DateRangeInputProps): JSX.Element {
     endYear = currentYear + 1,
     currentLabel = 'Current',
   } = props;
+  // useId() provides a stable unique base ID for the error paragraph.
+  const uid = useId();
+  const errorId = `${uid}-err`;
 
   const years: number[] = [];
   for (let y = endYear; y >= startYear; y--) years.push(y);
@@ -79,7 +82,14 @@ export function DateRangeInput(props: DateRangeInputProps): JSX.Element {
   const fieldClass = `${FIELD_BASE} ${errorText ? 'border-error' : 'border-border'}`;
 
   return (
-    <fieldset className={wrapperClass}>
+    <fieldset
+      className={wrapperClass}
+      // aria-describedby on <fieldset> IS valid (announces the error <p> along
+      // with the legend), but aria-invalid does NOT apply to grouping
+      // elements per WAI-ARIA — it's only meaningful on form controls. Each
+      // child <select> gets aria-invalid below.
+      aria-describedby={errorText ? errorId : undefined}
+    >
       {label && (
         <legend className="text-sm font-medium text-text-muted mb-1">
           {label}
@@ -92,6 +102,7 @@ export function DateRangeInput(props: DateRangeInputProps): JSX.Element {
           value={start.month}
           onChange={(e) => setStart(start.year, e.target.value)}
           disabled={disabled}
+          aria-invalid={errorText ? 'true' : undefined}
           className={fieldClass}
         >
           <option value="">MM</option>
@@ -106,6 +117,7 @@ export function DateRangeInput(props: DateRangeInputProps): JSX.Element {
           value={start.year}
           onChange={(e) => setStart(e.target.value, start.month)}
           disabled={disabled}
+          aria-invalid={errorText ? 'true' : undefined}
           className={fieldClass}
         >
           <option value="">YYYY</option>
@@ -123,6 +135,7 @@ export function DateRangeInput(props: DateRangeInputProps): JSX.Element {
           value={end.month}
           onChange={(e) => setEnd(end.year, e.target.value)}
           disabled={disabled || isCurrent}
+          aria-invalid={errorText ? 'true' : undefined}
           className={fieldClass}
         >
           <option value="">MM</option>
@@ -137,6 +150,7 @@ export function DateRangeInput(props: DateRangeInputProps): JSX.Element {
           value={end.year}
           onChange={(e) => setEnd(e.target.value, end.month)}
           disabled={disabled || isCurrent}
+          aria-invalid={errorText ? 'true' : undefined}
           className={fieldClass}
         >
           <option value="">YYYY</option>
@@ -152,7 +166,11 @@ export function DateRangeInput(props: DateRangeInputProps): JSX.Element {
           {currentLabel}
         </label>
       </div>
-      {errorText && <p className="text-sm text-error">{errorText}</p>}
+      {errorText && (
+        <p id={errorId} role="alert" className="text-sm text-error">
+          {errorText}
+        </p>
+      )}
     </fieldset>
   );
 }
