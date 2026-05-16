@@ -208,9 +208,7 @@ try {
 
   // Wait for fonts (10 s ceiling — Google Fonts can be slow on cold CDN).
   await Promise.race([
-    page.evaluate(
-      () => /** @type {any} */ (document).fonts.ready,
-    ),
+    page.evaluate(() => /** @type {any} */ (document).fonts.ready),
     new Promise((r) => setTimeout(r, 10_000)),
   ]);
 

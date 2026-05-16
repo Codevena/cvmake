@@ -66,17 +66,15 @@ function renderTemplateGrid() {
   const grid = document.getElementById('template-grid');
   if (!grid) return;
 
-  // Above-the-fold rule of thumb for desktop 4-column grid: the first 4
-  // cards render in the initial viewport. Eager-load them with fetchpriority
-  // high; the rest get the default loading="lazy" + low priority.
-  // Mobile (1 col) shows only the very first card above the fold, but
-  // eager-loading the next few is still a perf win because they'll be
-  // requested as soon as scrolling starts.
-  const EAGER_COUNT = 4;
-  const html = TEMPLATES.map((t, i) => {
-    const eager = i < EAGER_COUNT;
-    const loading = eager ? 'eager' : 'lazy';
-    const fetchPriority = eager ? 'high' : 'auto';
+  // All template cards live in the #templates section which is ~2 viewports
+  // below the fold (on both desktop and mobile — the hero + collage section
+  // come first). Marking any of them `eager` / `fetchpriority="high"`
+  // measurably HURT Lighthouse LCP (3.6 s → 5.3 s) because the browser
+  // prioritised the off-screen card AVIFs over the font + CSS resources
+  // that the actually-visible hero text was waiting on. Default
+  // `loading="lazy"` is correct here; the new AVIF/WebP byte savings still
+  // halve the eventual scroll-into-view load.
+  const html = TEMPLATES.map((t) => {
     return `
       <button
         type="button"
@@ -92,8 +90,7 @@ function renderTemplateGrid() {
             <img
               src="screenshots/${t.id}.png"
               alt="${t.name} template preview"
-              loading="${loading}"
-              fetchpriority="${fetchPriority}"
+              loading="lazy"
               decoding="async"
               width="1242"
               height="1754"
