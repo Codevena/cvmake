@@ -1,3 +1,4 @@
+# ── Build / cache noise ──────────────────────────────────────────────────────
 node_modules
 .next
 .turbo
@@ -9,3 +10,46 @@ node_modules
 *.log
 *.tsbuildinfo
 **/*.tsbuildinfo
+.pnpm-store/
+
+# ── Test & coverage artifacts ────────────────────────────────────────────────
+coverage/
+playwright-report/
+test-results/
+**/__visual__/**/.actual/
+
+# ── Privacy mirror of .gitignore — NEVER bake personal data into the image ──
+# Personal CV YAMLs (only example.* are safe to include)
+data/cvs/cv.*.yaml
+data/cvs/cv.*.yml
+# Personal photos — allow only example-* and the gitkeep / README
+data/cvs/photos/*
+!data/cvs/photos/example-*
+!data/cvs/photos/.gitkeep
+!data/cvs/photos/README.md
+# Same allowlist for the top-level public/photos/ tree.  The Next.js public
+# dir at apps/web/public/photos symlinks to this root, so anything here is
+# served at https://<host>/photos/<file>.  Personal photos (markus.*) MUST
+# stay out of the image even though `.gitignore` already excludes them from
+# git — `docker build` reads the working tree, not git.
+public/photos/*
+!public/photos/example-*
+!public/photos/.gitkeep
+!public/photos/README.md
+# Personal letter templates and build scripts
+data/letters/
+scripts/build-letter.mjs
+# Internal session / launch planning docs
+NEXT_SESSION.md
+LAUNCH_DRAFTS.md
+
+# ── Internal agent / review artifacts ────────────────────────────────────────
+.review/
+.review-logs/
+.audit/
+.superpowers/
+.claude/
+
+# ── Internal docs (only docs/screenshots/ is needed for the symlink) ─────────
+docs/superpowers/
+docs/template-review-*.md

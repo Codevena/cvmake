@@ -3,6 +3,10 @@ on:
   push: { branches: [main] }
   pull_request:
 
+# H22/H6 hardening: least-privilege default — individual jobs add write only if needed.
+permissions:
+  contents: read
+
 jobs:
   static:
     name: static (lint + typecheck + build)
@@ -16,9 +20,10 @@ jobs:
           node-version: 20.11.1
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - name: lint (60 known non-auto-fixable issues; tracked separately)
+      # H22 fix: removed continue-on-error — lint must be a hard gate.
+      # TODO: fix outstanding lint findings (60 known biome issues tracked separately)
+      - name: lint
         run: pnpm lint
-        continue-on-error: true
       - run: pnpm typecheck
       - run: pnpm build
 
@@ -43,6 +48,30 @@ jobs:
         run: pnpm --filter @codevena/cvmake-core exec puppeteer browsers install chrome
       - run: pnpm build
       - run: pnpm -r test:unit
+
+  # H23 fix: integration tests now run in CI (were missing before).
+  integration:
+    name: integration tests
+    runs-on: ubuntu-latest
+    needs: [unit]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 9.12.0 }
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.11.1
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: cache puppeteer browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/puppeteer
+          key: ${{ runner.os }}-puppeteer-${{ hashFiles('**/pnpm-lock.yaml') }}
+      - name: ensure puppeteer chrome installed
+        run: pnpm --filter @codevena/cvmake-core exec puppeteer browsers install chrome
+      - run: pnpm build
+      - run: pnpm turbo run test:integration
 
   e2e-visual:
     name: e2e + visual

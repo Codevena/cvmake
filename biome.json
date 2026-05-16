@@ -5,11 +5,14 @@
       "dist",
       ".next",
       ".turbo",
+      ".pnpm-store",
       "coverage",
       "playwright-report",
       "**/test-results/**",
       "**/__visual__/**",
-      "**/next-env.d.ts"
+      "**/next-env.d.ts",
+      "apps/showcase/src/input.css",
+      "apps/showcase/tailwind.css"
     ]
   },
   "formatter": {

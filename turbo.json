@@ -1,6 +1,7 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["tsconfig.base.json", "biome.json"],
+  "globalEnv": ["NEXT_PUBLIC_DEMO_MODE"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],

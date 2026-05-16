@@ -1,0 +1,46 @@
+version: 2
+updates:
+  # npm / pnpm workspace — weekly bumps for all packages
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "08:00"
+      timezone: Europe/Berlin
+    target-branch: main
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+    ignore:
+      # Keep pnpm pinned to the exact version used in corepack/Dockerfile.
+      # Bump manually and update Dockerfile + packageManager field in lockstep.
+      - dependency-name: pnpm
+
+  # Docker base image — weekly digest/tag updates
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "08:00"
+      timezone: Europe/Berlin
+    target-branch: main
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - docker
+
+  # GitHub Actions — weekly SHA/tag updates (M4: enables auto-PR for SHA pins)
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "08:00"
+      timezone: Europe/Berlin
+    target-branch: main
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - github-actions
