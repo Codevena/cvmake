@@ -1,4 +1,6 @@
-import { renderCV, shutdownPdfBrowser, wrapHtmlDocument } from '@codevena/cvmake-core';
+import { wrapHtmlDocument } from '@codevena/cvmake-core/html-document';
+import { shutdownPdfBrowser } from '@codevena/cvmake-core/pdf';
+import { renderCV } from '@codevena/cvmake-core/renderer';
 import { fullFixture } from '@codevena/cvmake-schema/fixtures';
 import puppeteer from 'puppeteer';
 import { afterAll, describe, expect, it } from 'vitest';

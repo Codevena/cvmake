@@ -43,9 +43,7 @@ export async function diffAgainstBaseline({
 
   if (!existsSync(baselinePath) && STRICT_BASELINE) {
     throw new Error(
-      `Baseline missing for ${templateId}/${paletteId} (page ${pageNumber}). ` +
-        'In CI, missing baselines are hard failures. Commit the baseline ' +
-        'or run the update-baselines workflow.',
+      `Baseline missing for ${templateId}/${paletteId} (page ${pageNumber}). In CI, missing baselines are hard failures. Commit the baseline or run the update-baselines workflow.`,
     );
   }
 
@@ -59,9 +57,7 @@ export async function diffAgainstBaseline({
   const actual = PNG.sync.read(png);
   if (baseline.width !== actual.width || baseline.height !== actual.height) {
     throw new Error(
-      `Dimension mismatch for ${templateId}/${paletteId}: ` +
-        `baseline ${baseline.width}x${baseline.height} vs actual ${actual.width}x${actual.height}. ` +
-        'Viewport changed? Re-generate the baseline via UPDATE_VISUAL=1 or the update-baselines workflow.',
+      `Dimension mismatch for ${templateId}/${paletteId}: baseline ${baseline.width}x${baseline.height} vs actual ${actual.width}x${actual.height}. Viewport changed? Re-generate the baseline via UPDATE_VISUAL=1 or the update-baselines workflow.`,
     );
   }
   const diff = new PNG({ width: baseline.width, height: baseline.height });
