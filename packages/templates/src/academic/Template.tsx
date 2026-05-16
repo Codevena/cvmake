@@ -38,6 +38,7 @@ export function AcademicTemplate({ data, locale, labels }: TemplateProps) {
           {contactItems.length > 0 && (
             <p className="academic__contacts">
               {contactItems.map((item, i) => (
+                // biome-ignore lint/suspicious/noArrayIndexKey: contact items are derived from stable YAML fields; order never changes after mount
                 <span className="academic__contacts-item" key={i}>
                   {item}
                 </span>
@@ -76,6 +77,7 @@ export function AcademicTemplate({ data, locale, labels }: TemplateProps) {
                       {e.bullets.length > 0 && (
                         <ul className="academic__entry-bullets">
                           {e.bullets.map((b, j) => (
+                            // biome-ignore lint/suspicious/noArrayIndexKey: bullet strings have no stable id; order is fixed from YAML and never mutated
                             <li key={j}>{b}</li>
                           ))}
                         </ul>
@@ -105,6 +107,7 @@ export function AcademicTemplate({ data, locale, labels }: TemplateProps) {
                       {e.bullets && e.bullets.length > 0 && (
                         <ul className="academic__entry-bullets">
                           {e.bullets.map((b, j) => (
+                            // biome-ignore lint/suspicious/noArrayIndexKey: bullet strings have no stable id; order is fixed from YAML and never mutated
                             <li key={j}>{b}</li>
                           ))}
                         </ul>
@@ -162,6 +165,7 @@ export function AcademicTemplate({ data, locale, labels }: TemplateProps) {
           <section className="academic__section" key={cs.id}>
             <h2 className="academic__section-title">{cs.title}</h2>
             {cs.items.map((it, i) => (
+              // biome-ignore lint/suspicious/noArrayIndexKey: custom section items have no stable id; read-only YAML-backed array with fixed order
               <div className="academic__custom-entry" key={i}>
                 <div className="academic__custom-title">{it.title}</div>
                 {it.subtitle && (
@@ -183,6 +187,7 @@ export function AcademicTemplate({ data, locale, labels }: TemplateProps) {
                 {it.bullets && (
                   <ul className="academic__custom-bullets">
                     {it.bullets.map((b, j) => (
+                      // biome-ignore lint/suspicious/noArrayIndexKey: bullet strings have no stable id; read-only YAML-backed array with fixed order
                       <li key={j}>{b}</li>
                     ))}
                   </ul>

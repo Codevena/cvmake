@@ -36,6 +36,7 @@ export function TechDevTemplate({ data, palette: _palette, locale, labels }: Tem
 
           {/* Contact section */}
           <section className="tech-dev__sidebar-section">
+            {/* biome-ignore lint/suspicious/noCommentText: intentional terminal-comment aesthetic — "// contact" is decorative UI text, not a code comment */}
             <h2>// contact</h2>
             <ul className="tech-dev__contact-list">
               {contacts.email && (
@@ -82,6 +83,7 @@ export function TechDevTemplate({ data, palette: _palette, locale, labels }: Tem
           {/* Skills section */}
           {data.skills && (data.skills.categorized ?? data.skills.stack) && (
             <section className="tech-dev__sidebar-section">
+              {/* biome-ignore lint/suspicious/noCommentText: intentional terminal-comment aesthetic — "// skills" is decorative UI text, not a code comment */}
               <h2>// skills</h2>
               {data.skills.categorized
                 ? Object.entries(data.skills.categorized).map(([group, items]) => (
@@ -103,11 +105,13 @@ export function TechDevTemplate({ data, palette: _palette, locale, labels }: Tem
           {/* Languages section */}
           {data.languages && data.languages.length > 0 && (
             <section className="tech-dev__sidebar-section">
+              {/* biome-ignore lint/suspicious/noCommentText: intentional terminal-comment aesthetic — "// languages" is decorative UI text, not a code comment */}
               <h2>// languages</h2>
               <ul className="tech-dev__lang-list">
                 {data.languages.map((l) => (
                   <li key={l.name}>
                     {l.name}
+                    {/* biome-ignore lint/suspicious/noCommentText: intentional terminal-comment separator — "//" is decorative UI text used as a visual divider */}
                     <span className="tech-dev__lang-sep">//</span>
                     <span className="tech-dev__lang-level">{l.label ?? l.level}</span>
                   </li>
@@ -135,6 +139,7 @@ export function TechDevTemplate({ data, palette: _palette, locale, labels }: Tem
             if (section === 'summary' && data.summary) {
               return (
                 <section className="tech-dev__section" key="summary">
+                  {/* biome-ignore lint/suspicious/noCommentText: intentional terminal-comment aesthetic — "// summary" prefix is decorative UI text */}
                   <h2 className="tech-dev__section-heading">// {labels.summary.toLowerCase()}</h2>
                   <p className="tech-dev__summary">{data.summary}</p>
                 </section>
@@ -145,6 +150,7 @@ export function TechDevTemplate({ data, palette: _palette, locale, labels }: Tem
               return (
                 <section className="tech-dev__section" key="experience">
                   <h2 className="tech-dev__section-heading">
+                    {/* biome-ignore lint/suspicious/noCommentText: intentional terminal-comment aesthetic — "// experience" prefix is decorative UI text */}
                     // {labels.experience.toLowerCase()}
                   </h2>
                   {data.experience.map((e, i) => (
@@ -164,6 +170,7 @@ export function TechDevTemplate({ data, palette: _palette, locale, labels }: Tem
                       {e.bullets.length > 0 && (
                         <ul className="tech-dev__bullets">
                           {e.bullets.map((b, j) => (
+                            // biome-ignore lint/suspicious/noArrayIndexKey: bullet strings have no stable id; read-only YAML-backed array with fixed order
                             <li key={j}>{b}</li>
                           ))}
                         </ul>
@@ -180,6 +187,7 @@ export function TechDevTemplate({ data, palette: _palette, locale, labels }: Tem
             if (section === 'education' && data.education.length > 0) {
               return (
                 <section className="tech-dev__section" key="education">
+                  {/* biome-ignore lint/suspicious/noCommentText: intentional terminal-comment aesthetic — "// education" prefix is decorative UI text */}
                   <h2 className="tech-dev__section-heading">// {labels.education.toLowerCase()}</h2>
                   {data.education.map((e, i) => (
                     <div className="tech-dev__entry" key={`edu-${e.institution}-${i}`}>
@@ -193,6 +201,7 @@ export function TechDevTemplate({ data, palette: _palette, locale, labels }: Tem
                       {e.bullets && e.bullets.length > 0 && (
                         <ul className="tech-dev__bullets">
                           {e.bullets.map((b, j) => (
+                            // biome-ignore lint/suspicious/noArrayIndexKey: bullet strings have no stable id; read-only YAML-backed array with fixed order
                             <li key={j}>{b}</li>
                           ))}
                         </ul>
@@ -209,8 +218,10 @@ export function TechDevTemplate({ data, palette: _palette, locale, labels }: Tem
           {/* Custom sections */}
           {data.customSections?.map((cs) => (
             <section className="tech-dev__section" key={cs.id}>
+              {/* biome-ignore lint/suspicious/noCommentText: intentional terminal-comment aesthetic — "// title" prefix is decorative UI text for custom sections */}
               <h2 className="tech-dev__section-heading">// {cs.title.toLowerCase()}</h2>
               {cs.items.map((it, i) => (
+                // biome-ignore lint/suspicious/noArrayIndexKey: custom section items have no stable id; read-only YAML-backed array with fixed order
                 <div className="tech-dev__custom-entry" key={i}>
                   <div className="tech-dev__custom-title">{it.title}</div>
                   {it.subtitle && <div className="tech-dev__custom-subtitle">{it.subtitle}</div>}
@@ -218,6 +229,7 @@ export function TechDevTemplate({ data, palette: _palette, locale, labels }: Tem
                   {it.bullets && it.bullets.length > 0 && (
                     <ul className="tech-dev__bullets">
                       {it.bullets.map((b, j) => (
+                        // biome-ignore lint/suspicious/noArrayIndexKey: bullet strings have no stable id; read-only YAML-backed array with fixed order
                         <li key={j}>{b}</li>
                       ))}
                     </ul>

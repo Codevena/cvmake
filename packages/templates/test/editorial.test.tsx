@@ -5,6 +5,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { editorial } from '../src/editorial/index.js';
 
+// biome-ignore lint/style/noNonNullAssertion: every template ships at least one palette; index 0 is guaranteed to exist
 const palette = editorial.palettes[0]!;
 
 describe('EditorialTemplate', () => {

@@ -5,6 +5,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { monochromeDark } from '../src/monochrome-dark/index.js';
 
+// biome-ignore lint/style/noNonNullAssertion: every template ships at least one palette; index 0 is guaranteed to exist
 const palette = monochromeDark.palettes[0]!;
 
 describe('MonochromeDarkTemplate', () => {

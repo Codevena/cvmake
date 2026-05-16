@@ -5,6 +5,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { creativeAccent } from '../src/creative-accent/index.js';
 
+// biome-ignore lint/style/noNonNullAssertion: every template ships at least one palette; index 0 is guaranteed to exist
 const palette = creativeAccent.palettes[0]!;
 
 describe('CreativeAccentTemplate', () => {

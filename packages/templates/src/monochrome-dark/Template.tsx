@@ -152,6 +152,7 @@ export function MonochromeDarkTemplate({ data, palette: _palette, locale, labels
                       {exp.bullets.length > 0 && (
                         <ul className="monochrome-dark__bullets">
                           {exp.bullets.map((bullet, j) => (
+                            // biome-ignore lint/suspicious/noArrayIndexKey: bullet strings have no stable id; read-only YAML-backed array with fixed order
                             <li key={j}>
                               <span className="monochrome-dark__bullet-marker" aria-hidden>
                                 →
@@ -183,6 +184,7 @@ export function MonochromeDarkTemplate({ data, palette: _palette, locale, labels
                       {edu.bullets && edu.bullets.length > 0 && (
                         <ul className="monochrome-dark__bullets">
                           {edu.bullets.map((bullet, j) => (
+                            // biome-ignore lint/suspicious/noArrayIndexKey: bullet strings have no stable id; read-only YAML-backed array with fixed order
                             <li key={j}>
                               <span className="monochrome-dark__bullet-marker" aria-hidden>
                                 →
@@ -206,6 +208,7 @@ export function MonochromeDarkTemplate({ data, palette: _palette, locale, labels
             <section className="monochrome-dark__section" key={cs.id}>
               <h2>{cs.title}</h2>
               {cs.items.map((item, i) => (
+                // biome-ignore lint/suspicious/noArrayIndexKey: custom section items have no stable id; read-only YAML-backed array with fixed order
                 <div className="monochrome-dark__custom-entry" key={i}>
                   <div className="monochrome-dark__custom-title">{item.title}</div>
                   {item.subtitle && (
@@ -217,6 +220,7 @@ export function MonochromeDarkTemplate({ data, palette: _palette, locale, labels
                   {item.bullets && item.bullets.length > 0 && (
                     <ul className="monochrome-dark__bullets">
                       {item.bullets.map((bullet, j) => (
+                        // biome-ignore lint/suspicious/noArrayIndexKey: bullet strings have no stable id; read-only YAML-backed array with fixed order
                         <li key={j}>
                           <span className="monochrome-dark__bullet-marker" aria-hidden>
                             →

@@ -57,6 +57,7 @@ export function EditorialTemplate({ data, palette, locale, labels }: TemplatePro
             {contactParts.length > 0 && (
               <div className="editorial__contacts">
                 {contactParts.map((part, i) => (
+                  // biome-ignore lint/suspicious/noArrayIndexKey: contact parts are derived from stable YAML fields; order never changes after mount
                   <span className="editorial__contact-item" key={i}>
                     {part}
                   </span>
@@ -104,6 +105,7 @@ export function EditorialTemplate({ data, palette, locale, labels }: TemplatePro
                       {e.bullets.length > 0 && (
                         <ul className="editorial__bullets">
                           {e.bullets.map((b, j) => (
+                            // biome-ignore lint/suspicious/noArrayIndexKey: bullet strings have no stable id; read-only YAML-backed array with fixed order
                             <li key={j}>{b}</li>
                           ))}
                         </ul>
@@ -133,6 +135,7 @@ export function EditorialTemplate({ data, palette, locale, labels }: TemplatePro
                       {e.bullets && e.bullets.length > 0 && (
                         <ul className="editorial__bullets">
                           {e.bullets.map((b, j) => (
+                            // biome-ignore lint/suspicious/noArrayIndexKey: bullet strings have no stable id; read-only YAML-backed array with fixed order
                             <li key={j}>{b}</li>
                           ))}
                         </ul>
@@ -191,6 +194,7 @@ export function EditorialTemplate({ data, palette, locale, labels }: TemplatePro
             <section className="editorial__section" key={cs.id}>
               <h2 className="editorial__section-heading">{cs.title}</h2>
               {cs.items.map((it, i) => (
+                // biome-ignore lint/suspicious/noArrayIndexKey: custom section items have no stable id; read-only YAML-backed array with fixed order
                 <div className="editorial__custom-entry" key={i}>
                   <div className="editorial__custom-title">{it.title}</div>
                   {it.subtitle && <div className="editorial__custom-subtitle">{it.subtitle}</div>}
@@ -198,6 +202,7 @@ export function EditorialTemplate({ data, palette, locale, labels }: TemplatePro
                   {it.bullets && (
                     <ul className="editorial__bullets">
                       {it.bullets.map((b, j) => (
+                        // biome-ignore lint/suspicious/noArrayIndexKey: bullet strings have no stable id; read-only YAML-backed array with fixed order
                         <li key={j}>{b}</li>
                       ))}
                     </ul>

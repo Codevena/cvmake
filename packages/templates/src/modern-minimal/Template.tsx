@@ -103,6 +103,7 @@ export function ModernMinimalTemplate({ data, locale, labels }: TemplateProps): 
                     {e.bullets.length > 0 && (
                       <ul className="modern-minimal__bullets">
                         {e.bullets.map((b, j) => (
+                          // biome-ignore lint/suspicious/noArrayIndexKey: bullet strings have no stable id; read-only YAML-backed array with fixed order
                           <li key={j}>{b}</li>
                         ))}
                       </ul>
@@ -134,6 +135,7 @@ export function ModernMinimalTemplate({ data, locale, labels }: TemplateProps): 
                     {e.bullets && e.bullets.length > 0 && (
                       <ul className="modern-minimal__bullets">
                         {e.bullets.map((b, j) => (
+                          // biome-ignore lint/suspicious/noArrayIndexKey: bullet strings have no stable id; read-only YAML-backed array with fixed order
                           <li key={j}>{b}</li>
                         ))}
                       </ul>
@@ -155,6 +157,7 @@ export function ModernMinimalTemplate({ data, locale, labels }: TemplateProps): 
                 <h2 className="modern-minimal__section-heading">{labels.skills}</h2>
                 {hasCategorized ? (
                   <div className="modern-minimal__skills-grid">
+                    {/* biome-ignore lint/style/noNonNullAssertion: guarded by hasCategorized truthiness check above */}
                     {Object.entries(data.skills.categorized!).map(([group, items]) => (
                       <div className="modern-minimal__skills-group" key={group}>
                         <span className="modern-minimal__skills-label">{group}</span>
@@ -163,7 +166,10 @@ export function ModernMinimalTemplate({ data, locale, labels }: TemplateProps): 
                     ))}
                   </div>
                 ) : (
-                  <p className="modern-minimal__skills-flat">{data.skills!.stack!.join(' · ')}</p>
+                  <>
+                    {/* biome-ignore lint/style/noNonNullAssertion: data.skills is truthy (guarded above) and hasStack is truthy (checked before this branch) */}
+                    <p className="modern-minimal__skills-flat">{data.skills!.stack!.join(' · ')}</p>
+                  </>
                 )}
               </section>
             );
@@ -198,6 +204,7 @@ export function ModernMinimalTemplate({ data, locale, labels }: TemplateProps): 
           <section className="modern-minimal__section" key={cs.id}>
             <h2 className="modern-minimal__section-heading">{cs.title}</h2>
             {cs.items.map((it, i) => (
+              // biome-ignore lint/suspicious/noArrayIndexKey: custom section items have no stable id; read-only YAML-backed array with fixed order
               <div className="modern-minimal__entry" key={i}>
                 <div className="modern-minimal__entry-head">
                   <div className="modern-minimal__entry-primary">{it.title}</div>
@@ -212,6 +219,7 @@ export function ModernMinimalTemplate({ data, locale, labels }: TemplateProps): 
                 {it.bullets && it.bullets.length > 0 && (
                   <ul className="modern-minimal__bullets">
                     {it.bullets.map((b, j) => (
+                      // biome-ignore lint/suspicious/noArrayIndexKey: bullet strings have no stable id; read-only YAML-backed array with fixed order
                       <li key={j}>{b}</li>
                     ))}
                   </ul>
