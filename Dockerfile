@@ -68,12 +68,17 @@ COPY --from=build /app ./
 COPY --from=build /home/nodejs/.cache/puppeteer /home/nodejs/.cache/puppeteer
 
 # Drop to non-root user (C5).
-# Chown the ENTIRE nodejs home so Node (which is now node 25 on the bundled
-# Next.js runtime) can mkdir its own module-resolution cache at
-# /home/nodejs/.cache/node — chowning only the puppeteer subdir leaves
-# /home/nodejs/.cache itself root-owned (created by the COPY above), and
-# EACCES on cache mkdir kills the runtime on first request.
-RUN chown -R nodejs:nodejs /app /home/nodejs
+# Only chown /home/nodejs — that's where Node writes its module-resolution
+# cache (.cache/node) and where Puppeteer caches Chromium (.cache/puppeteer).
+# Everything under /app is read-only at runtime: the demo deploy blocks
+# all writes via NEXT_PUBLIC_DEMO_MODE + middleware, and files copied from
+# the build stage as root are world-readable (umask 022) so nodejs can read
+# them without owning them. Recursive chown of /app would walk hundreds of
+# thousands of node_modules + Chromium files and timed out the Coolify
+# build container under the previous wider variant.
+# Self-hosted non-demo deploys that need writes under /app/data should mount
+# data/ as a volume with the correct ownership.
+RUN chown -R nodejs:nodejs /home/nodejs
 
 USER nodejs
 
