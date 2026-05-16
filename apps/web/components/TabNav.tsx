@@ -29,7 +29,9 @@ export function TabNav({ active, onSelect }: Props) {
     <div
       role="tablist"
       aria-label="CV sections"
-      className="flex shrink-0 gap-1 border-b border-border px-4"
+      // overflow-x-auto + whitespace-nowrap → on mobile the 7-tab strip
+      // scrolls horizontally instead of wrapping or overflowing.
+      className="flex shrink-0 gap-1 overflow-x-auto whitespace-nowrap border-b border-border px-4"
     >
       {TABS.map((tab) => {
         const isActive = tab.id === active;

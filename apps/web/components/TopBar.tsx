@@ -33,6 +33,13 @@ interface Props {
   lastSavedAt?: number | undefined;
   onOpenPalette: () => void;
   isDemo: boolean;
+  /**
+   * Mobile-only Edit/Preview toggle state. Optional so tests (which render
+   * at desktop width where the toggle is `lg:hidden` anyway) don't have to
+   * provide it. Default 'edit' is the safe choice if a caller forgets.
+   */
+  viewMode?: 'edit' | 'preview';
+  onSetViewMode?: (mode: 'edit' | 'preview') => void;
 }
 
 export function TopBar({
@@ -44,6 +51,10 @@ export function TopBar({
   lastSavedAt,
   onOpenPalette,
   isDemo,
+  viewMode = 'edit',
+  onSetViewMode = () => {
+    // no-op fallback for tests / callers that don't need the toggle
+  },
 }: Props) {
   const { getValues, formState } = useFormContext<CVData>();
   const router = useRouter();
@@ -100,6 +111,40 @@ export function TopBar({
           </select>
         </div>
         <div className="flex items-center gap-2">
+          {/* Mobile-only Edit/Preview toggle (C9 second pass — real responsive
+              editor instead of the MobileGuard overlay). Hidden ≥lg where the
+              three-pane shell already shows both columns side-by-side.
+              Uses role="group" + aria-pressed (segmented control pattern)
+              rather than role="tablist" — the TabNav below already owns
+              tablist semantics for the section tabs, and the view toggle
+              has no aria-controls relationship to render panels. */}
+          {/* biome-ignore lint/a11y/useSemanticElements: role="group" on a <div> is the canonical pattern for a segmented control — no native HTML element conveys "this collection of buttons is one logical control" without re-introducing fieldset/legend visual baggage */}
+          <div
+            role="group"
+            aria-label="Editor view"
+            className="flex overflow-hidden rounded-md border border-border bg-elevated text-xs lg:hidden"
+          >
+            <button
+              type="button"
+              aria-pressed={viewMode === 'edit'}
+              onClick={() => onSetViewMode('edit')}
+              className={`px-2 py-1 ${
+                viewMode === 'edit' ? 'bg-accent text-bg' : 'text-text-muted'
+              }`}
+            >
+              Edit
+            </button>
+            <button
+              type="button"
+              aria-pressed={viewMode === 'preview'}
+              onClick={() => onSetViewMode('preview')}
+              className={`px-2 py-1 ${
+                viewMode === 'preview' ? 'bg-accent text-bg' : 'text-text-muted'
+              }`}
+            >
+              Preview
+            </button>
+          </div>
           <button
             type="button"
             onClick={onOpenPalette}
