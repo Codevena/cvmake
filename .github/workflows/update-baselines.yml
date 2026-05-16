@@ -44,7 +44,7 @@ jobs:
           # PAT-free auto-commit path: we push back to the same branch with the
           # workflow's GITHUB_TOKEN. The contents:write permission above allows this.
           token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         with: { version: 9.12.0 }
       - uses: actions/setup-node@v4
         with:
