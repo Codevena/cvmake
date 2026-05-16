@@ -1,0 +1,73 @@
+name: Bug report
+description: Something isn't working as expected
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report. The more detail you provide, the faster we can help.
+
+  - type: input
+    id: title-summary
+    attributes:
+      label: One-line summary
+      description: Briefly describe what went wrong.
+      placeholder: e.g. "PDF export produces blank page for the swiss template"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened? What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Give us the exact steps so we can reproduce the bug.
+      placeholder: |
+        1. Run `npx @codevena/cvmake-cli build cv.yaml --template swiss`
+        2. Open the generated PDF
+        3. See a blank page
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+      description: What should have happened instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+      description: What actually happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Fill in as many fields as you know.
+      value: |
+        - cvmake version (CLI or editor URL):
+        - Node.js version (`node --version`):
+        - OS:
+        - Template used:
+        - Locale (de/en):
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Paste logs, screenshots, or your YAML snippet (remove personal data first).

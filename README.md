@@ -137,6 +137,8 @@ https://github.com/Codevena/cvmake/settings/secrets/actions.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). Bug reports, template ideas, and pull requests welcome.
 
+See [ROADMAP.md](ROADMAP.md) for what's planned and [CHANGELOG.md](CHANGELOG.md) for what has shipped.
+
 ## License
 
 MIT — see [LICENSE](LICENSE).

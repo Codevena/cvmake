@@ -1,0 +1,61 @@
+name: Template idea
+description: Propose a new CV template for cvmake
+labels: [template]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Templates are the easiest way to contribute to cvmake! Read [CONTRIBUTING.md](../../CONTRIBUTING.md) before opening a PR.
+        This form helps us track template ideas and coordinate effort so two people don't build the same thing.
+
+  - type: input
+    id: template-name
+    attributes:
+      label: Proposed template name
+      description: A short, memorable ID (lowercase, hyphens only) — this becomes the `--template` flag value.
+      placeholder: e.g. minimal-two-column
+    validations:
+      required: true
+
+  - type: textarea
+    id: target-audience
+    attributes:
+      label: Target audience
+      description: Who is this template designed for?
+      placeholder: e.g. "Product managers in tech who want a clean, data-driven layout without looking like a developer CV."
+    validations:
+      required: true
+
+  - type: textarea
+    id: style-description
+    attributes:
+      label: Style description
+      description: Describe the visual style — typography, layout, colour use, density, tone.
+      placeholder: e.g. "Single column, generous margins, humanist sans-serif, subtle blue accent on section headings, no icons."
+    validations:
+      required: true
+
+  - type: textarea
+    id: references
+    attributes:
+      label: References / inspiration
+      description: Link to examples, Dribbble shots, templates you admire, or design systems this draws from.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: contribution
+    attributes:
+      label: Are you willing to contribute this template as a PR?
+      options:
+        - "Yes — I'll build it"
+        - "Maybe — I'd need guidance"
+        - "No — just the idea"
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Sketches, mockups, colour palettes, or anything else that helps convey the vision.

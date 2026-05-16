@@ -1,0 +1,46 @@
+name: Feature request
+description: Suggest an improvement or new feature
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Got an idea? Great — please share it. Check the [Roadmap](../../ROADMAP.md) first to see if it's already planned.
+
+  - type: input
+    id: title-summary
+    attributes:
+      label: One-line summary
+      description: What would you like to see?
+      placeholder: e.g. "Add undo/redo support to the web editor"
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or motivation
+      description: What problem does this solve? Who would benefit?
+      placeholder: e.g. "When I accidentally delete a section in the editor there's no way to get it back."
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe what you'd like to happen. Rough ideas are fine.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Have you tried any workarounds or thought of other approaches?
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Links, mockups, or anything else that might help.
