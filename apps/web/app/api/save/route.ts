@@ -1,12 +1,48 @@
 import { stat } from 'node:fs/promises';
 import { atomicWriteFile } from '@/lib/atomic-write';
 import { resolveCvPath } from '@/lib/data-paths';
+import { isDemoMode } from '@/lib/demo-mode';
+import { checkOrigin } from '@/lib/request-guards';
 import { loadCV } from '@codevena/cvmake-core/loader';
 import { CVDataSchema } from '@codevena/cvmake-schema';
 import yaml from 'js-yaml';
 import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
+
+// (C1 enforcement lives inside POST() — the demo deploy refuses all writes
+// regardless of slug. DEMO_SLUGS constants live only on read-side routes.)
+
+// M6 — 512 KB body cap on /api/save (reuses the same bounded-reader pattern
+// as /api/export; prevents memory pressure from unbounded req.json() calls).
+const MAX_SAVE_BODY_BYTES = 512 * 1024;
+
+class BodyTooLargeError extends Error {}
+
+async function readBoundedText(req: Request, maxBytes: number): Promise<string> {
+  const reader = req.body?.getReader();
+  if (!reader) return '';
+  const chunks: Uint8Array[] = [];
+  let received = 0;
+  for (;;) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    if (!value) continue;
+    received += value.byteLength;
+    if (received > maxBytes) {
+      await reader.cancel().catch(() => {});
+      throw new BodyTooLargeError();
+    }
+    chunks.push(value);
+  }
+  const total = new Uint8Array(received);
+  let offset = 0;
+  for (const chunk of chunks) {
+    total.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return new TextDecoder('utf-8').decode(total);
+}
 
 interface SaveRequest {
   slug: string;
@@ -15,9 +51,38 @@ interface SaveRequest {
 }
 
 export async function POST(req: Request): Promise<NextResponse> {
+  // H3 — Origin check (CSRF protection)
+  const originErr = checkOrigin(req);
+  if (originErr) return originErr;
+
+  // M6 — Bounded body read (512 KB)
+  const declaredLength = req.headers.get('content-length');
+  if (declaredLength !== null && Number(declaredLength) > MAX_SAVE_BODY_BYTES) {
+    return NextResponse.json({ kind: 'too_large', maxBytes: MAX_SAVE_BODY_BYTES }, { status: 413 });
+  }
+  let rawText: string;
+  try {
+    rawText = await readBoundedText(req, MAX_SAVE_BODY_BYTES);
+  } catch (err) {
+    if (err instanceof BodyTooLargeError) {
+      return NextResponse.json(
+        { kind: 'too_large', maxBytes: MAX_SAVE_BODY_BYTES },
+        { status: 413 },
+      );
+    }
+    return NextResponse.json({ kind: 'bad_request' }, { status: 400 });
+  }
+
+  // C1 — defense-in-depth: the demo deploy must NEVER write to disk, for any
+  // slug. The middleware enforces this; this handler-level check mirrors the
+  // invariant so a middleware misconfig / bypassed-matcher test cannot leak
+  // a write through, even into the example.* fixtures.
+  if (isDemoMode()) {
+    return NextResponse.json({ kind: 'forbidden' }, { status: 403 });
+  }
   let body: SaveRequest;
   try {
-    body = (await req.json()) as SaveRequest;
+    body = JSON.parse(rawText) as SaveRequest;
   } catch {
     return NextResponse.json({ kind: 'bad_request' }, { status: 400 });
   }

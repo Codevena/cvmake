@@ -1,3 +1,8 @@
+// TODO(Agent 2 + build): Move this page under app/(dev)/dev-ui/ route group and
+// gate the entire group with a build-time condition in next.config.mjs to exclude
+// it from production bundles entirely. The runtime notFound() guard below is
+// defense-in-depth only — the route still exists in the production JS bundle.
+// Coordinate with Agent 2 (next.config.mjs) and Agent 3 (robots.ts disallow /dev-ui).
 'use client';
 
 import type { ColorPalette } from '@codevena/cvmake-schema';
@@ -41,7 +46,11 @@ const PALETTES: ColorPalette[] = [
 ];
 
 export default function DevUI(): JSX.Element {
-  if (process.env.NODE_ENV === 'production') {
+  // C15: only render in development. Production, staging, test, and any
+  // other unknown NODE_ENV value (including the empty/undefined case)
+  // should 404 — this avoids accidentally serving dev tooling whenever
+  // the build pipeline forgets to set NODE_ENV=production.
+  if (process.env.NODE_ENV !== 'development') {
     notFound();
   }
   const [name, setName] = useState('');
