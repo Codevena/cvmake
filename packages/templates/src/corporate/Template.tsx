@@ -78,8 +78,7 @@ export function CorporateTemplate({ data, locale, labels }: TemplateProps): Reac
                       {e.bullets.length > 0 && (
                         <ul className="corporate__bullets">
                           {e.bullets.map((b, j) => (
-                            // biome-ignore lint/suspicious/noArrayIndexKey: bullet strings have no stable id; read-only YAML-backed array with fixed order
-                            <li key={j}>{b}</li>
+                            <li key={`${b.slice(0, 40)}-${j}`}>{b}</li>
                           ))}
                         </ul>
                       )}
@@ -108,8 +107,7 @@ export function CorporateTemplate({ data, locale, labels }: TemplateProps): Reac
                       {e.bullets && e.bullets.length > 0 && (
                         <ul className="corporate__bullets">
                           {e.bullets.map((b, j) => (
-                            // biome-ignore lint/suspicious/noArrayIndexKey: bullet strings have no stable id; read-only YAML-backed array with fixed order
-                            <li key={j}>{b}</li>
+                            <li key={`${b.slice(0, 40)}-${j}`}>{b}</li>
                           ))}
                         </ul>
                       )}
@@ -129,10 +127,9 @@ export function CorporateTemplate({ data, locale, labels }: TemplateProps): Reac
             return (
               <section className="corporate__section" key="skills">
                 <h2 className="corporate__section-heading">{labels.skills}</h2>
-                {hasCategorized ? (
+                {hasCategorized && data.skills.categorized ? (
                   <div>
-                    {/* biome-ignore lint/style/noNonNullAssertion: guarded by hasCategorized truthiness check above */}
-                    {Object.entries(data.skills.categorized!).map(([group, items]) => (
+                    {Object.entries(data.skills.categorized).map(([group, items]) => (
                       <div className="corporate__skills-group" key={group}>
                         <span className="corporate__skills-label">{group}: </span>
                         <span className="corporate__skills-items">{items.join(', ')}</span>
@@ -141,8 +138,7 @@ export function CorporateTemplate({ data, locale, labels }: TemplateProps): Reac
                   </div>
                 ) : (
                   <>
-                    {/* biome-ignore lint/style/noNonNullAssertion: data.skills is truthy (checked on line 121) and hasStack is truthy (checked on line 125) */}
-                    <p className="corporate__skills-flat">{data.skills!.stack!.join(', ')}</p>
+                    <p className="corporate__skills-flat">{data.skills?.stack?.join(', ')}</p>
                   </>
                 )}
               </section>
@@ -175,8 +171,7 @@ export function CorporateTemplate({ data, locale, labels }: TemplateProps): Reac
           <section className="corporate__section" key={cs.id}>
             <h2 className="corporate__section-heading">{cs.title}</h2>
             {cs.items.map((it, i) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: custom section items have no stable id; read-only YAML-backed array with fixed order
-              <div className="corporate__row" key={i}>
+              <div className="corporate__row" key={`${it.title}-${i}`}>
                 <div className="corporate__row-date">{it.date ?? ''}</div>
                 <div className="corporate__row-body">
                   <div className="corporate__entry-primary">{it.title}</div>
@@ -189,8 +184,7 @@ export function CorporateTemplate({ data, locale, labels }: TemplateProps): Reac
                   {it.bullets && it.bullets.length > 0 && (
                     <ul className="corporate__bullets">
                       {it.bullets.map((b, j) => (
-                        // biome-ignore lint/suspicious/noArrayIndexKey: bullet strings have no stable id; read-only YAML-backed array with fixed order
-                        <li key={j}>{b}</li>
+                        <li key={`${b.slice(0, 40)}-${j}`}>{b}</li>
                       ))}
                     </ul>
                   )}

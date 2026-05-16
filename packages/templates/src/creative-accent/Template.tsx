@@ -65,8 +65,7 @@ export function CreativeAccentTemplate({ data, palette: _palette, locale, labels
                       {e.bullets.length > 0 && (
                         <ul className="creative-accent__bullets">
                           {e.bullets.map((b, j) => (
-                            // biome-ignore lint/suspicious/noArrayIndexKey: bullet strings have no stable id; read-only YAML-backed array with fixed order
-                            <li key={j}>{b}</li>
+                            <li key={`${b.slice(0, 40)}-${j}`}>{b}</li>
                           ))}
                         </ul>
                       )}
@@ -105,8 +104,7 @@ export function CreativeAccentTemplate({ data, palette: _palette, locale, labels
                       {e.bullets && e.bullets.length > 0 && (
                         <ul className="creative-accent__bullets">
                           {e.bullets.map((b, j) => (
-                            // biome-ignore lint/suspicious/noArrayIndexKey: bullet strings have no stable id; read-only YAML-backed array with fixed order
-                            <li key={j}>{b}</li>
+                            <li key={`${b.slice(0, 40)}-${j}`}>{b}</li>
                           ))}
                         </ul>
                       )}
@@ -124,8 +122,7 @@ export function CreativeAccentTemplate({ data, palette: _palette, locale, labels
             <section className="creative-accent__section" key={cs.id}>
               <h2 className="creative-accent__section-heading">{cs.title}</h2>
               {cs.items.map((it, i) => (
-                // biome-ignore lint/suspicious/noArrayIndexKey: custom section items have no stable id; read-only YAML-backed array with fixed order
-                <div className="creative-accent__entry" key={i}>
+                <div className="creative-accent__entry" key={`${it.title}-${i}`}>
                   <div className="creative-accent__entry-title">{it.title}</div>
                   {it.subtitle && (
                     <div className="creative-accent__entry-subtitle">{it.subtitle}</div>
@@ -134,8 +131,7 @@ export function CreativeAccentTemplate({ data, palette: _palette, locale, labels
                   {it.bullets && it.bullets.length > 0 && (
                     <ul className="creative-accent__bullets">
                       {it.bullets.map((b, j) => (
-                        // biome-ignore lint/suspicious/noArrayIndexKey: bullet strings have no stable id; read-only YAML-backed array with fixed order
-                        <li key={j}>{b}</li>
+                        <li key={`${b.slice(0, 40)}-${j}`}>{b}</li>
                       ))}
                     </ul>
                   )}
@@ -244,8 +240,7 @@ export function CreativeAccentTemplate({ data, palette: _palette, locale, labels
               <section className="creative-accent__sidebar-section">
                 <h2 className="creative-accent__sidebar-heading">{labels.languages}</h2>
                 <div className="creative-accent__tags">
-                  {/* biome-ignore lint/style/noNonNullAssertion: guarded by hasLanguages truthiness check (line 20) */}
-                  {data.languages!.map((l) => (
+                  {data.languages?.map((l) => (
                     <span className="creative-accent__pill" key={l.name}>
                       {l.name} — {l.label ?? l.level}
                     </span>

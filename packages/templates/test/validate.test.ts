@@ -37,8 +37,8 @@ describe('validateTemplate', () => {
     expect(() => validateTemplate({ ...base, palettes: [] })).toThrow(/at least one palette/);
   });
   it('verbietet doppelte Palette-IDs', () => {
-    // biome-ignore lint/style/noNonNullAssertion: base fixture is defined in this test with exactly one palette; index 0 is guaranteed
-    const first = base.palettes[0]!;
+    const [first] = base.palettes;
+    if (!first) throw new Error('test fixture must have at least one palette');
     expect(() => validateTemplate({ ...base, palettes: [first, first] })).toThrow(
       /duplicate palette id/,
     );

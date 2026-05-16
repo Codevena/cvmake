@@ -5,8 +5,8 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { academic } from '../src/academic/index.js';
 
-// biome-ignore lint/style/noNonNullAssertion: every template ships at least one palette; index 0 is guaranteed to exist
-const palette = academic.palettes[0]!;
+const [palette] = academic.palettes;
+if (!palette) throw new Error('academic template must ship at least one palette');
 
 describe('AcademicTemplate', () => {
   it('rendert Voll-Fixture ohne Fehler', () => {

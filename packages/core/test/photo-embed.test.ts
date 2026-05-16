@@ -19,8 +19,7 @@ describe('embedPhoto', () => {
     };
     const embedded = await embedPhoto(data, baseDir);
     expect(embedded.personal.photo).toMatch(/^data:image\/jpeg;base64,/);
-    // biome-ignore lint/style/noNonNullAssertion: photo is asserted non-null by the toMatch expect on the previous line
-    expect(embedded.personal.photo!.length).toBeGreaterThan(100);
+    expect(embedded.personal.photo?.length).toBeGreaterThan(100);
   });
 
   it('leaves photo empty if file missing', async () => {

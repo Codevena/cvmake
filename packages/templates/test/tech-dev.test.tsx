@@ -5,8 +5,8 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { techDev } from '../src/tech-dev/index.js';
 
-// biome-ignore lint/style/noNonNullAssertion: every template ships at least one palette; index 0 is guaranteed to exist
-const palette = techDev.palettes[0]!;
+const [palette] = techDev.palettes;
+if (!palette) throw new Error('tech-dev template must ship at least one palette');
 
 describe('TechDevTemplate', () => {
   it('rendert Voll-Fixture ohne Fehler', () => {

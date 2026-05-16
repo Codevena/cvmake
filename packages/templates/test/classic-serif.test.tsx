@@ -5,8 +5,8 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { classicSerif } from '../src/classic-serif/index.js';
 
-// biome-ignore lint/style/noNonNullAssertion: every template ships at least one palette; index 0 is guaranteed to exist
-const palette = classicSerif.palettes[0]!;
+const [palette] = classicSerif.palettes;
+if (!palette) throw new Error('classic-serif template must ship at least one palette');
 
 describe('ClassicSerifTemplate', () => {
   it('rendert Voll-Fixture ohne Fehler', () => {

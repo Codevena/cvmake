@@ -5,8 +5,8 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { editorial } from '../src/editorial/index.js';
 
-// biome-ignore lint/style/noNonNullAssertion: every template ships at least one palette; index 0 is guaranteed to exist
-const palette = editorial.palettes[0]!;
+const [palette] = editorial.palettes;
+if (!palette) throw new Error('editorial template must ship at least one palette');
 
 describe('EditorialTemplate', () => {
   it('rendert Voll-Fixture ohne Fehler', () => {

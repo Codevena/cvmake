@@ -140,8 +140,7 @@ export function ClassicSerifTemplate({ data, palette, locale, labels }: Template
                       {e.bullets.length > 0 && (
                         <ul className="classic-serif__bullets">
                           {e.bullets.map((b, j) => (
-                            // biome-ignore lint/suspicious/noArrayIndexKey: bullet strings have no stable id; read-only YAML-backed array with fixed order
-                            <li key={j}>{b}</li>
+                            <li key={`${b.slice(0, 40)}-${j}`}>{b}</li>
                           ))}
                         </ul>
                       )}
@@ -167,8 +166,7 @@ export function ClassicSerifTemplate({ data, palette, locale, labels }: Template
                       {e.bullets && e.bullets.length > 0 && (
                         <ul className="classic-serif__bullets">
                           {e.bullets.map((b, j) => (
-                            // biome-ignore lint/suspicious/noArrayIndexKey: bullet strings have no stable id; read-only YAML-backed array with fixed order
-                            <li key={j}>{b}</li>
+                            <li key={`${b.slice(0, 40)}-${j}`}>{b}</li>
                           ))}
                         </ul>
                       )}
@@ -184,16 +182,14 @@ export function ClassicSerifTemplate({ data, palette, locale, labels }: Template
             <section className="classic-serif__section" key={cs.id}>
               <h2>{cs.title}</h2>
               {cs.items.map((it, i) => (
-                // biome-ignore lint/suspicious/noArrayIndexKey: custom section items have no stable id; read-only YAML-backed array with fixed order
-                <div className="classic-serif__exp" key={i}>
+                <div className="classic-serif__exp" key={`${it.title}-${i}`}>
                   <div className="classic-serif__exp-title">{it.title}</div>
                   {it.subtitle && <div className="classic-serif__exp-meta">{it.subtitle}</div>}
                   {it.description && <p>{it.description}</p>}
                   {it.bullets && (
                     <ul className="classic-serif__bullets">
                       {it.bullets.map((b, j) => (
-                        // biome-ignore lint/suspicious/noArrayIndexKey: bullet strings have no stable id; read-only YAML-backed array with fixed order
-                        <li key={j}>{b}</li>
+                        <li key={`${b.slice(0, 40)}-${j}`}>{b}</li>
                       ))}
                     </ul>
                   )}

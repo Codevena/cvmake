@@ -5,8 +5,8 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { corporate } from '../src/corporate/index.js';
 
-// biome-ignore lint/style/noNonNullAssertion: every template ships at least one palette; index 0 is guaranteed to exist
-const palette = corporate.palettes[0]!;
+const [palette] = corporate.palettes;
+if (!palette) throw new Error('corporate template must ship at least one palette');
 
 describe('CorporateTemplate', () => {
   it('rendert Voll-Fixture ohne Fehler', () => {

@@ -170,8 +170,7 @@ export function TechDevTemplate({ data, palette: _palette, locale, labels }: Tem
                       {e.bullets.length > 0 && (
                         <ul className="tech-dev__bullets">
                           {e.bullets.map((b, j) => (
-                            // biome-ignore lint/suspicious/noArrayIndexKey: bullet strings have no stable id; read-only YAML-backed array with fixed order
-                            <li key={j}>{b}</li>
+                            <li key={`${b.slice(0, 40)}-${j}`}>{b}</li>
                           ))}
                         </ul>
                       )}
@@ -201,8 +200,7 @@ export function TechDevTemplate({ data, palette: _palette, locale, labels }: Tem
                       {e.bullets && e.bullets.length > 0 && (
                         <ul className="tech-dev__bullets">
                           {e.bullets.map((b, j) => (
-                            // biome-ignore lint/suspicious/noArrayIndexKey: bullet strings have no stable id; read-only YAML-backed array with fixed order
-                            <li key={j}>{b}</li>
+                            <li key={`${b.slice(0, 40)}-${j}`}>{b}</li>
                           ))}
                         </ul>
                       )}
@@ -221,16 +219,14 @@ export function TechDevTemplate({ data, palette: _palette, locale, labels }: Tem
               {/* biome-ignore lint/suspicious/noCommentText: intentional terminal-comment aesthetic — "// title" prefix is decorative UI text for custom sections */}
               <h2 className="tech-dev__section-heading">// {cs.title.toLowerCase()}</h2>
               {cs.items.map((it, i) => (
-                // biome-ignore lint/suspicious/noArrayIndexKey: custom section items have no stable id; read-only YAML-backed array with fixed order
-                <div className="tech-dev__custom-entry" key={i}>
+                <div className="tech-dev__custom-entry" key={`${it.title}-${i}`}>
                   <div className="tech-dev__custom-title">{it.title}</div>
                   {it.subtitle && <div className="tech-dev__custom-subtitle">{it.subtitle}</div>}
                   {it.description && <p className="tech-dev__custom-desc">{it.description}</p>}
                   {it.bullets && it.bullets.length > 0 && (
                     <ul className="tech-dev__bullets">
                       {it.bullets.map((b, j) => (
-                        // biome-ignore lint/suspicious/noArrayIndexKey: bullet strings have no stable id; read-only YAML-backed array with fixed order
-                        <li key={j}>{b}</li>
+                        <li key={`${b.slice(0, 40)}-${j}`}>{b}</li>
                       ))}
                     </ul>
                   )}
