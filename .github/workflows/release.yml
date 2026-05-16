@@ -9,12 +9,35 @@ on:
 # `pnpm -r --filter "@codevena/cvmake-{cli,core,schema,templates}" exec pnpm version <bump>`
 # then `git tag vX.Y.Z && git push --tags`. See README "Releasing" for the
 # full handoff.
+#
+# Auth model (audit security-supplychain.md M5):
+# - Uses npm Trusted Publishers via OIDC — no long-lived NPM_TOKEN secret
+#   needed. GitHub mints a short-lived OIDC token per run; npm verifies
+#   the audience and grants publish access for THIS workflow only.
+# - --provenance flag emits a signed provenance statement so npm shows a
+#   "✓ Provenance" badge on each package page (signed by GitHub Actions,
+#   visible to downstream consumers).
+#
+# !! BEFORE THE NEXT RELEASE !! configure the Trusted Publisher on
+# npmjs.com for each of the 4 packages:
+#   For @codevena/cvmake-{schema,core,templates,cli}, open
+#     https://www.npmjs.com/package/<pkg>/access
+#   → "Trusted Publisher" → "GitHub Actions" → Add publisher with:
+#     - Organisation/User:  Codevena
+#     - Repository:         cvmake
+#     - Workflow filename:  release.yml
+#     - Environment:        (leave empty)
+#   Once added for all 4, the existing NPM_TOKEN repo secret can be deleted
+#   (Settings → Secrets and variables → Actions).
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      # id-token: write is the critical permission — without it the OIDC
+      # token can't be requested and the trusted-publisher flow falls back
+      # to looking for NODE_AUTH_TOKEN (which we no longer pass).
       id-token: write
     steps:
       - uses: actions/checkout@v4
@@ -40,12 +63,14 @@ jobs:
       - run: pnpm build
       - run: pnpm -r test:unit
 
-      - name: publish to npm (dep order)
+      - name: publish to npm (dep order, with provenance)
         run: |
           set -e
-          pnpm --filter @codevena/cvmake-schema publish --access public --no-git-checks
-          pnpm --filter @codevena/cvmake-core publish --access public --no-git-checks
-          pnpm --filter @codevena/cvmake-templates publish --access public --no-git-checks
-          pnpm --filter @codevena/cvmake-cli publish --access public --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # --provenance writes a signed in-toto statement to npm. It REQUIRES
+          # OIDC auth (id-token: write above) — the npm CLI rejects provenance
+          # if the auth came from a long-lived token, hence the matching
+          # absence of NODE_AUTH_TOKEN in env below.
+          pnpm --filter @codevena/cvmake-schema publish --access public --no-git-checks --provenance
+          pnpm --filter @codevena/cvmake-core publish --access public --no-git-checks --provenance
+          pnpm --filter @codevena/cvmake-templates publish --access public --no-git-checks --provenance
+          pnpm --filter @codevena/cvmake-cli publish --access public --no-git-checks --provenance
