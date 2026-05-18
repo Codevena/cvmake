@@ -38,7 +38,7 @@ jobs:
               exit 1
               ;;
           esac
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: ${{ inputs.branch }}
           # PAT-free auto-commit path: we push back to the same branch with the
