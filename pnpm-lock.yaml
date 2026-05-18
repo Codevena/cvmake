@@ -272,8 +272,8 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       react-image-crop:
-        specifier: 11.0.7
-        version: 11.0.7(react@18.3.1)
+        specifier: 11.0.10
+        version: 11.0.10(react@18.3.1)
     devDependencies:
       '@testing-library/jest-dom':
         specifier: 6.6.3
@@ -2255,8 +2255,8 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18 || ^19
 
-  react-image-crop@11.0.7:
-    resolution: {integrity: sha512-ZciKWHDYzmm366JDL18CbrVyjnjH0ojufGDmScfS4ZUqLHg4nm6ATY+K62C75W4ZRNt4Ii+tX0bSjNk9LQ2xzQ==}
+  react-image-crop@11.0.10:
+    resolution: {integrity: sha512-+5FfDXUgYLLqBh1Y/uQhIycpHCbXkI50a+nbfkB1C0xXXUTwkisHDo2QCB1SQJyHCqIuia4FeyReqXuMDKWQTQ==}
     peerDependencies:
       react: '>=16.13.1'
 
@@ -4228,7 +4228,7 @@ snapshots:
     dependencies:
       react: 18.3.1
 
-  react-image-crop@11.0.7(react@18.3.1):
+  react-image-crop@11.0.10(react@18.3.1):
     dependencies:
       react: 18.3.1
 
