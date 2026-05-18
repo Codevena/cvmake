@@ -40,7 +40,7 @@ jobs:
       # to looking for NODE_AUTH_TOKEN (which we no longer pass).
       id-token: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v4
         with: { version: 9.12.0 }
       - uses: actions/setup-node@v4
