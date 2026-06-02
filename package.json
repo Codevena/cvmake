@@ -12,6 +12,7 @@
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
     "test:unit": "turbo run test:unit",
+    "test:coverage": "turbo run test:unit -- --coverage",
     "test:integration": "turbo run test:integration",
     "test:e2e": "turbo run test:e2e",
     "test:visual": "turbo run test:visual",
@@ -21,6 +22,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
+    "@vitest/coverage-v8": "2.1.5",
     "turbo": "2.3.0",
     "typescript": "5.6.3",
     "vitest": "2.1.5"

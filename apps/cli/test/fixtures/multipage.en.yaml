@@ -1,0 +1,100 @@
+# Deliberately long CV fixture — guaranteed to span >1 page on any platform so
+# the page-break spacer-injection logic in packages/core/src/pdf.ts is exercised.
+meta:
+  locale: en
+
+personal:
+  firstName: Pagination
+  lastName: Tester
+  title: 'Staff Engineer · Platform · Reliability'
+  contacts:
+    email: pagination.tester@example.com
+    github: paginationtester
+    location: 'Remote'
+
+summary: >-
+  A deliberately long professional summary used purely to push the rendered CV
+  well past a single page, so the multi-page pagination and spacer-injection
+  path in the PDF pipeline is exercised end-to-end during integration tests.
+
+experience:
+  - title: 'Staff Engineer'
+    company: 'Orbital Systems'
+    location: 'Berlin'
+    startDate: '2022-01'
+    bullets:
+      - 'Led a platform reliability initiative that cut p99 latency by 40 percent across the core API fleet'
+      - 'Designed and rolled out an incident-response framework adopted by eight product teams company-wide'
+      - 'Mentored four senior engineers and ran weekly architecture reviews and design critiques'
+  - title: 'Senior Backend Engineer'
+    company: 'Helios Data'
+    location: 'Munich'
+    startDate: '2019-06'
+    endDate: '2021-12'
+    bullets:
+      - 'Built a multi-tenant ingestion pipeline processing two billion events per day with strong delivery guarantees'
+      - 'Migrated a monolith to event-driven services, halving deploy time and improving isolation'
+      - 'Introduced load and chaos testing that surfaced three latent production-critical failure modes'
+  - title: 'Backend Engineer'
+    company: 'Northwind Labs'
+    location: 'Hamburg'
+    startDate: '2017-03'
+    endDate: '2019-05'
+    bullets:
+      - 'Owned the billing subsystem end to end, including idempotent payment retries and reconciliation'
+      - 'Reduced infrastructure cost by 28 percent through query optimisation and autoscaling tuning'
+      - 'Wrote the team onboarding guide and ran the interview loop for backend hires'
+  - title: 'Software Engineer'
+    company: 'Brightwave'
+    location: 'Cologne'
+    startDate: '2015-01'
+    endDate: '2017-02'
+    bullets:
+      - 'Shipped the first public REST API and its SDKs, growing third-party integrations from zero to forty'
+      - 'Hardened authentication and session handling ahead of the first external security audit'
+      - 'Automated the release pipeline, taking deploys from weekly-manual to on-demand'
+  - title: 'Junior Developer'
+    company: 'Pixel Forge'
+    location: 'Leipzig'
+    startDate: '2013-08'
+    endDate: '2014-12'
+    bullets:
+      - 'Implemented dozens of customer-facing features across a large PHP and JavaScript codebase'
+      - 'Fixed a long-standing data-corruption bug affecting roughly five percent of orders'
+  - title: 'Working Student, Engineering'
+    company: 'University Spin-off'
+    location: 'Dresden'
+    startDate: '2012-01'
+    endDate: '2013-07'
+    bullets:
+      - 'Prototyped a recommendation service that later shipped as a paid product feature'
+      - 'Maintained the continuous-integration setup and the internal documentation wiki'
+
+education:
+  - degree: 'MSc Computer Science'
+    institution: 'Technical University of Munich'
+    location: 'Munich'
+    startDate: '2011-10'
+    endDate: '2013-09'
+    bullets:
+      - 'Thesis on distributed consensus under partial synchrony'
+  - degree: 'BSc Computer Science'
+    institution: 'University of Leipzig'
+    location: 'Leipzig'
+    startDate: '2008-10'
+    endDate: '2011-09'
+
+skills:
+  categorized:
+    Languages: [Go, TypeScript, Python, Rust]
+    Infrastructure: [Kubernetes, Terraform, PostgreSQL, Kafka]
+    Practices: [Observability, Incident Response, Load Testing]
+
+languages:
+  - name: English
+    level: C2
+  - name: German
+    level: native
+
+rendering:
+  template: classic-serif
