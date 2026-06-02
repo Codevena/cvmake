@@ -1,3 +1,4 @@
+import { applyHiddenSections } from './hidden-sections.js';
 import { getLabels } from './i18n.js';
 import type { RenderInput, RenderOutput } from './renderer-types.js';
 
@@ -5,21 +6,25 @@ export async function renderCV({ data, template, paletteId }: RenderInput): Prom
   const { renderToStaticMarkup } = await import('react-dom/server');
   const palette = template.palettes.find((p) => p.id === paletteId) ?? template.palettes[0];
   if (!palette) throw new Error(`template ${template.meta.id} has no palettes`);
-  const accent = data.rendering.accentOverride ?? palette.accent;
+  // Strip sections the user marked hidden BEFORE rendering, so the PDF export
+  // and CLI honour `rendering.hiddenSections` exactly like the live preview.
+  // Idempotent, so double-application (e.g. if a caller already stripped) is safe.
+  const visible = applyHiddenSections(data);
+  const accent = visible.rendering.accentOverride ?? palette.accent;
   const effectivePalette = { ...palette, accent };
-  const labels = getLabels(data.meta.locale);
+  const labels = getLabels(visible.meta.locale);
 
   const html = renderToStaticMarkup(
     <template.Component
-      data={data}
+      data={visible}
       palette={effectivePalette}
-      locale={data.meta.locale}
+      locale={visible.meta.locale}
       labels={labels}
     />,
   );
 
   const css = cssVariables(effectivePalette);
-  return { html, css, locale: data.meta.locale };
+  return { html, css, locale: visible.meta.locale };
 }
 
 function cssVariables(p: {

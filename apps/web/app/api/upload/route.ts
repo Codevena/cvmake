@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto';
 import { mkdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { photoDir, uploadStagingDir, validateSlug } from '@/lib/data-paths';
@@ -96,7 +97,12 @@ export async function POST(req: Request): Promise<NextResponse> {
   const buf = Buffer.from(await file.arrayBuffer());
   await mkdir(photoDir(), { recursive: true });
   await mkdir(uploadStagingDir(), { recursive: true });
-  const tmp = path.join(uploadStagingDir(), `.upload-${slug}-${Date.now()}.bin`);
+  // Cryptographic suffix avoids same-millisecond temp-file collisions between
+  // two concurrent uploads for the same slug (mirrors atomic-write.ts).
+  const tmp = path.join(
+    uploadStagingDir(),
+    `.upload-${slug}-${Date.now()}-${randomBytes(6).toString('hex')}.bin`,
+  );
   await writeFile(tmp, buf);
   try {
     const result = await processPhoto({
@@ -112,7 +118,10 @@ export async function POST(req: Request): Promise<NextResponse> {
       height: result.height,
     });
   } catch (err) {
-    return NextResponse.json({ kind: 'process_failed', message: String(err) }, { status: 400 });
+    // Log the detailed error server-side; never return raw error strings to
+    // the client — they can leak filesystem paths / Sharp internals.
+    console.error('[upload] processPhoto failed:', err);
+    return NextResponse.json({ kind: 'process_failed' }, { status: 400 });
   } finally {
     await rm(tmp, { force: true });
   }

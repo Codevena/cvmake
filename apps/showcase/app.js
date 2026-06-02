@@ -203,23 +203,30 @@ function wireCopyButtons() {
     btn.className =
       'absolute right-2 top-2 rounded-md bg-ink/80 px-2 py-1 text-[11px] font-mono uppercase tracking-wider text-parchment/60 opacity-0 transition-opacity hover:bg-ink hover:text-parchment group-hover:opacity-100 group-focus-within:opacity-100 focus:opacity-100';
 
+    let restoreTimer = null;
+    const restoreLabel = (label) => {
+      if (restoreTimer) clearTimeout(restoreTimer);
+      restoreTimer = setTimeout(() => {
+        btn.textContent = 'Copy';
+        btn.classList.remove('text-sand');
+        restoreTimer = null;
+      }, 1400);
+      btn.textContent = label;
+    };
+
     btn.addEventListener('click', async () => {
-      const text = (pre.textContent ?? '').trim();
+      // Prefer an explicit `data-copy-text` (a single runnable command) over the
+      // rendered text — terminal blocks include a `$` prompt and fake output
+      // that is not pasteable.
+      const explicit = pre.getAttribute('data-copy-text');
+      const text = (explicit ?? pre.textContent ?? '').trim();
       try {
         await navigator.clipboard.writeText(text);
         track('showcase.code_copy', { length: text.length });
-        const prev = btn.textContent;
-        btn.textContent = 'Copied';
         btn.classList.add('text-sand');
-        setTimeout(() => {
-          btn.textContent = prev;
-          btn.classList.remove('text-sand');
-        }, 1400);
+        restoreLabel('Copied');
       } catch {
-        btn.textContent = 'Error';
-        setTimeout(() => {
-          btn.textContent = 'Copy';
-        }, 1400);
+        restoreLabel('Error');
       }
     });
 

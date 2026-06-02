@@ -13,6 +13,11 @@ describe('dates', () => {
   it('range mit offenem Ende nutzt Label', () => {
     expect(formatDateRange('2020-01', undefined, 'de', 'heute')).toBe('Jan. 2020 – heute');
   });
+  it('fällt bei out-of-range Monat auf das Jahr zurück statt "undefined"', () => {
+    expect(formatMonthYear('2020-13', 'de')).toBe('2020');
+    expect(formatMonthYear('2020-99', 'en')).toBe('2020');
+    expect(formatMonthYear('2020-00', 'de')).toBe('2020');
+  });
 });
 
 describe('initials', () => {

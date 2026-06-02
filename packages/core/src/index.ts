@@ -1,4 +1,5 @@
 export * from './errors.js';
+export * from './hidden-sections.js';
 export * from './html-document.js';
 export * from './i18n.js';
 export * from './loader.js';

@@ -6,7 +6,12 @@ import { generatePDF, shutdownPdfBrowser } from '@codevena/cvmake-core/pdf';
 import { embedPhoto } from '@codevena/cvmake-core/photo-embed';
 import { renderCV } from '@codevena/cvmake-core/renderer';
 import { bootstrapTemplates, getTemplate } from '@codevena/cvmake-templates';
-import { loadTemplateCss } from '@codevena/cvmake-templates/css';
+import {
+  loadPrintCss,
+  loadResetCss,
+  loadTemplateCss,
+  stripSharedImports,
+} from '@codevena/cvmake-templates/css';
 import pc from 'picocolors';
 
 export interface BuildArgs {
@@ -26,19 +31,34 @@ export async function runBuild(args: BuildArgs): Promise<void> {
   if (!template) {
     throw new Error(`unknown template: ${templateId}`);
   }
+  // Validate an explicitly-passed --palette instead of silently falling back to
+  // the default palette (which would produce a PDF in the wrong colours, exit 0).
+  if (args.palette !== undefined && !template.palettes.some((p) => p.id === args.palette)) {
+    throw new Error(
+      `unknown palette: ${args.palette} (template '${templateId}' has: ${template.palettes
+        .map((p) => p.id)
+        .join(', ')})`,
+    );
+  }
   const paletteId = args.palette ?? data.rendering.palette;
   const rendered = await renderCV({
     data,
     template,
     ...(paletteId !== undefined ? { paletteId } : {}),
   });
+  // The template's styles.css starts with relative `@import "../shared/..."`
+  // lines that cannot resolve under Puppeteer's setContent (no base URL). Load
+  // the shared reset/print CSS explicitly and strip the dead @imports, then
+  // order reset → template → print → palette-vars (mirrors the web preview).
+  const resetCss = loadResetCss();
+  const printCss = loadPrintCss();
   let templateCss = '';
   try {
-    templateCss = loadTemplateCss(templateId);
+    templateCss = stripSharedImports(loadTemplateCss(templateId));
   } catch {
-    // Template ships without dedicated styles.css — fall back to renderer output only.
+    // Template ships without dedicated styles.css — fall back to shared + renderer output only.
   }
-  const css = `${rendered.css}\n${templateCss}`;
+  const css = `${resetCss}\n${templateCss}\n${printCss}\n${rendered.css}`;
   const html = wrapHtmlDocument({
     title: `${data.personal.firstName} ${data.personal.lastName} — CV`,
     html: rendered.html,

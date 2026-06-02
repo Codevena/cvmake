@@ -56,12 +56,14 @@ export function EditorShell({ initialData, initialMtime, slug, allSlugs, bootstr
   const watched = useWatch({ control: form.control }) as CVData;
   const debounced = useDebouncedValue(watched, 150);
   const [conflict, setConflict] = useState<ConflictPayload | null>(null);
-  // Per spec §10.2 the autosave loop must stay paused after the user clicks
-  // "Cancel" on the conflict modal — otherwise the next debounced save
-  // would re-hit /api/save with the same stale mtime and 409 again, looping
-  // until the user resolves the conflict. Only an explicit Reload or a
-  // successful Overwrite is allowed to resume autosave.
-  const [conflictPaused, setConflictPaused] = useState(false);
+  // When the user dismisses the conflict modal without resolving it, we KEEP
+  // the conflict payload alive (so autosave stays paused via `conflict !== null`,
+  // per spec §10.2 — no silent 409-loop in the background) but hide the modal
+  // and surface a persistent "Resolve conflict" banner instead. Previously
+  // Cancel cleared the conflict and set a separate paused flag that nothing
+  // could reset, leaving autosave paused for the rest of the session with no
+  // way back to the modal and a dead Retry button.
+  const [conflictDismissed, setConflictDismissed] = useState(false);
   // Overwrite error — shown as an inline banner inside the conflict modal
   // area instead of a blocking window.alert.
   const [overwriteError, setOverwriteError] = useState<string | null>(null);
@@ -80,13 +82,16 @@ export function EditorShell({ initialData, initialMtime, slug, allSlugs, bootstr
     isDirty: form.formState.isDirty,
     isValid: form.formState.isValid,
     expectedMtime: initialMtime,
-    onConflict: setConflict,
+    onConflict: (p) => {
+      setConflict(p);
+      setConflictDismissed(false); // a fresh conflict always re-opens the modal
+    },
     onError: (e) => {
       if (e.kind === 'validation') {
         applyZodIssues(e.issues as ZodIssue[], form.setError);
       }
     },
-    paused: demo || conflict !== null || conflictPaused,
+    paused: demo || conflict !== null,
   });
 
   useHotkey('mod+k', (e) => {
@@ -151,7 +156,9 @@ export function EditorShell({ initialData, initialMtime, slug, allSlugs, bootstr
           allSlugs={allSlugs}
           saveState={autosave.state}
           saveError={autosave.errorMessage}
-          onRetry={autosave.retry}
+          // While a conflict is active, autosave is paused so the plain retry
+          // is a guaranteed no-op — instead re-open the resolution modal.
+          onRetry={conflict ? () => setConflictDismissed(false) : autosave.retry}
           lastSavedAt={autosave.lastSavedAt}
           onOpenPalette={() => setPaletteOpen(true)}
           isDemo={demo}
@@ -212,7 +219,7 @@ export function EditorShell({ initialData, initialMtime, slug, allSlugs, bootstr
           commands={paletteCommands}
         />
       </div>
-      {conflict && (
+      {conflict && !conflictDismissed && (
         <>
           <ConflictModal
             slug={slug}
@@ -222,9 +229,9 @@ export function EditorShell({ initialData, initialMtime, slug, allSlugs, bootstr
             onReload={(data, mtime) => {
               form.reset(data);
               autosave.expectedMtimeRef.current = mtime;
+              // Reload resolved the conflict — clear it (resumes autosave).
               setConflict(null);
-              // Reload resolved the conflict — resume autosave.
-              setConflictPaused(false);
+              setConflictDismissed(false);
             }}
             onOverwrite={async (mtime) => {
               // Await the response BEFORE dismissing the modal so a failed
@@ -251,21 +258,21 @@ export function EditorShell({ initialData, initialMtime, slug, allSlugs, bootstr
                 }
                 const body = (await res.json()) as { mtime: number };
                 autosave.expectedMtimeRef.current = body.mtime;
-                setConflict(null);
-                setOverwriteError(null);
                 // Successful overwrite resolves the conflict — resume autosave.
-                setConflictPaused(false);
+                setConflict(null);
+                setConflictDismissed(false);
+                setOverwriteError(null);
               } catch (err) {
                 setOverwriteError(`Overwrite failed: ${(err as Error).message}`);
               }
             }}
             onCancel={() => {
               // Per spec §10.2: closing the modal without resolving must keep
-              // autosave paused. The user has to pick Reload or Overwrite next
-              // time the conflict surfaces (or fix the file by hand) — we must
-              // not silently start 409-looping again in the background.
-              setConflictPaused(true);
-              setConflict(null);
+              // autosave paused. We KEEP the conflict payload (so `paused`
+              // stays true and we don't silently 409-loop) but hide the modal
+              // and show a persistent "Resolve conflict" banner so the user
+              // can re-open it — rather than being stuck for the session.
+              setConflictDismissed(true);
               setOverwriteError(null);
             }}
           />
@@ -282,6 +289,24 @@ export function EditorShell({ initialData, initialMtime, slug, allSlugs, bootstr
             </div>
           )}
         </>
+      )}
+      {conflict && conflictDismissed && (
+        // Persistent resume path after the conflict modal was dismissed:
+        // autosave is paused until the user resolves the conflict, so offer a
+        // way back to the modal instead of leaving them silently stuck.
+        <div
+          role="alert"
+          className="fixed inset-x-0 bottom-0 z-[55] flex flex-wrap items-center justify-center gap-3 border-t border-error bg-surface px-4 py-2 text-sm text-error shadow-card"
+        >
+          <span>File changed externally — autosave is paused.</span>
+          <button
+            type="button"
+            onClick={() => setConflictDismissed(false)}
+            className="rounded border border-error px-3 py-1 font-medium hover:bg-error/10"
+          >
+            Resolve conflict
+          </button>
+        </div>
       )}
     </FormProvider>
   );

@@ -50,6 +50,25 @@ interface SaveRequest {
   expectedMtime: number;
 }
 
+// L6 — serialize the mtime-check → write critical section per target path.
+// Without this, two concurrent saves to the same file can both pass the mtime
+// guard and then both rename their temp over the target (last-writer-wins),
+// defeating the §10.2 conflict guarantee. In-process only, which is sufficient
+// for this single-instance local tool (a distributed deploy would need a real
+// lock — see audit.md architecture strategy).
+const saveChains = new Map<string, Promise<unknown>>();
+
+function runExclusive<T>(key: string, task: () => Promise<T>): Promise<T> {
+  const prev = saveChains.get(key) ?? Promise.resolve();
+  const run = prev.then(task, task); // run after the previous save settles
+  const tracked = run.catch(() => {}); // stored promise must never reject
+  saveChains.set(key, tracked);
+  void tracked.finally(() => {
+    if (saveChains.get(key) === tracked) saveChains.delete(key);
+  });
+  return run;
+}
+
 export async function POST(req: Request): Promise<NextResponse> {
   // H3 — Origin check (CSRF protection)
   const originErr = checkOrigin(req);
@@ -92,45 +111,52 @@ export async function POST(req: Request): Promise<NextResponse> {
   } catch {
     return NextResponse.json({ kind: 'invalid_slug' }, { status: 400 });
   }
-  // mtime guard.
-  //
-  // Per spec §10.2 we treat an externally-deleted file as a conflict — the
-  // user opened the editor on a known mtime (>0) but the file is now gone,
-  // which is exactly the kind of out-of-band change the conflict modal is
-  // designed to handle. Only when the client signals "create new" by sending
-  // expectedMtime === 0 do we accept a missing file and let it be created.
-  const stExists = await stat(target).catch(() => null);
-  if (!stExists) {
-    if (body.expectedMtime > 0) {
+  // Run the mtime-check → write as a single critical section serialized per
+  // target path (L6 — closes the TOCTOU window between the guard and the write).
+  return runExclusive(target, async () => {
+    // mtime guard.
+    //
+    // Per spec §10.2 we treat an externally-deleted file as a conflict — the
+    // user opened the editor on a known mtime (>0) but the file is now gone,
+    // which is exactly the kind of out-of-band change the conflict modal is
+    // designed to handle. Only when the client signals "create new" by sending
+    // expectedMtime === 0 do we accept a missing file and let it be created.
+    const stExists = await stat(target).catch(() => null);
+    if (!stExists) {
+      if (body.expectedMtime > 0) {
+        return NextResponse.json(
+          { kind: 'conflict', currentData: null, currentMtime: 0 },
+          { status: 409 },
+        );
+      }
+      // expectedMtime === 0 → first save of a new file; fall through.
+    } else if (stExists.mtimeMs !== body.expectedMtime) {
+      let currentData: unknown = null;
+      try {
+        currentData = await loadCV(target);
+      } catch {
+        currentData = null;
+      }
       return NextResponse.json(
-        { kind: 'conflict', currentData: null, currentMtime: 0 },
+        { kind: 'conflict', currentData, currentMtime: stExists.mtimeMs },
         { status: 409 },
       );
     }
-    // expectedMtime === 0 → first save of a new file; fall through.
-  } else if (stExists.mtimeMs !== body.expectedMtime) {
-    let currentData: unknown = null;
-    try {
-      currentData = await loadCV(target);
-    } catch {
-      currentData = null;
+    // validation
+    const parsed = CVDataSchema.safeParse(body.data);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { kind: 'validation', issues: parsed.error.issues },
+        { status: 422 },
+      );
     }
-    return NextResponse.json(
-      { kind: 'conflict', currentData, currentMtime: stExists.mtimeMs },
-      { status: 409 },
-    );
-  }
-  // validation
-  const parsed = CVDataSchema.safeParse(body.data);
-  if (!parsed.success) {
-    return NextResponse.json({ kind: 'validation', issues: parsed.error.issues }, { status: 422 });
-  }
-  const stamped = {
-    ...parsed.data,
-    meta: { ...parsed.data.meta, updatedAt: new Date().toISOString().slice(0, 10) },
-  };
-  const dump = yaml.dump(stamped, { lineWidth: 100, noRefs: true });
-  await atomicWriteFile(target, dump);
-  const newMtime = (await stat(target)).mtimeMs;
-  return NextResponse.json({ ok: true, mtime: newMtime });
+    const stamped = {
+      ...parsed.data,
+      meta: { ...parsed.data.meta, updatedAt: new Date().toISOString().slice(0, 10) },
+    };
+    const dump = yaml.dump(stamped, { lineWidth: 100, noRefs: true });
+    await atomicWriteFile(target, dump);
+    const newMtime = (await stat(target)).mtimeMs;
+    return NextResponse.json({ ok: true, mtime: newMtime });
+  });
 }

@@ -21,6 +21,10 @@ export interface ProcessedPhoto {
 const DEFAULT_MAX_BYTES = 10 * 1024 * 1024;
 const DEFAULT_TARGET = 600;
 const SLUG_RE = /^(?!\.+$)[a-z0-9.-]+$/;
+// Cap the DECODED pixel count so a small, highly-compressed "decompression
+// bomb" cannot force Sharp to allocate gigabytes. ~50 MP still covers any
+// realistic DSLR/phone photo. Sharp throws if the source exceeds this.
+const MAX_INPUT_PIXELS = 50_000_000;
 
 export async function processPhoto(opts: ProcessPhotoOptions): Promise<ProcessedPhoto> {
   const {
@@ -38,12 +42,12 @@ export async function processPhoto(opts: ProcessPhotoOptions): Promise<Processed
   }
 
   const buffer = await readFile(inputPath);
-  let pipeline = sharp(buffer).rotate();
+  let pipeline = sharp(buffer, { limitInputPixels: MAX_INPUT_PIXELS }).rotate();
   if (opts.crop) {
     // After EXIF rotation, width/height may be swapped (90°/270° orientations).
     // Re-fetch post-rotate dimensions so we can give a clear error before sharp's
     // generic "bad extract area" fires.
-    const rotMeta = await sharp(buffer).rotate().metadata();
+    const rotMeta = await sharp(buffer, { limitInputPixels: MAX_INPUT_PIXELS }).rotate().metadata();
     const imgW = rotMeta.width ?? 0;
     const imgH = rotMeta.height ?? 0;
     const left = Math.round(opts.crop.left);

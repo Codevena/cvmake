@@ -47,6 +47,9 @@ export async function GET(_req: Request, ctx: Ctx): Promise<NextResponse> {
     if (err instanceof ValidationError) {
       return NextResponse.json({ kind: 'validation', issues: err.issues }, { status: 422 });
     }
-    return NextResponse.json({ kind: 'unknown', message: String(err) }, { status: 500 });
+    // Log details server-side; return a generic message so raw error strings
+    // (which can include absolute filesystem paths) don't leak to the client.
+    console.error(`[cv/${slug}] load failed:`, err);
+    return NextResponse.json({ kind: 'unknown' }, { status: 500 });
   }
 }

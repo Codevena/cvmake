@@ -134,7 +134,11 @@ export function PreviewFrame({
           </div>
         </div>
       )}
-      {root && tplDef && palette
+      {/* Only portal once `root` was (re)built for the CURRENT templateId.
+          On a template switch the doc-rewrite happens in an effect after this
+          render, so without this gate we'd briefly portal the new template's
+          component into the previous template's root/CSS (visible flash). */}
+      {root && tplDef && palette && lastTemplateRef.current === templateId
         ? createPortal(
             <tplDef.Component
               data={filtered}

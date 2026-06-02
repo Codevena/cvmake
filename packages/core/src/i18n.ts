@@ -43,5 +43,8 @@ const EN: LabelDictionary = {
 const DICTIONARIES: Record<Locale, LabelDictionary> = { de: DE, en: EN };
 
 export function getLabels(locale: Locale): LabelDictionary {
-  return DICTIONARIES[locale];
+  // Fall back to English for any locale without a dictionary entry, so a future
+  // locale added to the enum (or an unchecked caller) gets a usable dictionary
+  // rather than `undefined`, which templates would dereference and crash on.
+  return DICTIONARIES[locale] ?? DICTIONARIES.en;
 }

@@ -159,6 +159,7 @@ export function TopBar({
               errorMessage={saveError}
               onRetry={onRetry}
               lastSavedAt={lastSavedAt}
+              blockedInvalid={formState.isDirty && !formState.isValid}
             />
           )}
           {isDemo && <DownloadYamlButton getData={getValues} slug={slug} />}

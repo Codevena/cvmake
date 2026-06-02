@@ -21,6 +21,57 @@ const t = {
 
 type Tab = 'stack' | 'categorized';
 
+/**
+ * A single editable skill category. The category name is edited via a LOCAL
+ * draft and only committed on blur — committing on every keystroke (as the old
+ * code did) rewrote the object key, which changed the row's React key and
+ * remounted the input, dropping focus after a single character.
+ */
+function CategoryRow({
+  name,
+  items,
+  onRename,
+  onItemsChange,
+  onDelete,
+}: {
+  name: string;
+  items: string[];
+  onRename: (oldName: string, nextName: string) => void;
+  onItemsChange: (name: string, next: string[]) => void;
+  onDelete: (name: string) => void;
+}) {
+  const [draft, setDraft] = useState(name);
+
+  function commit() {
+    const next = draft.trim();
+    if (!next || next === name) {
+      setDraft(name); // discard an empty/unchanged edit, restore the canonical name
+      return;
+    }
+    onRename(name, next);
+    // On success the row remounts under the new key (draft re-initialises to the
+    // new name); if the rename was refused (e.g. a name collision) the row keeps
+    // its old name, so restore the draft to the canonical value either way.
+    setDraft(name);
+  }
+
+  return (
+    <div className="rounded border border-border p-3">
+      <div className="mb-2 flex items-center justify-between">
+        <Input label={t.category} value={draft} onChange={setDraft} onBlur={commit} />
+        <button type="button" onClick={() => onDelete(name)} aria-label={t.deleteCategory(name)}>
+          🗑
+        </button>
+      </div>
+      <TagInput
+        label={`${name} Items`}
+        value={items}
+        onChange={(next) => onItemsChange(name, next)}
+      />
+    </div>
+  );
+}
+
 export function SkillsSection() {
   const { control, getValues, setValue, watch } = useFormContext<CVData>();
   const initialCats = getValues('skills.categorized') ?? {};
@@ -48,6 +99,23 @@ export function SkillsSection() {
   function removeCategory(name: string) {
     const { [name]: _omitted, ...rest } = cats;
     setValue('skills.categorized', rest, { shouldDirty: true });
+  }
+
+  function renameCategory(oldName: string, nextName: string) {
+    if (!nextName || nextName === oldName) return;
+    // Refuse to rename onto an existing category — that would silently merge
+    // and drop one set of items.
+    if (Object.hasOwn(cats, nextName)) return;
+    // Rebuild preserving insertion order so the renamed row doesn't jump.
+    const rebuilt: Record<string, string[]> = {};
+    for (const [k, v] of Object.entries(cats)) {
+      rebuilt[k === oldName ? nextName : k] = v;
+    }
+    setValue('skills.categorized', rebuilt, { shouldDirty: true });
+  }
+
+  function changeItems(name: string, next: string[]) {
+    setValue('skills.categorized', { ...cats, [name]: next }, { shouldDirty: true });
   }
 
   return (
@@ -81,37 +149,14 @@ export function SkillsSection() {
       {tab === 'categorized' && (
         <div className="flex flex-col gap-3">
           {catEntries.map(([name, items]) => (
-            <div key={name} className="rounded border border-border p-3">
-              <div className="mb-2 flex items-center justify-between">
-                <Input
-                  label={t.category}
-                  value={name}
-                  onChange={(next) => {
-                    if (!next || next === name) return;
-                    const { [name]: oldItems, ...rest } = cats;
-                    setValue(
-                      'skills.categorized',
-                      { ...rest, [next]: oldItems ?? [] },
-                      { shouldDirty: true },
-                    );
-                  }}
-                />
-                <button
-                  type="button"
-                  onClick={() => setPendingDeleteCategory(name)}
-                  aria-label={t.deleteCategory(name)}
-                >
-                  🗑
-                </button>
-              </div>
-              <TagInput
-                label={`${name} Items`}
-                value={items}
-                onChange={(next) =>
-                  setValue('skills.categorized', { ...cats, [name]: next }, { shouldDirty: true })
-                }
-              />
-            </div>
+            <CategoryRow
+              key={name}
+              name={name}
+              items={items}
+              onRename={renameCategory}
+              onItemsChange={changeItems}
+              onDelete={setPendingDeleteCategory}
+            />
           ))}
           {addingCategory ? (
             <div className="flex items-center gap-2 rounded border border-dashed border-border p-2">

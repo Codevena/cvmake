@@ -4,24 +4,31 @@ import path from 'node:path';
 import type { CVData } from '@codevena/cvmake-schema';
 
 /**
- * Resolve a `/photos/<file>` URL (as produced by the editor's photo-upload
- * API) to a filesystem path. Walks up from `startDir` looking for a sibling
- * `public/` directory and joins the URL path into it. Falls back to the
- * literal `path.resolve` result if no public dir is found — `readFile` will
- * then ENOENT and embedPhoto leaves the original path in place.
+ * Walk up from `startDir` looking for a sibling `public/` directory that
+ * contains a `photos/` folder. Returns the `public/` path or null.
  */
-function resolvePublicUrl(startDir: string, photoUrl: string): string {
-  const rel = photoUrl.replace(/^\/+/, '');
+function findPublicDir(startDir: string): string | null {
   let dir = startDir;
   for (let i = 0; i < 10; i++) {
     if (existsSync(path.join(dir, 'public', 'photos'))) {
-      return path.join(dir, 'public', rel);
+      return path.join(dir, 'public');
     }
     const parent = path.dirname(dir);
     if (parent === dir) break;
     dir = parent;
   }
-  return path.resolve(startDir, photoUrl);
+  return null;
+}
+
+/**
+ * True when `target` resolves to `root` itself or a path strictly inside it.
+ * Mirrors the path-traversal guard in apps/web/lib/data-paths.ts so a
+ * malicious `..`/absolute photo value cannot escape its allowed directory.
+ */
+function isContained(target: string, root: string): boolean {
+  const resolvedRoot = path.resolve(root);
+  const resolvedTarget = path.resolve(target);
+  return resolvedTarget === resolvedRoot || resolvedTarget.startsWith(`${resolvedRoot}${path.sep}`);
 }
 
 function mimetypeFromExt(ext: string): string | null {
@@ -64,9 +71,28 @@ export async function embedPhoto(data: CVData, baseDir: string): Promise<CVData>
   // need a real filesystem path. Map a leading `/photos/` onto the repo's
   // `public/photos/` so PDF export embeds the same image the live preview
   // shows. Relative paths still resolve against `baseDir` (the YAML dir).
-  const filePath = photo.startsWith('/photos/')
-    ? resolvePublicUrl(baseDir, photo)
-    : path.resolve(baseDir, photo);
+  //
+  // Security: `photo` is an unconstrained user-supplied string (CVDataSchema
+  // only types it as an optional string). Confine the resolved path to its
+  // allowed root so a `..`/absolute payload cannot turn this into an
+  // arbitrary file read whose bytes get embedded into the returned PDF.
+  let filePath: string;
+  let allowedRoot: string;
+  if (photo.startsWith('/photos/')) {
+    const publicDir = findPublicDir(baseDir);
+    if (!publicDir) return data; // no public/ dir → nothing to embed
+    const rel = photo.replace(/^\/+/, '');
+    filePath = path.join(publicDir, rel);
+    allowedRoot = path.join(publicDir, 'photos');
+  } else {
+    filePath = path.resolve(baseDir, photo);
+    allowedRoot = path.resolve(baseDir);
+  }
+
+  if (!isContained(filePath, allowedRoot)) {
+    // Path traversal blocked — leave the original value untouched.
+    return data;
+  }
 
   let bytes: Buffer;
   try {

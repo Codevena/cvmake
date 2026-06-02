@@ -56,5 +56,13 @@ program
 
 program.parseAsync(process.argv).catch((err: Error) => {
   console.error(err.message);
+  // The most common first-run failure is a missing Chromium download — give an
+  // actionable hint instead of a raw Puppeteer "Could not find Chrome" string.
+  if (/could not find\s+(chrome|chromium)|browser was not found/i.test(err.message)) {
+    console.error(
+      '\nChromium is required for PDF rendering but was not found.\n' +
+        'Install it once with:  pnpm exec puppeteer browsers install chrome',
+    );
+  }
   process.exit(1);
 });

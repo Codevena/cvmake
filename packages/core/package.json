@@ -24,6 +24,10 @@
       "types": "./dist/errors.d.ts",
       "default": "./dist/errors.js"
     },
+    "./hidden-sections": {
+      "types": "./dist/hidden-sections.d.ts",
+      "default": "./dist/hidden-sections.js"
+    },
     "./html-document": {
       "types": "./dist/html-document.d.ts",
       "default": "./dist/html-document.js"

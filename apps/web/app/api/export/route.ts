@@ -8,6 +8,7 @@ import { embedPhoto } from '@codevena/cvmake-core/photo-embed';
 import { renderCV } from '@codevena/cvmake-core/renderer';
 import { CVDataSchema } from '@codevena/cvmake-schema';
 import { bootstrapTemplates, getTemplate } from '@codevena/cvmake-templates';
+import { stripSharedImports } from '@codevena/cvmake-templates/css';
 import { NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';
@@ -241,7 +242,13 @@ export async function POST(req: Request): Promise<Response> {
     });
     const bootstrap = getPreviewBootstrap();
     const tplCss = bootstrap.templates[body.templateId]?.css ?? '';
-    const fullCss = `${tplCss}\n${css}`;
+    // The template's styles.css starts with relative `@import "../shared/..."`
+    // lines that cannot resolve under Puppeteer's setContent (no base URL), so
+    // they get dropped — losing @page margins, box-sizing and page-break rules
+    // (and breaking the spacer math in pdf.ts). Prepend the shared reset/print
+    // CSS explicitly and strip the dead @imports, mirroring how the live
+    // preview iframe composes its styles.
+    const fullCss = `${bootstrap.resetCss}\n${stripSharedImports(tplCss)}\n${bootstrap.printCss}\n${css}`;
     const doc = wrapHtmlDocument({
       title: `${parsed.data.personal.firstName} CV`,
       html,

@@ -44,4 +44,29 @@ describe('renderCV', () => {
     expect(out.html).toContain('Berufserfahrung');
     expect(out.locale).toBe('de');
   });
+
+  it('strippt rendering.hiddenSections vor dem Rendern (Export/CLI = Preview)', async () => {
+    const tpl: TemplateDefinition = {
+      ...fakeTemplate,
+      Component: ({ data }) => (
+        <main>
+          {data.summary ? <p data-testid="summary">{data.summary}</p> : null}
+          <span data-testid="exp">{data.experience.length}</span>
+        </main>
+      ),
+    };
+    const out = await renderCV({
+      data: {
+        meta: { locale: 'de' },
+        personal: { firstName: 'A', lastName: 'B', contacts: {} },
+        summary: 'SECRET_SUMMARY',
+        experience: [{ title: 't', company: 'c', startDate: '2020', bullets: [] }],
+        education: [],
+        rendering: { template: 'fake', hiddenSections: ['summary', 'experience'] },
+      },
+      template: tpl,
+    });
+    expect(out.html).not.toContain('SECRET_SUMMARY');
+    expect(out.html).toContain('data-testid="exp">0<');
+  });
 });

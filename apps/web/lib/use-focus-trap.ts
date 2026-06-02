@@ -37,19 +37,31 @@ function getFocusableElements(container: HTMLElement): HTMLElement[] {
  *   - Returns focus to `previouslyFocused`.
  *
  * Pattern based on the Reach UI / Radix focus-trap convention (no external dep).
+ *
+ * Stacked modals: a module-level stack ensures only the TOPMOST open trap
+ * handles Tab — otherwise two traps listening on `document` simultaneously
+ * fight over Tab wrapping and focus restoration.
  */
+const trapStack: symbol[] = [];
+
 export function useFocusTrap(open: boolean): RefObject<HTMLDivElement> {
   const containerRef = useRef<HTMLDivElement>(null);
   const previouslyFocused = useRef<Element | null>(null);
+  const idRef = useRef<symbol | null>(null);
+  if (idRef.current === null) idRef.current = Symbol('focus-trap');
 
   useEffect(() => {
     if (!open) return;
+    const id = idRef.current as symbol;
 
     // Capture the element that had focus before the modal opened.
     previouslyFocused.current = document.activeElement;
 
     const container = containerRef.current;
     if (!container) return;
+
+    // Register as the current topmost trap.
+    trapStack.push(id);
 
     // Focus the first focusable child (e.g. Close button).
     const focusable = getFocusableElements(container);
@@ -63,6 +75,8 @@ export function useFocusTrap(open: boolean): RefObject<HTMLDivElement> {
     }
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Only the topmost trap manages Tab so stacked modals don't conflict.
+      if (trapStack[trapStack.length - 1] !== id) return;
       if (e.key !== 'Tab') return;
 
       const elements = getFocusableElements(container);
@@ -94,6 +108,9 @@ export function useFocusTrap(open: boolean): RefObject<HTMLDivElement> {
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
+      // Unregister from the trap stack.
+      const idx = trapStack.lastIndexOf(id);
+      if (idx !== -1) trapStack.splice(idx, 1);
       // Restore focus to the element that was active before the modal opened.
       const prev = previouslyFocused.current;
       if (prev && 'focus' in prev && typeof (prev as HTMLElement).focus === 'function') {
