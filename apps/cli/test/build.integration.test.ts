@@ -28,17 +28,15 @@ describe('runBuild integration', () => {
     const fileInfo = await stat(pdfPath);
     expect(fileInfo.size).toBeGreaterThan(20_000);
 
-    // Try to parse text from the PDF with pdf-parse
-    try {
-      type PdfParseFn = (buf: Buffer) => Promise<{ text: string }>;
-      const pdfParse = require('pdf-parse') as PdfParseFn;
-      const parsed = await pdfParse(buf);
-      expect(parsed.text).toContain('Lena Bauer');
-      expect(parsed.text).toContain('Berufserfahrung');
-    } catch {
-      // pdf-parse may have CJS/ESM side-effect issues in test context;
-      // the %PDF- header + size check above already validates the output.
-    }
+    // Parse the PDF's text layer (machine-readable text, not rasterised glyphs).
+    // Use the lib entry so pdf-parse's index.js debug branch (which reads a
+    // bundled sample PDF) doesn't run; normalise to survive text-layer quirks.
+    type PdfParseFn = (b: Buffer) => Promise<{ text: string }>;
+    const pdfParse = require('pdf-parse/lib/pdf-parse.js') as PdfParseFn;
+    const parsed = await pdfParse(buf);
+    const n = parsed.text.toLowerCase().replace(/\s+/g, '');
+    expect(n).toContain('lenabauer');
+    expect(n).toContain('berufserfahrung');
 
     await rm(out, { recursive: true });
   });
