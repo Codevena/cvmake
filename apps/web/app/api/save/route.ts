@@ -54,8 +54,8 @@ interface SaveRequest {
 // Without this, two concurrent saves to the same file can both pass the mtime
 // guard and then both rename their temp over the target (last-writer-wins),
 // defeating the §10.2 conflict guarantee. In-process only, which is sufficient
-// for this single-instance local tool (a distributed deploy would need a real
-// lock — see audit.md architecture strategy).
+// for this single-instance local tool (a distributed/multi-replica deploy would
+// need a shared lock, e.g. Redis).
 const saveChains = new Map<string, Promise<unknown>>();
 
 function runExclusive<T>(key: string, task: () => Promise<T>): Promise<T> {

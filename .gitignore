@@ -71,6 +71,7 @@ data/cvs/photos/*
 # Session/review artifacts — local-only, never public
 NEXT_SESSION.md
 LAUNCH_DRAFTS.md
+audit.md
 .review-logs/
 .review/
 .audit/

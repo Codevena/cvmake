@@ -15,9 +15,9 @@ const pdfParse = require('pdf-parse/lib/pdf-parse.js') as PdfParseFn;
 
 afterAll(() => shutdownPdfBrowser());
 
-// The single-column templates marketed as ATS-friendly (audit.md). An ATS
-// parser reads the PDF's text layer, so the foundational requirement is that
-// the exported PDF carries real, extractable text (not rasterised glyphs).
+// Templates aimed at ATS-friendly output. An ATS parser reads the PDF's text
+// layer, so the foundational requirement is that the exported PDF carries real,
+// extractable text (not rasterised glyphs).
 const ATS_TEMPLATES = ['classic-serif', 'corporate', 'modern-minimal'];
 
 const YAML = path.resolve('../../data/cvs/example.en.yaml');
