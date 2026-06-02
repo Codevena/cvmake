@@ -30,9 +30,11 @@
     "@codevena/cvmake-schema": "workspace:*",
     "@codevena/cvmake-templates": "workspace:*",
     "commander": "12.1.0",
+    "js-yaml": "4.1.0",
     "picocolors": "1.1.1"
   },
   "devDependencies": {
+    "@types/js-yaml": "4.0.9",
     "@types/node": "20.17.6",
     "pdf-parse": "1.1.1",
     "typescript": "5.6.3",

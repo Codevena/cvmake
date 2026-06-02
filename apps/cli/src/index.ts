@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 import { Command } from 'commander';
 import { runBuild, runBuildAll } from './commands/build.js';
+import { runImport } from './commands/import.js';
 import { runInit } from './commands/init.js';
 import { runListTemplates } from './commands/list-templates.js';
 import { runValidate } from './commands/validate.js';
@@ -27,6 +28,17 @@ program
   .option('-f, --force', 'vorhandene Datei überschreiben', false)
   .action((output: string, opts: { lang: string; force?: boolean }) => {
     process.exit(runInit({ output, lang: opts.lang, force: opts.force }));
+  });
+
+program
+  .command('import')
+  .description('convert a JSON Resume (jsonresume.org) to cvmake YAML')
+  .argument('<resume.json>', 'Pfad zur JSON-Resume-Datei')
+  .argument('[output]', 'Output-Pfad', 'cv.yaml')
+  .option('-l, --lang <lang>', 'Sprache (de|en)', 'en')
+  .option('-f, --force', 'vorhandene Datei überschreiben', false)
+  .action((input: string, output: string, opts: { lang: string; force?: boolean }) => {
+    process.exit(runImport({ input, output, lang: opts.lang, force: opts.force }));
   });
 
 program

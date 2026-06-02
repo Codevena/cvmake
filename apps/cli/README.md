@@ -26,12 +26,27 @@ for high-fidelity PDF rendering. Subsequent runs are instant.
 ## Commands
 
 ```bash
-cvmake init [output] [-l <de|en>] [-f]   # scaffold a starter cv.yaml (default: cv.yaml)
+cvmake init [output] [-l <de|en>] [-f]          # scaffold a starter cv.yaml (default: cv.yaml)
+cvmake import <resume.json> [output] [-l] [-f]   # convert a JSON Resume to cvmake YAML
 cvmake build <cv.yaml> [-t <template>] [-p <palette>] [-o <output.pdf>]
 cvmake validate <cv.yaml>
 cvmake list-templates
-cvmake build-all [-d <dir>] [-o <out>]   # render every YAML in a directory
+cvmake build-all [-d <dir>] [-o <out>]          # render every YAML in a directory
 ```
+
+### Already have a JSON Resume?
+
+Bring your existing [jsonresume.org](https://jsonresume.org) file and get all
+12 templates instantly:
+
+```bash
+npx @codevena/cvmake-cli import resume.json cv.yaml
+npx @codevena/cvmake-cli build cv.yaml
+```
+
+`import` maps basics, work, education, skills, languages, and extras
+(projects, awards, certificates, publications, volunteering) into the cvmake
+schema, then writes a clean, commented YAML for you to fine-tune.
 
 Default output: `out/cv.pdf`.
 

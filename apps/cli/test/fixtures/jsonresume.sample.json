@@ -1,0 +1,81 @@
+{
+  "basics": {
+    "name": "Richard Hendriks",
+    "label": "Backend Engineer",
+    "image": "https://example.com/richard.jpg",
+    "email": "richard.hendriks@example.com",
+    "phone": "(912) 555-4321",
+    "url": "https://richardhendriks.example.com",
+    "summary": "Backend engineer focused on data-intensive systems and compression.",
+    "location": { "city": "San Francisco", "region": "California", "countryCode": "US" },
+    "profiles": [
+      { "network": "GitHub", "username": "rhendriks", "url": "https://github.com/rhendriks" },
+      {
+        "network": "LinkedIn",
+        "username": "richard-hendriks",
+        "url": "https://linkedin.com/in/richard-hendriks"
+      },
+      { "network": "Twitter", "username": "rhendriks", "url": "https://twitter.com/rhendriks" }
+    ]
+  },
+  "work": [
+    {
+      "name": "Pied Piper",
+      "position": "CEO/President",
+      "url": "https://piedpiper.example.com",
+      "startDate": "2017-06-01",
+      "endDate": "2019-12-01",
+      "summary": "Lossless compression startup.",
+      "highlights": [
+        "Built a middle-out compression engine reaching a Weissman score of 5.2",
+        "Grew the team from 2 to 14 engineers"
+      ],
+      "location": "Silicon Valley"
+    },
+    {
+      "name": "Hooli",
+      "position": "Software Engineer",
+      "startDate": "2015-01",
+      "endDate": "2017-05",
+      "highlights": ["Maintained the core data pipeline"]
+    }
+  ],
+  "education": [
+    {
+      "institution": "Vassar College",
+      "area": "Computer Science",
+      "studyType": "Bachelor",
+      "startDate": "2011-09",
+      "endDate": "2015-06",
+      "score": "3.8",
+      "courses": ["Algorithms", "Distributed Systems"]
+    }
+  ],
+  "skills": [
+    { "name": "Backend", "level": "Master", "keywords": ["Go", "PostgreSQL", "gRPC"] },
+    { "name": "Compression", "keywords": ["Huffman", "LZ77"] }
+  ],
+  "languages": [
+    { "language": "English", "fluency": "Native speaker" },
+    { "language": "German", "fluency": "Professional working proficiency" },
+    { "language": "Spanish", "fluency": "B1" }
+  ],
+  "projects": [
+    {
+      "name": "Middle-Out",
+      "description": "An open-source compression library.",
+      "highlights": ["10x faster than gzip on text", "Used by 3 companies"],
+      "keywords": ["compression", "go"],
+      "startDate": "2018-01",
+      "url": "https://github.com/rhendriks/middle-out"
+    }
+  ],
+  "awards": [
+    {
+      "title": "TechCrunch Disrupt Winner",
+      "date": "2017-09",
+      "awarder": "TechCrunch",
+      "summary": "Won the startup battlefield."
+    }
+  ]
+}

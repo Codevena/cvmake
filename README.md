@@ -76,6 +76,16 @@ No clone required. `init` drops a ready-to-edit, schema-valid `cv.yaml`
 (use `--lang de` for German). The first `build` downloads Chromium
 (~150 MB, one-time) which is needed for high-fidelity PDF rendering.
 
+### Already have a JSON Resume?
+
+Convert an existing [jsonresume.org](https://jsonresume.org) file and get all
+12 templates instantly:
+
+```bash
+npx @codevena/cvmake-cli import resume.json cv.yaml
+npx @codevena/cvmake-cli build cv.yaml
+```
+
 ### Or clone for contribution / customization
 
 ```bash
