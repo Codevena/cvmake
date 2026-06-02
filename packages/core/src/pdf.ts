@@ -2,18 +2,67 @@ import type { Browser, Page } from 'puppeteer';
 import puppeteer from 'puppeteer';
 
 let browserPromise: Promise<Browser> | null = null;
+// Renders served by the current browser, and renders currently in flight on it.
+// `renderCount` drives recycling (bound memory growth); `inFlight` makes
+// recycling safe — we only ever close a browser when nothing is rendering on it.
+let renderCount = 0;
+let inFlight = 0;
+
+/**
+ * How many renders a single browser serves before it is recycled. Long-lived
+ * Chromium processes accumulate memory, so we restart after N renders. Override
+ * with CVMAKE_PDF_MAX_RENDERS (e.g. tune down on a memory-constrained host).
+ */
+function maxRenders(): number {
+  const v = Number(process.env.CVMAKE_PDF_MAX_RENDERS);
+  return Number.isFinite(v) && v > 0 ? v : 100;
+}
 
 async function getBrowser(): Promise<Browser> {
+  // Recycle the browser once it has served enough renders AND nothing is
+  // rendering on it right now. Gating on `inFlight === 0` guarantees we never
+  // close a browser out from under an in-flight render (which would surface as
+  // a spurious "Target closed"); under load the recycle simply happens at the
+  // next idle gap.
+  if (browserPromise && renderCount >= maxRenders() && inFlight === 0) {
+    const old = browserPromise;
+    browserPromise = null;
+    renderCount = 0;
+    try {
+      await (await old).close();
+    } catch {
+      /* already gone */
+    }
+  }
   if (!browserPromise) {
     // Cache the launch promise so concurrent callers share one browser.
     // Critically: if the launch fails (e.g. transient Chromium crash, OOM
     // during sandbox init), reset the cache so the NEXT call retries — the
     // alternative (leaving a permanently-rejected promise here) would brick
     // every subsequent PDF export until the Node process restarts.
-    const p = puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox', '--font-render-hinting=none'],
-    });
+    const p = (async () => {
+      const browser = await puppeteer.launch({
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox', '--font-render-hinting=none'],
+      });
+      // If the browser dies unexpectedly (crash / OOM / external kill) after a
+      // successful launch, drop the cache so the next render relaunches instead
+      // of reusing a dead browser. Without this a single Chromium crash bricks
+      // every subsequent export. Intentional close (recycle/shutdown) also
+      // fires this, but by then `browserPromise` no longer === p, so it no-ops.
+      browser.on('disconnected', () => {
+        if (browserPromise === p) {
+          browserPromise = null;
+          renderCount = 0;
+          // NB: do NOT reset `inFlight` here. Renders that were in flight on the
+          // crashed browser will still run their `finally` and decrement it
+          // themselves; zeroing it here would make those decrements drive
+          // `inFlight` negative, permanently wedging the `inFlight === 0`
+          // recycle gate.
+        }
+      });
+      return browser;
+    })();
     browserPromise = p;
     p.catch(() => {
       if (browserPromise === p) browserPromise = null;
@@ -22,10 +71,25 @@ async function getBrowser(): Promise<Browser> {
   return browserPromise;
 }
 
+/**
+ * Best-effort pre-warm: launch the shared browser ahead of the first request so
+ * the initial export doesn't pay the cold-start cost. Safe to call at server
+ * boot; swallows launch errors (the next render will retry via getBrowser).
+ */
+export async function prewarmPdfBrowser(): Promise<void> {
+  try {
+    await getBrowser();
+  } catch {
+    /* best-effort — getBrowser already reset the cache for a retry */
+  }
+}
+
 export async function shutdownPdfBrowser(): Promise<void> {
   if (!browserPromise) return;
   const b = await browserPromise;
   browserPromise = null;
+  renderCount = 0;
+  inFlight = 0;
   await b.close();
 }
 
@@ -55,6 +119,7 @@ export async function generatePDF(html: string, opts: GeneratePDFOptions = {}): 
   // the browser is still launching or the page is being created is observed
   // (and so the abort handler closes whatever page exists at that moment).
   let page: Page | null = null;
+  let counted = false;
   const onAbort = () => {
     page?.close().catch(() => {
       /* page may already be closed by the finally */
@@ -66,6 +131,11 @@ export async function generatePDF(html: string, opts: GeneratePDFOptions = {}): 
       throw new Error('aborted before start');
     }
     const browser = await getBrowser();
+    // Account this render against the current browser (drives recycling) and
+    // mark it in-flight so a recycle can't close the browser under us.
+    inFlight += 1;
+    renderCount += 1;
+    counted = true;
     if (opts.signal?.aborted) {
       throw new Error('aborted during browser launch');
     }
@@ -257,5 +327,8 @@ export async function generatePDF(html: string, opts: GeneratePDFOptions = {}): 
     await page?.close().catch(() => {
       /* may already be closed by onAbort, or never created if abort was early */
     });
+    // Clamp defensively: never let `inFlight` go negative (which would wedge
+    // the recycle gate) even if the browser disconnected mid-render.
+    if (counted) inFlight = Math.max(0, inFlight - 1);
   }
 }
