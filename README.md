@@ -65,11 +65,16 @@ maintain it in two languages, and not pay $9/month forever for the privilege. cv
 ### Install + render in one shot
 
 ```bash
-npx @codevena/cvmake-cli build path/to/cv.yaml
+# 1. Scaffold a commented starter CV (cv.yaml)
+npx @codevena/cvmake-cli init cv.yaml
+
+# 2. Edit cv.yaml with your data, then render it
+npx @codevena/cvmake-cli build cv.yaml
 ```
 
-No clone required. The first run downloads Chromium (~150 MB, one-time)
-which is needed for high-fidelity PDF rendering.
+No clone required. `init` drops a ready-to-edit, schema-valid `cv.yaml`
+(use `--lang de` for German). The first `build` downloads Chromium
+(~150 MB, one-time) which is needed for high-fidelity PDF rendering.
 
 ### Or clone for contribution / customization
 

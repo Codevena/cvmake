@@ -234,43 +234,48 @@
       <div class="mx-auto max-w-5xl px-6">
         <div class="text-center">
           <h2 class="font-display text-3xl font-medium tracking-tight md:text-4xl">
-            From clone to PDF in three steps
+            From zero to PDF in three steps
           </h2>
-          <p class="mt-3 text-parchment/70">No accounts. No telemetry. Everything stays on your machine.</p>
+          <p class="mt-3 text-parchment/70">No clone, no accounts, no telemetry. Just <code class="font-mono text-sand">npx</code> — everything stays on your machine.</p>
         </div>
 
         <ol class="mt-14 grid gap-6 md:grid-cols-3">
           <li class="group relative rounded-xl border border-ink-line bg-ink-soft p-6 shadow-card">
             <div class="flex items-center gap-3 text-sand">
               <span class="font-display text-2xl">01</span>
-              <span class="text-xs uppercase tracking-[0.18em]">Clone</span>
+              <span class="text-xs uppercase tracking-[0.18em]">Scaffold</span>
             </div>
-            <pre class="mt-5 overflow-x-auto rounded-md bg-ink/80 p-4 font-mono text-[13px] leading-6 text-parchment/90" data-copy><code>git clone https://github.com/Codevena/cvmake
-cd cvmake
-pnpm install
-pnpm build</code></pre>
+            <pre class="mt-5 overflow-x-auto rounded-md bg-ink/80 p-4 font-mono text-[13px] leading-6 text-parchment/90" data-copy><code>npx @codevena/cvmake-cli \
+   init cv.yaml
+
+# --lang de for German</code></pre>
           </li>
           <li class="group relative rounded-xl border border-ink-line bg-ink-soft p-6 shadow-card">
             <div class="flex items-center gap-3 text-sand">
               <span class="font-display text-2xl">02</span>
               <span class="text-xs uppercase tracking-[0.18em]">Edit YAML</span>
             </div>
-            <pre class="mt-5 overflow-x-auto rounded-md bg-ink/80 p-4 font-mono text-[13px] leading-6 text-parchment/90" data-copy><code>cp data/cvs/example.de.yaml \
-   data/cvs/cv.de.yaml
-
-# open in any editor</code></pre>
+            <pre class="mt-5 overflow-x-auto rounded-md bg-ink/80 p-4 font-mono text-[13px] leading-6 text-parchment/90"><code># open cv.yaml in any editor
+# and fill in your data —
+# it's commented to guide you</code></pre>
           </li>
           <li class="group relative rounded-xl border border-ink-line bg-ink-soft p-6 shadow-card">
             <div class="flex items-center gap-3 text-sand">
               <span class="font-display text-2xl">03</span>
               <span class="text-xs uppercase tracking-[0.18em]">Render</span>
             </div>
-            <pre class="mt-5 overflow-x-auto rounded-md bg-ink/80 p-4 font-mono text-[13px] leading-6 text-parchment/90" data-copy><code>pnpm cvmake build \
-   data/cvs/cv.de.yaml
+            <pre class="mt-5 overflow-x-auto rounded-md bg-ink/80 p-4 font-mono text-[13px] leading-6 text-parchment/90" data-copy><code>npx @codevena/cvmake-cli \
+   build cv.yaml
 
 # → out/cv.pdf</code></pre>
           </li>
         </ol>
+
+        <p class="mt-8 text-center text-sm text-parchment/55">
+          Prefer to hack on it or add a template?
+          <a href="https://github.com/Codevena/cvmake#readme" class="text-sand underline decoration-dotted underline-offset-4 hover:text-parchment">Clone the repo</a>
+          and run <code class="font-mono text-parchment/80">pnpm build</code>.
+        </p>
       </div>
     </section>
 

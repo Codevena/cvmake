@@ -10,9 +10,8 @@ templates, multiple color palettes each, multilingual.
 ## Quick start
 
 ```bash
-# Get an example to start from
-curl -O https://raw.githubusercontent.com/Codevena/cvmake/main/data/cvs/example.en.yaml
-mv example.en.yaml cv.yaml
+# Scaffold a commented starter CV (use --lang de for German)
+npx @codevena/cvmake-cli init cv.yaml
 
 # Open cv.yaml in your editor, fill in your data
 
@@ -21,12 +20,13 @@ npx @codevena/cvmake-cli build cv.yaml
 # → out/cv.pdf
 ```
 
-The first invocation downloads Chromium (~150 MB, one-time) — required
+The first `build` downloads Chromium (~150 MB, one-time) — required
 for high-fidelity PDF rendering. Subsequent runs are instant.
 
 ## Commands
 
 ```bash
+cvmake init [output] [-l <de|en>] [-f]   # scaffold a starter cv.yaml (default: cv.yaml)
 cvmake build <cv.yaml> [-t <template>] [-p <palette>] [-o <output.pdf>]
 cvmake validate <cv.yaml>
 cvmake list-templates

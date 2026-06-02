@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 import { Command } from 'commander';
 import { runBuild, runBuildAll } from './commands/build.js';
+import { runInit } from './commands/init.js';
 import { runListTemplates } from './commands/list-templates.js';
 import { runValidate } from './commands/validate.js';
 
@@ -17,6 +18,16 @@ program
   .name('cvmake')
   .description('cvmake — fork-friendly OSS CV builder. YAML in, PDF out.')
   .version(pkg.version);
+
+program
+  .command('init')
+  .description('scaffold a commented starter cv.yaml')
+  .argument('[output]', 'Output-Pfad', 'cv.yaml')
+  .option('-l, --lang <lang>', 'Sprache (de|en)', 'en')
+  .option('-f, --force', 'vorhandene Datei überschreiben', false)
+  .action((output: string, opts: { lang: string; force?: boolean }) => {
+    process.exit(runInit({ output, lang: opts.lang, force: opts.force }));
+  });
 
 program
   .command('build')
