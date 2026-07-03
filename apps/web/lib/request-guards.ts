@@ -6,7 +6,7 @@ import { NextResponse } from 'next/server';
  * should proceed.
  *
  * NEXT_PUBLIC_APP_ORIGIN must be set in production (e.g.
- * https://editor.cvmake.codevena.dev). When unset (dev / unconfigured), the
+ * https://cveditor.codevena.dev). When unset (dev / unconfigured), the
  * check is skipped entirely — the deploy must therefore set the env var to
  * activate CSRF protection.
  *

@@ -23,7 +23,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://editor.cvmake.codevena.dev'),
+  metadataBase: new URL('https://cveditor.codevena.dev'),
   title: { default: 'cvmake — CV editor', template: '%s | cvmake' },
   description:
     'Open-source CV builder. Edit your YAML CV in the browser and export a polished PDF in seconds.',
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'cvmake — CV editor',
     description: 'Open-source CV builder. YAML in, PDF out.',
-    url: 'https://editor.cvmake.codevena.dev',
+    url: 'https://cveditor.codevena.dev',
     siteName: 'cvmake',
     type: 'website',
     images: [
