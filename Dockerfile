@@ -1,5 +1,5 @@
 # Build + run the cvmake web editor. Build context = repo root.
-FROM node:20.11.1-bookworm-slim AS base
+FROM node:26.5.0-bookworm-slim AS base
 ENV PNPM_HOME=/pnpm
 ENV PATH=$PNPM_HOME:$PATH
 RUN corepack enable && corepack prepare pnpm@9.12.0 --activate
