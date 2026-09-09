@@ -94,3 +94,48 @@ APFS clone. Notable results:
 - Two mutations on the `PeriodField` fix came back green and were shown to be
   vacuous *mutations* rather than vacuous tests; the mutation that reproduces the
   original mechanism (`useController` reading the field back) fails both cases.
+
+## Final verdict
+
+**Slot A: PASS — 0 CRITICAL, 0 WARN.** Verified from a clean `.next`, cold, with
+no page rendered first: every vendored template serves its faces
+(`tech-dev` 279 408 bytes / 5 faces, `creative-accent` 594 118 / 7,
+`editorial` 439 716 / 6, `academic` 267 172 / 4, `noir` 184 436 / 4,
+`modern-minimal` and `monochrome-dark` 195 106 / 3, `classic-serif` an empty
+200), zero remote URLs anywhere, and every traversal shape still 404. Both new
+guards die under mutation.
+
+A sweep for a second instance of the same shape — behaviour that only exists in
+a built, cold process — found none: every route in `apps/web/app` is
+force-dynamic with no `generateStaticParams`, the two route handlers that touch
+the template registry both bootstrap it themselves, and the four runtime path
+resolvers were checked against a real built server.
+
+Suites: schema 60, ui 52, core 77, templates 102, web 178, cli 28 + 12.
+
+**One INFO, pre-existing and correctly configured today:**
+`NEXT_PUBLIC_DEMO_MODE` is inlined into the client bundle at build time, so a
+deployment that sets it only at runtime gets a server refusing every write and a
+client that believes it is in normal mode. The Dockerfile sets it in both
+stages; there is simply no guard. Recorded in `review-todo.md`.
+
+## What this gate cost, and what it caught
+
+Four rounds of findings plus three verification passes. The pattern worth
+keeping is that **green meant "not guarded" five different ways** in one gate:
+
+1. a vacuous **assertion** — fired before the resolver had run, and `waitFor`
+   matched the first value it saw;
+2. a vacuous **fixture** — the assertion was right, but the file it named did
+   not exist, so every case passed for an unrelated reason;
+3. a vacuous **mutation** — an alternative implementation, an unreachable path,
+   and three edits that never landed at all;
+4. an **observer that subscribed too late** — React runs child effects before
+   parent effects, so a parent `useWatch` never saw a child's `setValue`;
+5. a stale **build directory** answering for the code — `force-static` had
+   frozen a 404 into `.next`, and it outlived the fix.
+
+Two reviewers were fooled in opposite directions by (5) at the same time: one
+built into a `.next` holding the patched 200 and concluded the fix was complete,
+the other into one holding the 404 and nearly concluded it was inert. The tell
+was that the byte counts agreed to within one comment line.
