@@ -21,19 +21,53 @@ export const CvDateSchema = z
 // "https://evil.com/x" would otherwise produce "github.com/https://evil.com/x".
 const HandleSchema = z.string().regex(/^[A-Za-z0-9._-]+$/, 'expected a bare handle, not a URL');
 
+const TAB = 9;
+const LINE_FEED = 10;
+const CARRIAGE_RETURN = 13;
+const SPACE = 0x20;
+
+/** True if the URL parser would strip a character out of the middle of `v`. */
+function containsStrippedWhitespace(v: string): boolean {
+  for (let i = 0; i < v.length; i++) {
+    const c = v.charCodeAt(i);
+    if (c === TAB || c === LINE_FEED || c === CARRIAGE_RETURN) return true;
+  }
+  return false;
+}
+
+/** True if the URL parser would trim a leading or trailing character off `v`. */
+function hasTrimmedEdge(v: string): boolean {
+  return v.charCodeAt(0) <= SPACE || v.charCodeAt(v.length - 1) <= SPACE;
+}
+
+const PHOTO_SCHEME = /^[a-zA-Z][a-zA-Z0-9+.-]*:/;
+
 /**
- * Defense-in-depth for the photo field: it flows into `<img src>`. Reject
- * dangerous URI schemes (javascript:, non-image data:, file:, vbscript:) while
- * still allowing relative paths, `/photos/...`, http(s) URLs, and data:image
- * URIs. The actual file read is separately path-contained in core/photo-embed.
+ * The photo field flows into `<img src>` of a document that the server renders
+ * in a real browser, so a remote value makes the render host fetch it. Only two
+ * kinds of value are useful there: a local path (which the renderer inlines as
+ * a data URL before rendering) and an already-embedded `data:image/` URI.
+ * Everything else — http(s), file:, javascript:, protocol-relative — is refused
+ * here, before any browser starts.
+ *
+ * The two guards at the top are not cosmetic. The URL parser strips ASCII
+ * tab/CR/LF from anywhere in the input and trims leading and trailing C0
+ * controls and spaces BEFORE it looks for a scheme, so a predicate reading the
+ * raw string sees something different from what the browser resolves:
+ * "ht\ttp://169.254.169.254/" carries no scheme for a regex and a perfectly
+ * good one for Chromium. Rejecting those characters instead of mirroring the
+ * normalisation keeps the two views identical without owning the drift.
+ *
+ * `""` is accepted on purpose: it means "no photo" and is what the editor
+ * writes when a user removes their picture.
  */
 function isSafePhotoValue(v: string): boolean {
-  const trimmed = v.trimStart();
-  const scheme = /^([a-z][a-z0-9+.-]*):/i.exec(trimmed);
-  if (!scheme) return true; // no scheme → relative path
-  const s = (scheme[1] ?? '').toLowerCase();
-  if (s === 'http' || s === 'https') return true;
-  return /^data:image\//i.test(trimmed);
+  if (v === '') return true;
+  if (containsStrippedWhitespace(v)) return false;
+  if (hasTrimmedEdge(v)) return false;
+  if (PHOTO_SCHEME.test(v)) return /^data:image\//i.test(v);
+  if (/^[/\\]{2}/.test(v)) return false; // protocol-relative is not a local path
+  return true;
 }
 
 export const ContactsSchema = z
@@ -54,7 +88,7 @@ export const PersonalSchema = z
     title: z.string().optional(),
     photo: z
       .string()
-      .refine(isSafePhotoValue, 'photo must be a path, http(s) URL, or data:image URI')
+      .refine(isSafePhotoValue, 'photo must be a local path or a data:image URI')
       .optional(),
     birthDate: z.string().optional(),
     maritalStatus: z.string().optional(),

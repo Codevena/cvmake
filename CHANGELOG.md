@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed (breaking)
+- **`personal.photo` now accepts only a local path or a `data:image/` URI.**
+  Remote `http(s)` values, values carrying tab, carriage-return or line-feed
+  characters, and protocol-relative values (`//host/x.jpg`) are rejected by the
+  schema. A remote value did render before this change — which is precisely the
+  problem: the machine doing the render fetched an address chosen by whoever
+  supplied the CV. If you used a remote photo, download it next to your YAML and
+  point `photo` at the local file, or embed it as a `data:image/` URI.
+
+  An empty string keeps working: it means "no photo" and is what the editor
+  writes when a picture is removed. A CV with no `photo` key is unaffected.
+
+  **If you have an existing `cv.yaml` with a remote photo, the whole file now
+  fails to load, not just the photo** — `cvmake build` and `cvmake validate`
+  both stop with a validation error naming the field, the editor's API answers
+  422, and the editor page fails to open the document at all, so you cannot fix
+  it from the UI. Edit the `photo:` line in the YAML by hand. This mainly affects files produced by
+  `cvmake import` before this release: its old mapping kept a JSON Resume
+  `basics.image` URL verbatim, and JSON Resume images usually are URLs.
+
+  `cvmake import` follows the same contract: JSON Resume's `basics.image` is
+  usually a remote URL, and the importer now drops it with a note instead of
+  writing a document that will not validate.
+
+### Changed
+- The PDF renderer no longer loads anything from the network. Only content
+  embedded in the document itself is used; the rendered document additionally
+  declares a Content-Security-Policy that says the same. Templates that carried
+  a Google Fonts `@import` were already not loading it in the PDF path — the
+  composed stylesheet puts the `@import` after the first rule, where CSS drops
+  it — so exported PDFs are unchanged.
+
 ## [0.2.0] — 2026-09-09
 
 The first release since 0.1.0, and mainly a repair one: on 0.1.0 the CLI could

@@ -96,13 +96,38 @@ function safeHandle(profile: Rec): string | undefined {
   return undefined;
 }
 
-/** Keep a photo only if it is a safe shape the cvmake schema accepts. */
-function safePhoto(image: unknown): string | undefined {
+/**
+ * Keep a photo only if it is a shape the cvmake schema accepts: a local path or
+ * an embedded `data:image/` URI.
+ *
+ * JSON Resume's `basics.image` is usually a remote URL, and cvmake refuses
+ * those: the PDF is rendered by a browser on the machine doing the build, so a
+ * remote photo would make that machine fetch an arbitrary address. Such a value
+ * is dropped here — and the caller says so, because a photo that vanishes
+ * without a word is the kind of surprise that gets discovered in a finished PDF.
+ */
+function safePhoto(image: unknown): {
+  photo?: string;
+  dropped?: { value: string; reason: 'remote' | 'unusable' };
+} {
   const s = asString(image);
-  if (!s) return undefined;
-  if (/^(https?:\/\/|data:image\/)/i.test(s)) return s;
-  if (!/^[a-z][a-z0-9+.-]*:/i.test(s)) return s; // relative path, no scheme
-  return undefined;
+  if (!s) return {};
+  // The control-character rules come FIRST, before the data: test: the schema
+  // rejects values carrying tab/CR/LF or a leading/trailing character at or
+  // below U+0020 (the URL parser strips exactly those, so a raw-string check
+  // would otherwise see a different value than the browser), and `asString`'s
+  // trim() does not remove C0 controls. Checked after the data: branch, a
+  // data:image URI with an embedded newline would escape them and the importer
+  // would write a document the schema refuses without printing the note.
+  if (/[\t\n\r]/.test(s)) return { dropped: { value: s, reason: 'unusable' } };
+  if (s.charCodeAt(0) <= 0x20 || s.charCodeAt(s.length - 1) <= 0x20) {
+    return { dropped: { value: s, reason: 'unusable' } };
+  }
+  if (/^data:image\//i.test(s)) return { photo: s };
+  if (/^[a-z][a-z0-9+.-]*:/i.test(s)) return { dropped: { value: s, reason: 'remote' } };
+  // protocol-relative
+  if (/^[/\\]{2}/.test(s)) return { dropped: { value: s, reason: 'remote' } };
+  return { photo: s }; // relative or rooted local path
 }
 
 function validEmail(v: unknown): string | undefined {
@@ -397,7 +422,7 @@ export function runImport(args: ImportArgs): number {
     }),
   );
 
-  const photo = safePhoto(basics.image);
+  const { photo, dropped } = safePhoto(basics.image);
   const title = asString(basics.label);
   const summary = asString(basics.summary);
   const cv: Rec = {
@@ -436,6 +461,19 @@ export function runImport(args: ImportArgs): number {
     console.warn(
       pc.yellow(
         `  note: skipped ${skippedWork} work and ${skippedEdu} education entries without a start date`,
+      ),
+    );
+  }
+  if (dropped) {
+    // The value is echoed so the user can find it, but truncated: a data: URI
+    // is routinely tens of kilobytes, and printing one in full buries the note
+    // it belongs to.
+    const shown = dropped.value.length > 60 ? `${dropped.value.slice(0, 60)}…` : dropped.value;
+    console.warn(
+      pc.yellow(
+        dropped.reason === 'remote'
+          ? `  note: dropped the remote photo ${shown} — cvmake embeds local files only; download it and set a local path`
+          : `  note: dropped the photo value ${shown} — it carries characters that cannot appear in a photo path; re-add the picture by hand`,
       ),
     );
   }

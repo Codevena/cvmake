@@ -46,25 +46,44 @@ function mimetypeFromExt(ext: string): string | null {
 }
 
 /**
+ * Drops the photo field entirely. Used for every value that did not become an
+ * embedded data URL — leaving such a value in place would put an arbitrary,
+ * user-chosen URL into the rendered `<img src>`.
+ */
+function withoutPhoto(data: CVData): CVData {
+  const { photo: _dropped, ...personal } = data.personal;
+  return { ...data, personal };
+}
+
+/**
  * Reads the photo referenced in CVData and replaces its path with a base64
  * data URL so Puppeteer can render it without a base URL.
  *
- * - If photo is already a data URL, returns data unchanged (idempotent).
- * - If photo is undefined/empty, returns data unchanged.
- * - If the file does not exist, returns data unchanged (templates fall back
- *   to initials rendering).
+ * POSTCONDITION, relied upon by the renderer: on return, `personal.photo` is
+ * either absent or a `data:image/` URL. Nothing else ever reaches the document.
+ * Every branch that cannot embed the value therefore drops the field, and the
+ * templates render their initials fallback — which is what this comment claimed
+ * long before it was true.
+ *
+ * The schema (packages/schema) already refuses remote and control-character
+ * values before a request reaches here. This is the second, independent half:
+ * it holds even for callers that skip validation.
  */
 export async function embedPhoto(data: CVData, baseDir: string): Promise<CVData> {
   const photo = data.personal.photo;
 
-  // Nothing to embed
-  if (!photo) return data;
+  // Nothing to embed. Dropping rather than returning as-is keeps the
+  // postcondition free of exceptions ('' is not a data: URL).
+  if (!photo) return withoutPhoto(data);
 
-  // Already a data URL — idempotent
-  if (photo.startsWith('data:')) return data;
+  // Already an embedded image — idempotent. Tested case-insensitively and
+  // restricted to `data:image/` so this branch accepts exactly the set the
+  // schema accepts; `/^data:/i` would keep a `data:text/html` value the schema
+  // refuses, and the two layers would mean different things.
+  if (/^data:image\//i.test(photo)) return data;
 
   const mimetype = mimetypeFromExt(path.extname(photo));
-  if (!mimetype) return data;
+  if (!mimetype) return withoutPhoto(data);
 
   // The editor's photo-upload API returns absolute `/photos/<slug>.jpg`
   // paths (so the dev server can serve them at the same URL), but here we
@@ -80,7 +99,7 @@ export async function embedPhoto(data: CVData, baseDir: string): Promise<CVData>
   let allowedRoot: string;
   if (photo.startsWith('/photos/')) {
     const publicDir = findPublicDir(baseDir);
-    if (!publicDir) return data; // no public/ dir → nothing to embed
+    if (!publicDir) return withoutPhoto(data); // no public/ dir → nothing to embed
     const rel = photo.replace(/^\/+/, '');
     filePath = path.join(publicDir, rel);
     allowedRoot = path.join(publicDir, 'photos');
@@ -90,16 +109,19 @@ export async function embedPhoto(data: CVData, baseDir: string): Promise<CVData>
   }
 
   if (!isContained(filePath, allowedRoot)) {
-    // Path traversal blocked — leave the original value untouched.
-    return data;
+    // Path traversal blocked — and the value is dropped, not left in place:
+    // refusing to READ it while still rendering it as `<img src>` would move
+    // the problem from the filesystem to the network.
+    return withoutPhoto(data);
   }
 
   let bytes: Buffer;
   try {
     bytes = await readFile(filePath);
   } catch {
-    // File not found — leave original path so template can fall back to initials
-    return data;
+    // File not found — drop the field so the template really does fall back to
+    // initials instead of rendering a dead <img>.
+    return withoutPhoto(data);
   }
 
   const dataUrl = `data:${mimetype};base64,${bytes.toString('base64')}`;

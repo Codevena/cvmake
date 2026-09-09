@@ -18,6 +18,13 @@ let browsers: FakeBrowser[] = [];
 
 function makePage() {
   return {
+    // generatePDF installs the render network policy before touching the
+    // document; a fake page without these two would make every lifecycle test
+    // fail on a TypeError. Deliberately fake, not tolerated in the source:
+    // making the installation optional there would remove its fail-closed
+    // behaviour.
+    setRequestInterception: vi.fn(async () => {}),
+    on: vi.fn(),
     emulateMediaType: vi.fn(async () => {}),
     setContent: vi.fn(async () => {}),
     evaluate: vi.fn(async () => undefined),

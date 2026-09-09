@@ -1,5 +1,6 @@
 import type { Browser, LaunchOptions } from 'puppeteer';
 import type { Page } from 'puppeteer';
+import { applyRenderNetworkPolicy } from './render-network.js';
 
 /**
  * Puppeteer is loaded lazily, on the first actual PDF render.
@@ -159,10 +160,13 @@ export interface GeneratePDFOptions {
   margin?: { top: string; right: string; bottom: string; left: string } | undefined;
   /**
    * Ceiling on how long to wait for `document.fonts.ready` before rendering.
-   * With `waitUntil: 'load'` (puppeteer 24+), `setContent` returns before web
-   * fonts are guaranteed to have loaded — a generous default gives templates
-   * that @import Google Fonts enough time to fetch and decode font files
-   * before the PDF is rasterized.
+   * With `waitUntil: 'load'` (puppeteer 24+), `setContent` returns before fonts
+   * are guaranteed to be decoded.
+   *
+   * NOTE: this no longer covers REMOTE fonts. The render network policy and the
+   * document CSP both refuse them, so a template's `@import` of a web font can
+   * never resolve here — if a font is missing from a PDF, that is why, and the
+   * fix is to embed it, not to raise this timeout.
    */
   fontTimeoutMs?: number | undefined;
   /**
@@ -204,6 +208,12 @@ export async function generatePDF(html: string, opts: GeneratePDFOptions = {}): 
     if (opts.signal?.aborted) {
       throw new Error('aborted during page creation');
     }
+    // Deny remote loads before the document exists. Deliberately not wrapped in
+    // a try/catch: if the policy cannot be installed, the render must fail
+    // rather than proceed unprotected — the document carries user-supplied
+    // data, and an uncontrolled page turns the public export endpoint into a
+    // server-side request forge.
+    await applyRenderNetworkPolicy(page);
     await page.emulateMediaType('print');
     await page.setContent(html, { waitUntil: 'load' });
     // Wait for fonts to be ready, with a generous ceiling.  Clear the timer

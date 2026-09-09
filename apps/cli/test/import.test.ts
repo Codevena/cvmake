@@ -1,4 +1,4 @@
-import { existsSync, mkdtempSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { loadCV } from '@codevena/cvmake-core/loader';
@@ -33,6 +33,92 @@ describe('import', () => {
     expect(data.personal.contacts.linkedin).toBe('richard-hendriks');
     expect(data.personal.contacts.location).toContain('San Francisco');
     expect(data.summary).toContain('compression');
+  });
+
+  // The photo mapping has two directions and both need a number. The suite
+  // already covers the refusal (the sample fixture carries a remote image and
+  // the output must not contain it); without the two cases below, a safePhoto
+  // that drops EVERY photo passes the whole suite.
+  it('keeps a local image path', async () => {
+    const local = path.join(mkdtempSync(path.join(tmpdir(), 'cvmake-import-src-')), 'resume.json');
+    writeFileSync(
+      local,
+      JSON.stringify({ basics: { name: 'A B', image: 'photos/me.jpg' }, work: [], education: [] }),
+      'utf8',
+    );
+    const out = tmpOut();
+    expect(await runImport({ input: local, output: out, lang: 'en' })).toBe(0);
+    const data = await loadCV(out);
+    expect(data.personal.photo).toBe('photos/me.jpg');
+  });
+
+  it('keeps an embedded data:image photo', async () => {
+    const embedded = 'data:image/png;base64,AAAA';
+    const src = path.join(mkdtempSync(path.join(tmpdir(), 'cvmake-import-src-')), 'resume.json');
+    writeFileSync(
+      src,
+      JSON.stringify({ basics: { name: 'A B', image: embedded }, work: [], education: [] }),
+      'utf8',
+    );
+    const out = tmpOut();
+    expect(await runImport({ input: src, output: out, lang: 'en' })).toBe(0);
+    const data = await loadCV(out);
+    expect(data.personal.photo).toBe(embedded);
+  });
+
+  it('drops a data URI carrying a newline, and does not call it remote', async () => {
+    // This shape reaches the drop path only because the control-character
+    // rules run before the data: branch. It must produce a document the schema
+    // accepts, and a note that describes what actually happened.
+    const src = path.join(mkdtempSync(path.join(tmpdir(), 'cvmake-import-src-')), 'resume.json');
+    const wrapped = 'data:image/png;base64,AAAA\nBBBB';
+    writeFileSync(
+      src,
+      JSON.stringify({ basics: { name: 'A B', image: wrapped }, work: [], education: [] }),
+      'utf8',
+    );
+    const out = tmpOut();
+    expect(await runImport({ input: src, output: out, lang: 'en' })).toBe(0);
+    const data = await loadCV(out); // throws if the output does not validate
+    expect(data.personal.photo).toBeUndefined();
+
+    const notes = (console.warn as unknown as { mock: { calls: unknown[][] } }).mock.calls
+      .map((c) => String(c[0]))
+      .join('\n');
+    expect(notes).toContain('dropped the photo value');
+    expect(notes).not.toContain('remote photo');
+  });
+
+  it('truncates a long dropped value instead of printing all of it', async () => {
+    // A data: URI is routinely tens of kilobytes; the note must stay readable.
+    const src = path.join(mkdtempSync(path.join(tmpdir(), 'cvmake-import-src-')), 'resume.json');
+    const huge = `https://example.com/${'x'.repeat(5000)}.jpg`;
+    writeFileSync(
+      src,
+      JSON.stringify({ basics: { name: 'A B', image: huge }, work: [], education: [] }),
+      'utf8',
+    );
+    await runImport({ input: src, output: tmpOut(), lang: 'en' });
+    const notes = (console.warn as unknown as { mock: { calls: unknown[][] } }).mock.calls
+      .map((c) => String(c[0]))
+      .join('\n');
+    expect(notes).toContain('dropped the remote photo');
+    expect(notes).not.toContain('x'.repeat(200));
+    expect(notes.length).toBeLessThan(1000);
+  });
+
+  it('drops the remote image of the sample fixture and says so', async () => {
+    const out = tmpOut();
+    await runImport({ input: SAMPLE, output: out, lang: 'en' });
+    const data = await loadCV(out);
+    expect(data.personal.photo).toBeUndefined();
+    expect(readFileSync(out, 'utf8')).not.toContain('example.com/richard.jpg');
+    // A photo that disappears without a word is the failure mode this note
+    // exists to prevent, so the note is asserted rather than assumed.
+    const notes = (console.warn as unknown as { mock: { calls: unknown[][] } }).mock.calls
+      .map((c) => String(c[0]))
+      .join('\n');
+    expect(notes).toContain('dropped the remote photo');
   });
 
   it('maps work, education, skills, languages and extra sections', async () => {

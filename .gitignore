@@ -72,6 +72,7 @@ data/cvs/photos/*
 NEXT_SESSION.md
 LAUNCH_DRAFTS.md
 audit.md
+review-todo.md
 .review-logs/
 .review/
 .audit/
