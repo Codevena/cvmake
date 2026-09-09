@@ -102,6 +102,32 @@ describe('resolveClientIp', () => {
     expect(r.kind).toBe('ip');
   });
 
+  it('gives one key to the many spellings of one /64', () => {
+    // IPv6 has several legal spellings of the same address. Before this they
+    // produced four different keys, so rotating the spelling bought a fresh
+    // rate-limit bucket per request — the same evasion the /64 grouping exists
+    // to stop, arrived at one layer up.
+    const keys = [
+      '2001:db8::1',
+      '2001:0db8::2',
+      '2001:DB8::3',
+      '2001:db8:0:0::4',
+      '2001:0DB8:0000:0000:0000:0000:0000:5',
+    ].map((a) => {
+      const r = resolveClientIp(h({ 'cf-connecting-ip': a }));
+      return r.kind === 'ip' ? r.key : `unverified:${r.reason}`;
+    });
+    expect(new Set(keys).size).toBe(1);
+    expect(keys[0]).toBe('2001:db8:0:0::/64');
+  });
+
+  it('still separates two genuinely different /64s', () => {
+    // The counter-probe: canonicalising must not collapse subnets together.
+    const a = resolveClientIp(h({ 'cf-connecting-ip': '2001:db8:0:1::1' }));
+    const b = resolveClientIp(h({ 'cf-connecting-ip': '2001:db8:0:2::1' }));
+    expect(a.kind === 'ip' && b.kind === 'ip' && a.key !== b.key).toBe(true);
+  });
+
   it('applies the same rule to the Cloudflare header', () => {
     // The rule guarded only the forwarded chain at first. A proxy misconfigured
     // into writing an internal address into THIS header tells us just as little.

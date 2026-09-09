@@ -176,13 +176,22 @@ describe('vendored template fonts', () => {
     const styles = readFileSync(path.join(SRC, id, 'styles.css'), 'utf8');
     const families = [...fonts.matchAll(/font-family:\s*["']([^"']+)["']/g)].map((m) => m[1]);
     expect(families.length).toBeGreaterThan(0);
+    // Parse the family names out of the stylesheet rather than searching it for
+    // a substring: `styles.css.includes('Inter')` is satisfied by `Interstate`,
+    // by a comment, and by a class called `.interview`.
+    const namedInStyles = new Set(
+      [...styles.matchAll(/font-family:\s*([^;}]+)/g)]
+        .flatMap((m) => (m[1] ?? '').split(','))
+        .map((part) => part.trim().replace(/^["']|["']$/g, '')),
+    );
     for (const family of new Set(families)) {
       // Guards the other direction: 2.1 MB of base64 is worth carrying only for
       // faces the template names. A renamed family in styles.css leaves the
       // bytes in the package and the text in Helvetica.
-      expect(styles.includes(family as string), `${id}/styles.css never names ${family}`).toBe(
-        true,
-      );
+      expect(
+        namedInStyles.has(family as string),
+        `${id}/styles.css never names ${family} in a font-family declaration`,
+      ).toBe(true);
     }
   });
 });

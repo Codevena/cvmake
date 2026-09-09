@@ -94,7 +94,15 @@ function bucketKey(addr: string): string {
   const tailGroups = tail === '' ? [] : tail.split(':');
   const fill = addr.includes('::') ? 8 - headGroups.length - tailGroups.length : 0;
   const groups = [...headGroups, ...Array(Math.max(0, fill)).fill('0'), ...tailGroups];
-  return `${groups.slice(0, 4).join(':')}::/64`;
+  // Canonicalise each group before it becomes part of a key. IPv6 has several
+  // legal spellings of the same address, and without this they are several
+  // buckets: `2001:db8::1`, `2001:0db8::2`, `2001:DB8::3` and
+  // `2001:0DB8:0000:0000:...` produced four different keys for one /64 —
+  // exactly the rotation the /64 bucketing exists to stop, one layer up.
+  return `${groups
+    .slice(0, 4)
+    .map((g) => g.toLowerCase().replace(/^0+(?=.)/, ''))
+    .join(':')}::/64`;
 }
 
 /**
