@@ -73,6 +73,13 @@ function CategoryRow({
 }
 
 export function SkillsSection() {
+  // Every write here passes `shouldValidate` as well as `shouldDirty`. Without
+  // it react-hook-form never re-runs the resolver for these fields, so a
+  // half-added category — a name with no skills under it yet — left the form
+  // reporting itself as valid: autosave fired a POST per edit, the server
+  // rejected each with 422, and only then did the field and its tab get
+  // marked. Nothing was ever written to disk either way, but the refusal
+  // belongs in the form, not in a round-trip per keystroke batch.
   const { control, getValues, setValue, watch } = useFormContext<CVData>();
   const initialCats = getValues('skills.categorized') ?? {};
   const initialTab: Tab = Object.keys(initialCats).length > 0 ? 'categorized' : 'stack';
@@ -91,14 +98,18 @@ export function SkillsSection() {
   function commitNewCategory() {
     const name = newCategoryName.trim();
     if (!name) return;
-    setValue('skills.categorized', { ...cats, [name]: [] }, { shouldDirty: true });
+    setValue(
+      'skills.categorized',
+      { ...cats, [name]: [] },
+      { shouldDirty: true, shouldValidate: true },
+    );
     setNewCategoryName('');
     setAddingCategory(false);
   }
 
   function removeCategory(name: string) {
     const { [name]: _omitted, ...rest } = cats;
-    setValue('skills.categorized', rest, { shouldDirty: true });
+    setValue('skills.categorized', rest, { shouldDirty: true, shouldValidate: true });
   }
 
   function renameCategory(oldName: string, nextName: string) {
@@ -111,11 +122,15 @@ export function SkillsSection() {
     for (const [k, v] of Object.entries(cats)) {
       rebuilt[k === oldName ? nextName : k] = v;
     }
-    setValue('skills.categorized', rebuilt, { shouldDirty: true });
+    setValue('skills.categorized', rebuilt, { shouldDirty: true, shouldValidate: true });
   }
 
   function changeItems(name: string, next: string[]) {
-    setValue('skills.categorized', { ...cats, [name]: next }, { shouldDirty: true });
+    setValue(
+      'skills.categorized',
+      { ...cats, [name]: next },
+      { shouldDirty: true, shouldValidate: true },
+    );
   }
 
   return (

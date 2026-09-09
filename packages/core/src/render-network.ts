@@ -109,7 +109,9 @@ export async function applyRenderNetworkPolicy(
 export function renderCsp(policy: RenderNetworkPolicy = DENY_REMOTE): string {
   const hosts = policy.allowedHosts.map((h) => `https://${h}`).join(' ');
   const styleSrc = hosts ? `'unsafe-inline' ${hosts}` : "'unsafe-inline'";
-  const fontSrc = hosts || "'none'";
+  // `data:` only — an embedded font carries no request. Remote hosts appear
+  // here only if the policy ever allows one again.
+  const fontSrc = hosts ? `data: ${hosts}` : 'data:';
   return [
     `default-src 'none'`,
     'img-src data:',

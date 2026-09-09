@@ -10,7 +10,7 @@ import { beforeAll, describe, expect, it, vi } from 'vitest';
  * schema refuses must never reach Chromium. Mocking the renderer is what makes
  * "was not called" observable at all.
  */
-const generatePDF = vi.fn(async () => Buffer.from('%PDF-1.7\n', 'utf8'));
+const generatePDF = vi.fn(async (_html: string) => Buffer.from('%PDF-1.7\n', 'utf8'));
 
 vi.mock('@codevena/cvmake-core/pdf', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@codevena/cvmake-core/pdf')>();
@@ -95,5 +95,18 @@ describe('POST /api/export — photo guard', () => {
     const res = await post(withPhoto('photos/example-lena.webp'));
     expect(res.status).toBe(200);
     expect(generatePDF).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not embed another CV photo when the request omits its slug', async () => {
+    // `slug` is optional on this endpoint outside demo mode, so "no slug means
+    // no restriction" would leave the cross-tenant read open to exactly the
+    // request that leaves it out. The route must refuse instead.
+    generatePDF.mockClear();
+    const res = await post(withPhoto('/photos/someone-else.jpg'));
+    expect(res.status).toBe(200);
+    // The render still happens — the photo is simply not in it.
+    expect(generatePDF).toHaveBeenCalledTimes(1);
+    const html = String(generatePDF.mock.calls[0]?.[0] ?? '');
+    expect(html).not.toContain('someone-else');
   });
 });

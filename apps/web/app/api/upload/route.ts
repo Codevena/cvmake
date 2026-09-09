@@ -44,6 +44,10 @@ export async function POST(req: Request): Promise<NextResponse> {
   const file = form.get('file');
   const slugRaw = form.get('slug');
   const cropRaw = form.get('crop');
+  // Read only to keep the request contract: a client that omits the field
+  // still gets a 400. The VALUE is deliberately unused — the output ratio comes
+  // from the crop rectangle, which is already validated and, unlike this field,
+  // cannot contradict itself ('free' is a legal value here with no ratio in it).
   const aspect = form.get('aspect');
   if (
     !(file instanceof Blob) ||

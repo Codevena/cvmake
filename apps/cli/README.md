@@ -5,7 +5,7 @@
 Build production-quality CV PDFs from a plain-text YAML file. 12 polished
 templates, multiple color palettes each, multilingual.
 
-**Live demo + web editor:** https://cvmake.codevena.dev
+**Template showcase:** https://cvmake.codevena.dev · **Web editor:** https://cveditor.codevena.dev
 
 ## Quick start
 
@@ -87,7 +87,7 @@ human-readable errors if anything is off.
 
 ## Web editor
 
-Prefer a GUI? https://cvmake.codevena.dev — same engine, runs in your
+Prefer a GUI? https://cveditor.codevena.dev — same engine, runs in your
 browser. Edit the YAML side-by-side with the live PDF preview, export
 when ready.
 

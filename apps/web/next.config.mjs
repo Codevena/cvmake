@@ -7,16 +7,20 @@ export default {
         headers: [
           {
             key: 'Content-Security-Policy',
-            // TODO: tighten after next/font migration completes (style-src and font-src
-            // can drop the googleapis.com / gstatic.com allowance once next/font
-            // self-hosts the fonts). The allowance is harmless post-migration.
-            // Also tighten script-src by dropping 'unsafe-inline' once App Router
-            // nonce support is wired cleanly.
+            // TODO: tighten by dropping 'unsafe-inline' from script-src once App
+            // Router nonce support is wired cleanly.
             value: [
               "default-src 'self'",
               "img-src 'self' data: blob:",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-              "font-src 'self' https://fonts.gstatic.com",
+              // `data:` is required, not cosmetic: the template fonts are
+              // vendored as data: URIs, and the preview renders into an
+              // about:blank iframe written with document.write(), which
+              // inherits THIS policy rather than the renderer's. Without it the
+              // browser refuses every face and the preview silently falls back
+              // to a system font — the same PDF/preview mismatch this release
+              // set out to remove, only pointing the other way.
+              "font-src 'self' data: https://fonts.gstatic.com",
               // analytics.codevena.dev = self-hosted Umami (apps/web/components/UmamiScript.tsx).
               // If you point NEXT_PUBLIC_UMAMI_SRC at a different host, update
               // both script-src AND connect-src below to match.

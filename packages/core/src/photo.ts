@@ -43,6 +43,10 @@ export async function processPhoto(opts: ProcessPhotoOptions): Promise<Processed
 
   const buffer = await readFile(inputPath);
   let pipeline = sharp(buffer, { limitInputPixels: MAX_INPUT_PIXELS }).rotate();
+  // Set when a crop was applied: the output size that preserves its ratio.
+  // Without a crop the square default stands, which is what every existing
+  // caller relies on.
+  let cropTarget: { width: number; height: number } | undefined;
   if (opts.crop) {
     // After EXIF rotation, width/height may be swapped (90°/270° orientations).
     // Re-fetch post-rotate dimensions so we can give a clear error before sharp's
@@ -60,10 +64,27 @@ export async function processPhoto(opts: ProcessPhotoOptions): Promise<Processed
       );
     }
     pipeline = pipeline.extract({ left, top, width, height });
+    // Keep the aspect ratio the user actually dragged. The old code resized
+    // every crop to a square, so a 3:4 selection was extracted correctly and
+    // then squashed — and `position: 'attention'` picked a NEW region inside
+    // the frame the user had just chosen, overriding their framing.
+    //
+    // `targetSize` is the long edge, matching what a square crop produced
+    // before: a 100x100 crop still yields 600x600, a 300x400 one yields
+    // 450x600. Deliberately no `Math.min(1, …)` cap — that would never
+    // upscale, so every crop smaller than the target would come out smaller
+    // than it does today (a 100x100 crop would drop from 600x600 to 100x100).
+    // Math.max(1, …) covers a degenerate selection: 2000x1 would otherwise
+    // compute a height of 0 and sharp rejects that outright.
+    const scale = targetSize / Math.max(width, height);
+    cropTarget = {
+      width: Math.max(1, Math.round(width * scale)),
+      height: Math.max(1, Math.round(height * scale)),
+    };
   }
   pipeline = pipeline.resize({
-    width: targetSize,
-    height: targetSize,
+    width: cropTarget?.width ?? targetSize,
+    height: cropTarget?.height ?? targetSize,
     fit: 'cover',
     position: 'attention',
   });

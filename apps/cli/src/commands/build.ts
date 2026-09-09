@@ -70,16 +70,45 @@ export async function runBuild(args: BuildArgs): Promise<void> {
   if (!template) {
     throw new Error(`unknown template: ${templateId}`);
   }
-  // Validate an explicitly-passed --palette instead of silently falling back to
-  // the default palette (which would produce a PDF in the wrong colours, exit 0).
-  if (args.palette !== undefined && !template.palettes.some((p) => p.id === args.palette)) {
-    throw new Error(
-      `unknown palette: ${args.palette} (template '${templateId}' has: ${template.palettes
-        .map((p) => p.id)
-        .join(', ')})`,
-    );
-  }
+  // Validate the palette that will actually be used, not just the flag. renderCV
+  // falls back to `palettes[0]` for an unknown id, so an outdated
+  // `rendering.palette` in the YAML used to produce a PDF in the wrong colours
+  // and exit 0 — the same defect this check was written for, reached by the
+  // other route. The message names where the value came from, or the user goes
+  // looking for a flag they never typed.
   const paletteId = args.palette ?? data.rendering.palette;
+  const paletteKnown = paletteId === undefined || template.palettes.some((p) => p.id === paletteId);
+  // Whether an unusable palette is an error depends on who caused the mismatch.
+  // Overriding the template on the command line makes the file's own palette
+  // inapplicable through no fault of the file — that combination gets a note
+  // and the template's default. An explicit --palette, or a palette the YAML
+  // pairs with its OWN template, is a request that cannot be honoured: renderCV
+  // would silently fall back to palettes[0] and exit 0 with the wrong colours,
+  // which is the defect this guards.
+  // The note applies only when the palette was fine for the file's OWN template
+  // and became inapplicable through the override. A palette that does not exist
+  // in either template is a defect in the file, and downgrading it would both
+  // hide that and blame `--template` for something it did not cause.
+  const ownTemplate = getTemplate(data.rendering.template);
+  const validForOwnTemplate =
+    paletteId !== undefined && (ownTemplate?.palettes.some((p) => p.id === paletteId) ?? false);
+  const overrideCausedMismatch =
+    args.template !== undefined && args.template !== data.rendering.template && validForOwnTemplate;
+  if (!paletteKnown) {
+    const names = template.palettes.map((p) => p.id).join(', ');
+    if (args.palette === undefined && overrideCausedMismatch) {
+      console.warn(
+        pc.yellow(
+          `  note: palette '${paletteId}' does not exist in template '${templateId}' (from --template); using ${template.palettes[0]?.id}`,
+        ),
+      );
+    } else {
+      const origin = args.palette !== undefined ? '--palette' : 'cv.yaml `rendering.palette`';
+      throw new Error(
+        `unknown palette: ${paletteId} (from ${origin}; template '${templateId}' has: ${names})`,
+      );
+    }
+  }
   const rendered = await renderCV({
     data,
     template,

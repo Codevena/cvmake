@@ -1,13 +1,15 @@
+import { LOCAL_KEY, requiresVerifiedIp, resolveClientIp } from '@/lib/client-ip';
 import { dataDir, validateSlug } from '@/lib/data-paths';
 import { isDemoMode } from '@/lib/demo-mode';
 import { getPreviewBootstrap } from '@/lib/preview-bootstrap';
 import { checkOrigin } from '@/lib/request-guards';
 import { wrapHtmlDocument } from '@codevena/cvmake-core/html-document';
 import { generatePDF } from '@codevena/cvmake-core/pdf';
-import { embedPhoto } from '@codevena/cvmake-core/photo-embed';
+import { type PhotoOwner, embedPhoto } from '@codevena/cvmake-core/photo-embed';
 import { renderCV } from '@codevena/cvmake-core/renderer';
 import { CVDataSchema } from '@codevena/cvmake-schema';
 import { bootstrapTemplates, getTemplate } from '@codevena/cvmake-templates';
+import { loadTemplateCss } from '@codevena/cvmake-templates/css';
 import { stripSharedImports } from '@codevena/cvmake-templates/css';
 import { NextResponse } from 'next/server';
 
@@ -65,6 +67,13 @@ interface BucketEntry {
   resetAt: number;
 }
 
+// Process-local on purpose, and only sound because this runs as a single
+// replica: the Coolify app serves one container, so one Map is one budget.
+// Two consequences that are NOT hidden: a restart forgets every bucket, and a
+// second replica would double the allowance rather than share it. Making this
+// distributed means Redis or an edge rule, which is an infrastructure decision
+// rather than a code one — the concurrency cap below and the render timeout are
+// what actually bound resource use, and they hold per process either way.
 const rateBuckets = new Map<string, BucketEntry>();
 // Cap on map size to bound memory under spoofed X-Forwarded-For floods (the
 // header is attacker-controlled). When the map exceeds this, expired entries
@@ -77,10 +86,6 @@ function pruneExpired(now: number): void {
   for (const [key, entry] of rateBuckets) {
     if (entry.resetAt <= now) rateBuckets.delete(key);
   }
-}
-
-function getClientIp(req: Request): string {
-  return req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? '__unknown__';
 }
 
 function checkRateLimit(ip: string): { allowed: boolean; retryAfter: number } {
@@ -137,9 +142,17 @@ export async function POST(req: Request): Promise<Response> {
   const originErr = checkOrigin(req);
   if (originErr) return originErr;
 
-  // H1 — Rate limit
-  const ip = getClientIp(req);
-  const { allowed, retryAfter } = checkRateLimit(ip);
+  // H1 — Rate limit. The key comes from the one resolver that knows what each
+  // header is worth; see apps/web/lib/client-ip.ts.
+  const client = resolveClientIp(req.headers);
+  if (client.kind === 'unverified' && requiresVerifiedIp()) {
+    // Refuse before anything expensive runs. This is a misconfiguration, not
+    // overload, so it gets its own kind and deliberately no `Retry-After`:
+    // the condition does not pass on its own, and telling the client to come
+    // back shortly would have it retry for ever.
+    return NextResponse.json({ kind: 'client_unverified', reason: client.reason }, { status: 503 });
+  }
+  const { allowed, retryAfter } = checkRateLimit(client.kind === 'ip' ? client.key : LOCAL_KEY);
   if (!allowed) {
     return NextResponse.json(
       { kind: 'rate_limited', retryAfter },
@@ -234,14 +247,36 @@ export async function POST(req: Request): Promise<Response> {
     // ("photos/example-lena.webp" → data/cvs/photos/example-lena.webp) and a
     // descendant from which embedPhoto can walk up to find public/photos for
     // absolute /photos/<slug>.jpg URLs produced by the upload API.
-    const embedded = await embedPhoto(parsed.data, dataDir());
+    // The owner comes from the REQUEST's slug, never from `safeSlug` — that
+    // falls back to `personal.lastName`, which the caller chooses freely, so it
+    // would let an attacker declare themselves the owner of any file. A request
+    // without a usable slug gets `none` and therefore no `/photos/` access at
+    // all, rather than the unrestricted single-user behaviour.
+    const owner: PhotoOwner = (() => {
+      if (!body.slug) return { kind: 'none' };
+      try {
+        return { kind: 'slug', slug: validateSlug(body.slug) };
+      } catch {
+        return { kind: 'none' };
+      }
+    })();
+    const embedded = await embedPhoto(parsed.data, dataDir(), owner);
     const { html, css, locale } = await renderCV({
       data: embedded,
       template,
       ...(body.paletteId !== undefined ? { paletteId: body.paletteId } : {}),
     });
     const bootstrap = getPreviewBootstrap();
-    const tplCss = bootstrap.templates[body.templateId]?.css ?? '';
+    // `loadTemplateCss`, not the bootstrap entry: the bootstrap is the client
+    // payload and no longer carries the @font-face blocks. Reading them here
+    // keeps the PDF self-contained, which it has to be — the renderer is not
+    // allowed to fetch anything.
+    let tplCss = '';
+    try {
+      tplCss = loadTemplateCss(body.templateId);
+    } catch {
+      tplCss = bootstrap.templates[body.templateId]?.css ?? '';
+    }
     // The template's styles.css starts with relative `@import "../shared/..."`
     // lines that cannot resolve under Puppeteer's setContent (no base URL), so
     // they get dropped — losing @page margins, box-sizing and page-break rules

@@ -8,7 +8,7 @@
 ![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=nextdotjs)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178c6?logo=typescript&logoColor=white)
 
-**→ Live demo: [cvmake.codevena.dev](https://cvmake.codevena.dev)**
+**→ Template showcase: [cvmake.codevena.dev](https://cvmake.codevena.dev) · Live editor: [cveditor.codevena.dev](https://cveditor.codevena.dev)**
 
 <p align="center">
   <img src="docs/collage-4templates.png" width="800" alt="One YAML, four templates — classic-serif, swiss, bauhaus, noir all rendered from the same example.en.yaml" />
@@ -53,10 +53,12 @@ maintain it in two languages, and not pay $9/month forever for the privilege. cv
   multiple color palettes. Same content, instant restyle.
 - **Multilingual by default** — author `cv.de.yaml` + `cv.en.yaml` side-by-side from one
   schema, switch via CLI flag.
-- **High-fidelity PDF output** — React + Puppeteer means your live browser preview is
-  byte-identical to the exported PDF.
+- **High-fidelity PDF output** — the browser preview and the PDF run the same React
+  components, the same template CSS and the same vendored fonts, so what you arrange is
+  what you get. They are not byte-identical: the preview is a live DOM, the PDF is a
+  Puppeteer print render, and only the second one paginates.
 - **CLI or browser** — `npx @codevena/cvmake-cli build cv.yaml` for terminal users,
-  [the live editor](https://cvmake.codevena.dev) for everyone else.
+  [the live editor](https://cveditor.codevena.dev) for everyone else.
 - **MIT, no lockin** — your data stays on your machine. Fork the schema, fork a template,
   add your own. The project is small enough to actually read.
 

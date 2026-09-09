@@ -11,6 +11,15 @@ const DATA: CVData = {
   rendering: { template: 'classic-serif' },
 };
 
+// The hook now saves when the data differs from what was last SENT, not when
+// react-hook-form calls the form dirty. Mounting with untouched data must
+// therefore produce no request at all — these tests hand it a genuinely
+// changed document instead of only flipping `isDirty`.
+const EDITED: CVData = {
+  ...DATA,
+  personal: { ...DATA.personal, firstName: 'Changed' },
+};
+
 describe('useAutosave', () => {
   beforeEach(() => vi.useFakeTimers({ shouldAdvanceTime: true }));
   afterEach(() => {
@@ -28,18 +37,20 @@ describe('useAutosave', () => {
     );
     const onConflict = vi.fn();
     const onError = vi.fn();
-    const { result } = renderHook(() =>
-      useAutosave({
-        slug: 'cv.de',
-        data: DATA,
-        isDirty: true,
-        isValid: true,
-        expectedMtime: 1,
-        onConflict,
-        onError,
-        paused: false,
-      }),
+    const { result, rerender } = renderHook(
+      ({ data }: { data: CVData }) =>
+        useAutosave({
+          slug: 'cv.de',
+          data,
+          isValid: true,
+          expectedMtime: 1,
+          onConflict,
+          onError,
+          paused: false,
+        }),
+      { initialProps: { data: DATA } },
     );
+    rerender({ data: EDITED });
     await act(async () => {
       vi.advanceTimersByTime(2100);
     });
@@ -66,7 +77,6 @@ describe('useAutosave', () => {
         useAutosave({
           slug: 'cv.de',
           data,
-          isDirty: true,
           isValid: true,
           expectedMtime: 1,
           onConflict: vi.fn(),
@@ -75,6 +85,9 @@ describe('useAutosave', () => {
         }),
       { initialProps: { data: DATA } },
     );
+    // A real edit, not just a dirty flag: the hook compares against what was
+    // last sent, so mounting with untouched data produces no request.
+    rerender({ data: EDITED });
     // First save fires after 2s debounce, completes, schedules clean@+3s.
     await act(async () => {
       vi.advanceTimersByTime(2100);
@@ -129,7 +142,6 @@ describe('useAutosave', () => {
         useAutosave({
           slug: 'cv.de',
           data,
-          isDirty: true,
           isValid: true,
           expectedMtime: 1,
           onConflict: vi.fn(),
@@ -138,6 +150,8 @@ describe('useAutosave', () => {
         }),
       { initialProps: { data: DATA } },
     );
+    // A real edit, not just a dirty flag — see the note above EDITED.
+    rerender({ data: EDITED });
     // T=0..2.1s: First save fires after 2s debounce, resolves immediately,
     // sets state='saved' and schedules the 3s clean timer (fires at T=5.1s).
     await act(async () => {
@@ -188,18 +202,20 @@ describe('useAutosave', () => {
         }),
     );
     const onConflict = vi.fn();
-    renderHook(() =>
-      useAutosave({
-        slug: 'cv.de',
-        data: DATA,
-        isDirty: true,
-        isValid: true,
-        expectedMtime: 1,
-        onConflict,
-        onError: vi.fn(),
-        paused: false,
-      }),
+    const { rerender } = renderHook(
+      ({ data }: { data: CVData }) =>
+        useAutosave({
+          slug: 'cv.de',
+          data,
+          isValid: true,
+          expectedMtime: 1,
+          onConflict,
+          onError: vi.fn(),
+          paused: false,
+        }),
+      { initialProps: { data: DATA } },
     );
+    rerender({ data: EDITED });
     await act(async () => {
       vi.advanceTimersByTime(2100);
     });
@@ -207,5 +223,167 @@ describe('useAutosave', () => {
     await waitFor(() =>
       expect(onConflict).toHaveBeenCalledWith({ currentData: DATA, currentMtime: 555 }),
     );
+  });
+});
+
+describe('useAutosave — what the persisted state is measured against', () => {
+  beforeEach(() => vi.useFakeTimers({ shouldAdvanceTime: true }));
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  function mount(overrides: Partial<Parameters<typeof useAutosave>[0]> = {}) {
+    const onConflict = vi.fn();
+    const onError = vi.fn();
+    const view = renderHook(
+      ({ data }: { data: CVData }) =>
+        useAutosave({
+          slug: 'cv.de',
+          data,
+          isValid: true,
+          expectedMtime: 1,
+          onConflict,
+          onError,
+          paused: false,
+          ...overrides,
+        }),
+      { initialProps: { data: DATA } },
+    );
+    return { ...view, onConflict, onError };
+  }
+
+  const withName = (name: string): CVData => ({
+    ...DATA,
+    personal: { ...DATA.personal, firstName: name },
+  });
+
+  function bodiesOf(mock: { mock: { calls: unknown[][] } }): string[] {
+    return mock.mock.calls.map((c) => {
+      const init = c[1] as RequestInit;
+      return JSON.parse(String(init.body)).data.personal.firstName as string;
+    });
+  }
+
+  async function tick() {
+    await act(async () => {
+      vi.advanceTimersByTime(2100);
+    });
+  }
+
+  it('saves a revert, which react-hook-form calls clean', async () => {
+    // M -> X is saved; returning to M made react-hook-form report the form as
+    // clean, and the old code bailed out there — leaving X on disk while the
+    // editor showed M.
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation(
+      async () =>
+        new Response(JSON.stringify({ mtime: 2 }), {
+          status: 200,
+          headers: { 'content-type': 'application/json' },
+        }),
+    );
+    const { rerender } = mount();
+    rerender({ data: withName('X') });
+    await tick();
+    await waitFor(() => expect(bodiesOf(fetchMock)).toEqual(['X']));
+    // This is the moment react-hook-form would call the form clean: the value
+    // is back to what it was created with. The hook no longer takes `isDirty`
+    // at all — it compares the serialised document against what the server
+    // last accepted — so what has to be saved here is a document that is
+    // identical to the one loaded and different from the one on disk.
+    rerender({ data: withName('M') });
+    await tick();
+    await waitFor(() => expect(bodiesOf(fetchMock)).toEqual(['X', 'M']));
+  });
+
+  it('does not save on mount when nothing was touched', async () => {
+    // The counter-probe. Both reference points start from the loaded data, so
+    // opening the editor must be silent.
+    const fetchMock = vi.spyOn(globalThis, 'fetch');
+    mount();
+    await tick();
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('still reports unsaved changes after a failed save', async () => {
+    // The dangerous case: the attempt marker is stamped on failure too, so
+    // comparing against it would say "clean" exactly when the work exists only
+    // in memory and the user must not be allowed to navigate away.
+    vi.spyOn(globalThis, 'fetch').mockImplementation(
+      async () => new Response('boom', { status: 500 }),
+    );
+    const { result, rerender } = mount();
+    rerender({ data: withName('X') });
+    await tick();
+    await waitFor(() => expect(result.current.state).toBe('error'));
+    expect(result.current.hasUnsavedChanges).toBe(true);
+  });
+
+  it('lets Cmd+S retry the exact payload that just failed', async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, 'fetch')
+      .mockImplementation(async () => new Response('boom', { status: 500 }));
+    const { result, rerender } = mount();
+    rerender({ data: withName('X') });
+    await tick();
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+    // Through the real key handler, not through saveNow: the hotkey is where
+    // the equality check used to sit, and an equality check there would find
+    // the attempt marker already holding this payload and do nothing — the
+    // manual retry would be silently dead.
+    await act(async () => {
+      window.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 's', metaKey: true, bubbles: true }),
+      );
+    });
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+  });
+
+  it('reports whether the server accepted the data', async () => {
+    const responses = [
+      new Response(JSON.stringify({ mtime: 3 }), {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      }),
+      new Response(JSON.stringify({ issues: [] }), {
+        status: 422,
+        headers: { 'content-type': 'application/json' },
+      }),
+    ];
+    vi.spyOn(globalThis, 'fetch').mockImplementation(async () => responses.shift() as Response);
+    const { result } = mount();
+    let ok: boolean | undefined;
+    await act(async () => {
+      ok = await result.current.saveNow(withName('A'));
+    });
+    expect(ok).toBe(true);
+    await act(async () => {
+      ok = await result.current.saveNow(withName('B'));
+    });
+    expect(ok).toBe(false);
+  });
+
+  it('does not write the discarded changes back after a conflict reload', async () => {
+    // Measured failure without the settled guard: ["X","X","SERVER"] — the
+    // second X is the edit the user just threw away in the conflict dialog.
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation(
+      async () =>
+        new Response(JSON.stringify({ kind: 'conflict', currentData: DATA, currentMtime: 7 }), {
+          status: 409,
+          headers: { 'content-type': 'application/json' },
+        }),
+    );
+    const { result, rerender } = mount();
+    rerender({ data: withName('X') });
+    await tick();
+    await waitFor(() => expect(bodiesOf(fetchMock)).toEqual(['X']));
+
+    // The user picks "reload": the shell resets the form and tells the hook.
+    const server = withName('SERVER');
+    act(() => result.current.markResolved(server, 7));
+    rerender({ data: server });
+    await tick();
+    expect(bodiesOf(fetchMock)).toEqual(['X']);
+    expect(result.current.hasUnsavedChanges).toBe(false);
   });
 });

@@ -22,9 +22,16 @@ const TABS: { id: TabId; label: string }[] = [
 interface Props {
   active: TabId;
   onSelect: (id: TabId) => void;
+  /**
+   * Tabs whose section currently fails validation. Marked visually AND for
+   * assistive technology: a colour-only marker would leave exactly the users
+   * who most need the hint without one, and the editor gives no other clue
+   * about where an error lives.
+   */
+  errorTabs?: TabId[] | undefined;
 }
 
-export function TabNav({ active, onSelect }: Props) {
+export function TabNav({ active, onSelect, errorTabs = [] }: Props) {
   return (
     <div
       role="tablist"
@@ -35,20 +42,30 @@ export function TabNav({ active, onSelect }: Props) {
     >
       {TABS.map((tab) => {
         const isActive = tab.id === active;
+        const hasError = errorTabs.includes(tab.id);
         return (
           <button
             key={tab.id}
             type="button"
             role="tab"
             aria-selected={isActive}
+            aria-invalid={hasError ? 'true' : undefined}
             onClick={() => onSelect(tab.id)}
             className={`-mb-px border-b-2 px-3 py-2.5 text-sm transition ${
               isActive
                 ? 'border-accent text-text'
                 : 'border-transparent text-text-muted hover:text-text'
-            }`}
+            } ${hasError ? 'text-error' : ''}`}
           >
             {tab.label}
+            {hasError && (
+              <>
+                <span aria-hidden="true" className="ml-1 text-error">
+                  •
+                </span>
+                <span className="sr-only"> (has errors)</span>
+              </>
+            )}
           </button>
         );
       })}

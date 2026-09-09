@@ -1,7 +1,9 @@
 'use client';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { cvRoute } from '@/lib/cv-route';
 import { isDemoMode } from '@/lib/demo-mode';
 import { downloadYaml as downloadYamlFile } from '@/lib/download-yaml';
+import { firstTabWithError, tabsWithErrors } from '@/lib/error-tabs';
 import { exportPdf } from '@/lib/export-pdf';
 import type { PreviewBootstrap } from '@/lib/preview-bootstrap';
 import { type ConflictPayload, useAutosave } from '@/lib/use-autosave';
@@ -64,6 +66,7 @@ export function EditorShell({ initialData, initialMtime, slug, allSlugs, bootstr
   // could reset, leaving autosave paused for the rest of the session with no
   // way back to the modal and a dead Retry button.
   const [conflictDismissed, setConflictDismissed] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
   // Overwrite error — shown as an inline banner inside the conflict modal
   // area instead of a blocking window.alert.
   const [overwriteError, setOverwriteError] = useState<string | null>(null);
@@ -79,7 +82,6 @@ export function EditorShell({ initialData, initialMtime, slug, allSlugs, bootstr
   const autosave = useAutosave({
     slug,
     data: watched,
-    isDirty: form.formState.isDirty,
     isValid: form.formState.isValid,
     expectedMtime: initialMtime,
     onConflict: (p) => {
@@ -99,35 +101,83 @@ export function EditorShell({ initialData, initialMtime, slug, allSlugs, bootstr
     setPaletteOpen((prev) => !prev);
   });
 
-  // beforeunload guard (audit C11 sibling — covers the "close tab / refresh /
-  // navigate to external URL" case that the in-app ConfirmDialog can't reach).
-  // Only enabled in demo mode: non-demo deploys autosave every 2 s so unsaved
-  // work is already protected; demo deploys explicitly don't save and a
-  // closed tab would lose the user's edits silently.
+  // beforeunload guard — covers closing the tab, reloading, or navigating to an
+  // external URL, which the in-app dialog cannot reach.
+  //
+  // This used to be demo-only, on the reasoning that "non-demo deploys autosave
+  // every 2 s so unsaved work is already protected". That does not hold: inside
+  // the debounce window nothing has been sent yet, an invalid form is never
+  // sent at all, and a failed save leaves the work in memory only. The guard
+  // now asks the hook whether anything is actually unsaved, in either mode.
+  //
   // Browsers ignore custom returnValue strings since Chrome 51 — setting any
   // string (or just calling preventDefault) triggers the native "Leave site?"
   // prompt. The empty string + preventDefault is the spec-compliant idiom.
   useEffect(() => {
-    if (!demo || !form.formState.isDirty) return;
+    if (!autosave.hasUnsavedChanges) return;
     const handler = (e: BeforeUnloadEvent) => {
       e.preventDefault();
       e.returnValue = '';
     };
     window.addEventListener('beforeunload', handler);
     return () => window.removeEventListener('beforeunload', handler);
-  }, [demo, form.formState.isDirty]);
+  }, [autosave.hasUnsavedChanges]);
+
+  // One place decides whether leaving this CV is safe, for both entry points:
+  // the TopBar selector and the command palette. The decision needs the
+  // autosave state, which only lives here.
+  const [pendingSwitch, setPendingSwitch] = useState<string | null>(null);
+  const requestCvSwitch = (target: string): void => {
+    if (target === slug) return;
+    if (!autosave.hasUnsavedChanges) {
+      router.push(cvRoute(target, demo));
+      return;
+    }
+    setPendingSwitch(target);
+  };
+
+  // What the dialog can offer depends on why the work is unsaved:
+  //  - demo: autosave is permanently paused, so there is no disk to save to
+  //  - invalid form: saving is impossible, so offer the way to the error
+  //  - open conflict: autosave is paused, saveNow would do nothing at all
+  //  - otherwise: save and switch
+  //
+  // `demo` has to come first, and it is the deployed configuration
+  // (`Dockerfile` sets NEXT_PUBLIC_DEMO_MODE=true, and the demo shows two CVs
+  // in the selector, so switching is the ordinary thing to do). Without it the
+  // dialog offered "Save and switch", whose handler calls saveNow(), which
+  // returns false immediately because demo pauses autosave — the dialog closed
+  // and nothing happened at all.
+  const switchBlockedBy: 'demo' | 'invalid' | 'conflict' | null = demo
+    ? 'demo'
+    : !form.formState.isValid
+      ? 'invalid'
+      : conflict !== null
+        ? 'conflict'
+        : null;
 
   const currentTemplateId = form.watch('rendering.template');
 
   const paletteCommands: PaletteCommands = {
-    switchCv: (s) => router.push(cvRoute(s, demo)),
+    // Same guard as the TopBar selector: this path used to bypass it
+    // entirely, in demo mode and outside it.
+    switchCv: (s) => requestCvSwitch(s),
     allSlugs,
     switchTemplate: (id) => form.setValue('rendering.template', id, { shouldDirty: true }),
     templateIds: listTemplates().map((t) => t.meta.id),
     switchPalette: (id) => form.setValue('rendering.palette', id, { shouldDirty: true }),
     paletteIds: getTemplate(currentTemplateId)?.palettes.map((p) => p.id) ?? [],
     jumpToSection: (id) => setActiveTab(id),
-    exportPdf: () => exportPdf({ data: form.getValues(), slug }),
+    // Same error surface as the TopBar button. This path had no catch at all,
+    // so a failed export from the palette produced an unhandled rejection and
+    // no message — and it is the LESS guarded of the two, because the button
+    // is disabled on an invalid form and the command is not.
+    exportPdf: () => {
+      setExportError(null);
+      exportPdf({ data: form.getValues(), slug }).catch((err: unknown) => {
+        setExportError(err instanceof Error ? err.message : 'The export failed.');
+      });
+    },
     ...(demo
       ? {
           downloadYaml: () => downloadYamlFile({ data: form.getValues(), slug }),
@@ -161,6 +211,9 @@ export function EditorShell({ initialData, initialMtime, slug, allSlugs, bootstr
           onRetry={conflict ? () => setConflictDismissed(false) : autosave.retry}
           lastSavedAt={autosave.lastSavedAt}
           onOpenPalette={() => setPaletteOpen(true)}
+          onRequestCvSwitch={requestCvSwitch}
+          exportError={exportError}
+          onExportError={setExportError}
           isDemo={demo}
           viewMode={viewMode}
           onSetViewMode={setViewMode}
@@ -174,7 +227,11 @@ export function EditorShell({ initialData, initialMtime, slug, allSlugs, bootstr
             <Sidebar bootstrap={bootstrap} />
           </div>
           <div className={formColClass}>
-            <TabNav active={activeTab} onSelect={setActiveTab} />
+            <TabNav
+              active={activeTab}
+              onSelect={setActiveTab}
+              errorTabs={tabsWithErrors(form.formState.errors)}
+            />
             {/* biome-ignore lint/a11y/useSemanticElements: explicit role="form" is needed — <form> only carries an implicit role when given an accessible name via aria-label/aria-labelledby */}
             <div role="form" className="flex-1 overflow-y-auto p-4 lg:p-6">
               {/* sr-only h1 gives screen readers and SEO an accessible heading without affecting layout */}
@@ -219,6 +276,71 @@ export function EditorShell({ initialData, initialMtime, slug, allSlugs, bootstr
           commands={paletteCommands}
         />
       </div>
+      <ConfirmDialog
+        open={pendingSwitch !== null}
+        title="Unsaved changes"
+        message={
+          switchBlockedBy === 'demo'
+            ? 'This demo never writes to disk, so these changes cannot be saved. Download the YAML first if you want to keep them.'
+            : switchBlockedBy === 'invalid'
+              ? 'These changes cannot be saved yet because the CV is not valid. Fix the error first, or discard the changes and switch.'
+              : switchBlockedBy === 'conflict'
+                ? 'This file changed on disk, so saving is on hold until the conflict is resolved. Resolve it first, or discard your changes and switch.'
+                : 'Switching now would lose changes that have not reached the disk yet.'
+        }
+        confirmLabel={switchBlockedBy === null ? 'Save and switch' : 'Discard and switch'}
+        tone={switchBlockedBy === null ? 'default' : 'danger'}
+        {...(switchBlockedBy === 'invalid'
+          ? {
+              secondaryLabel: 'Go to the error',
+              onSecondary: () => {
+                const firstErrorTab = firstTabWithError(form.formState.errors);
+                if (firstErrorTab) setActiveTab(firstErrorTab);
+                setPendingSwitch(null);
+              },
+            }
+          : switchBlockedBy === 'conflict'
+            ? {
+                secondaryLabel: 'Resolve conflict',
+                onSecondary: () => {
+                  setConflictDismissed(false);
+                  setPendingSwitch(null);
+                },
+              }
+            : switchBlockedBy === 'demo'
+              ? // The confirm button already reads "Discard and switch" here;
+                // a secondary saying the same thing twice is just noise.
+                {}
+              : {
+                  secondaryLabel: 'Discard and switch',
+                  onSecondary: () => {
+                    const target = pendingSwitch;
+                    setPendingSwitch(null);
+                    if (target) router.push(cvRoute(target, demo));
+                  },
+                })}
+        onConfirm={async () => {
+          const target = pendingSwitch;
+          if (!target) return;
+          if (switchBlockedBy !== null) {
+            // Nothing to save — this button is "discard and switch" here.
+            setPendingSwitch(null);
+            router.push(cvRoute(target, demo));
+            return;
+          }
+          const ok = await autosave.saveNow(form.getValues());
+          if (!ok) {
+            // A 409 opens the conflict modal on top of this one; two focus
+            // traps fighting is worse than asking the user to switch again
+            // after resolving. Every other failure keeps its own indicator.
+            setPendingSwitch(null);
+            return;
+          }
+          setPendingSwitch(null);
+          router.push(cvRoute(target, demo));
+        }}
+        onCancel={() => setPendingSwitch(null)}
+      />
       {conflict && !conflictDismissed && (
         <>
           <ConflictModal
@@ -228,7 +350,11 @@ export function EditorShell({ initialData, initialMtime, slug, allSlugs, bootstr
             isFormDirty={form.formState.isDirty}
             onReload={(data, mtime) => {
               form.reset(data);
-              autosave.expectedMtimeRef.current = mtime;
+              // Tell the hook the conflict is resolved: without it the effect
+              // writes the freshly loaded server state straight back, and the
+              // unsaved-changes guard keeps reporting work that no longer
+              // exists.
+              autosave.markResolved(data, mtime);
               // Reload resolved the conflict — clear it (resumes autosave).
               setConflict(null);
               setConflictDismissed(false);
@@ -257,7 +383,7 @@ export function EditorShell({ initialData, initialMtime, slug, allSlugs, bootstr
                   return;
                 }
                 const body = (await res.json()) as { mtime: number };
-                autosave.expectedMtimeRef.current = body.mtime;
+                autosave.markResolved(form.getValues(), body.mtime);
                 // Successful overwrite resolves the conflict — resume autosave.
                 setConflict(null);
                 setConflictDismissed(false);

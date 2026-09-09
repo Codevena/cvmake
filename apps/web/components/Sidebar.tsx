@@ -17,21 +17,32 @@ export function Sidebar(_props: Props) {
   const { control, setValue, getValues } = useFormContext<CVData>();
   const templateId = useWatch({ control, name: 'rendering.template' });
 
-  // Template-switch effect: reset palette if not present in new template
-  const prevRef = useRef(templateId);
+  // Keep `rendering.palette` valid for the current template.
+  //
+  // This used to run only on a template SWITCH, which left the case the whole
+  // check exists for untouched: a stored CV whose palette no longer exists.
+  // renderCV silently falls back to palettes[0] for an unknown id, so such a
+  // file rendered in colours nobody asked for, with HTTP 200 and exit 0.
+  //
+  // The two cases differ on purpose:
+  //  - switch: any palette that does not belong to the new template is replaced,
+  //    including an unset one, and the change is the user's (shouldDirty).
+  //  - first render: only a value that is present AND invalid is healed, and it
+  //    is NOT marked dirty. Marking it would flag the form as changed without
+  //    the user touching anything, which the unsaved-changes guard would then
+  //    report as pending work — a phantom state.
+  const prevRef = useRef<string | undefined>(undefined);
   useEffect(() => {
-    if (prevRef.current === templateId) return;
-    const tpl = getTemplate(templateId);
-    if (tpl) {
-      const current = getValues('rendering.palette');
-      if (!tpl.palettes.some((p) => p.id === current)) {
-        const nextId = tpl.palettes[0]?.id;
-        if (nextId !== undefined) {
-          setValue('rendering.palette', nextId, { shouldDirty: true });
-        }
-      }
-    }
+    const isSwitch = prevRef.current !== undefined && prevRef.current !== templateId;
     prevRef.current = templateId;
+    const tpl = getTemplate(templateId);
+    if (!tpl) return;
+    const current = getValues('rendering.palette');
+    if (!isSwitch && current === undefined) return;
+    if (tpl.palettes.some((p) => p.id === current)) return;
+    const nextId = tpl.palettes[0]?.id;
+    if (nextId === undefined) return;
+    setValue('rendering.palette', nextId, { shouldDirty: isSwitch });
   }, [templateId, setValue, getValues]);
 
   const templates = listTemplates();

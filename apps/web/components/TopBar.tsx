@@ -1,6 +1,4 @@
 'use client';
-// ConfirmDialog is provided by Agent 5 — import will resolve once that file lands.
-import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { track } from '@/lib/analytics';
 import { cvRoute } from '@/lib/cv-route';
 import { exportPdf } from '@/lib/export-pdf';
@@ -34,6 +32,24 @@ interface Props {
   onOpenPalette: () => void;
   isDemo: boolean;
   /**
+   * Asks the shell to switch CVs. The shell owns the decision because it holds
+   * the autosave state; this component used to make it locally and only in
+   * demo mode, which left every non-demo switch unguarded — and the command
+   * palette bypassed it entirely.
+   */
+  onRequestCvSwitch: (slug: string) => void;
+  /**
+   * The export failure message, owned by the shell.
+   *
+   * It lives there rather than here because there are TWO ways to start an
+   * export — this button and the command palette — and only one of them used
+   * to report anything. A failure from the palette produced an unhandled
+   * rejection and no banner at all, which is worse than the silent no-op the
+   * catch was added to fix.
+   */
+  exportError: string | null;
+  onExportError: (message: string | null) => void;
+  /**
    * Mobile-only Edit/Preview toggle state. Optional so tests (which render
    * at desktop width where the toggle is `lg:hidden` anyway) don't have to
    * provide it. Default 'edit' is the safe choice if a caller forgets.
@@ -51,6 +67,9 @@ export function TopBar({
   lastSavedAt,
   onOpenPalette,
   isDemo,
+  onRequestCvSwitch,
+  exportError,
+  onExportError,
   viewMode = 'edit',
   onSetViewMode = () => {
     // no-op fallback for tests / callers that don't need the toggle
@@ -59,17 +78,11 @@ export function TopBar({
   const { getValues, formState } = useFormContext<CVData>();
   const router = useRouter();
   const [exporting, setExporting] = useState(false);
-  // C11: intercept CV switch in demo mode when there are unsaved changes.
-  const [pendingSwitch, setPendingSwitch] = useState<{ targetSlug: string } | null>(null);
 
   function handleCvSwitch(newSlug: string) {
     if (newSlug === slug) return;
-    if (isDemo && formState.isDirty) {
-      setPendingSwitch({ targetSlug: newSlug });
-    } else {
-      track('editor.locale_switch', { from: slug, to: newSlug });
-      router.push(cvRoute(newSlug, isDemo));
-    }
+    track('editor.locale_switch', { from: slug, to: newSlug });
+    onRequestCvSwitch(newSlug);
   }
 
   async function handleExportPdf() {
@@ -82,7 +95,12 @@ export function TopBar({
       palette: values.rendering?.palette,
     });
     try {
+      onExportError(null);
       await exportPdf({ data: values, slug });
+    } catch (err) {
+      // Without this the rejection was unhandled and the failure was invisible:
+      // the button flipped back to its label and nothing else happened.
+      onExportError(err instanceof Error ? err.message : 'The export failed.');
     } finally {
       setExporting(false);
     }
@@ -173,21 +191,17 @@ export function TopBar({
           </button>
         </div>
       </header>
-      {/* C11: Confirm dialog shown when switching CVs in demo mode with unsaved changes */}
-      <ConfirmDialog
-        open={!!pendingSwitch}
-        title="Discard unsaved changes?"
-        message="Your local demo edits will be lost."
-        confirmLabel="Discard"
-        tone="danger"
-        onConfirm={() => {
-          if (pendingSwitch) {
-            router.push(cvRoute(pendingSwitch.targetSlug, isDemo));
-          }
-          setPendingSwitch(null);
-        }}
-        onCancel={() => setPendingSwitch(null)}
-      />
+      {exportError && (
+        <div
+          role="alert"
+          className="flex items-start justify-between gap-4 border-b border-error bg-error/10 px-4 py-2 text-sm text-error"
+        >
+          <span>{exportError}</span>
+          <button type="button" className="shrink-0 underline" onClick={() => onExportError(null)}>
+            Dismiss
+          </button>
+        </div>
+      )}
     </>
   );
 }

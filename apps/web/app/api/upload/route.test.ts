@@ -1,6 +1,7 @@
 import { mkdir, mkdtemp, readFile, readdir, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
+import sharp from 'sharp';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 async function post(form: FormData) {
@@ -28,15 +29,37 @@ describe('POST /api/upload', () => {
     const form = new FormData();
     form.append('file', new Blob([fixture], { type: 'image/jpeg' }), 'p.jpg');
     form.append('slug', 'cv.de');
-    form.append('crop', JSON.stringify({ x: 0, y: 0, width: 100, height: 100 }));
-    form.append('aspect', '1:1');
+    // A 3:4 crop, not a square one: with a square the output is 600x600 either
+    // way, so the assertion below could not tell whether the route forwards the
+    // crop at all. Removing `crop:` from the processPhoto call leaves every
+    // output at 600x600 and a square-crop test stays green.
+    form.append('crop', JSON.stringify({ x: 0, y: 0, width: 300, height: 400 }));
+    form.append('aspect', '3:4');
     const res = await post(form);
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.webp).toBe('/photos/cv.de.webp');
     expect(body.jpg).toBe('/photos/cv.de.jpg');
+    const written = await sharp(path.join(cwd, 'public', 'photos', 'cv.de.jpg')).metadata();
+    expect(`${written.width}x${written.height}`).toBe('450x600');
     const stagingFiles = await readdir(path.join(cwd, 'data', 'cvs', 'photos'));
     expect(stagingFiles).toEqual([]);
+  });
+
+  it('400 when the aspect field is missing', async () => {
+    // The value is deliberately unused — the output ratio comes from the crop
+    // rectangle — but the field stays REQUIRED. Without this case the unused
+    // variable is what a future cleanup deletes, and a client that omits the
+    // field would silently start getting 200 instead of 400.
+    const fixture = await readFile(
+      path.resolve(__dirname, '../../../../../packages/core/test/fixtures/photo-input.jpg'),
+    );
+    const form = new FormData();
+    form.append('file', new Blob([fixture], { type: 'image/jpeg' }), 'p.jpg');
+    form.append('slug', 'cv.de');
+    form.append('crop', JSON.stringify({ x: 0, y: 0, width: 100, height: 100 }));
+    const res = await post(form);
+    expect(res.status).toBe(400);
   });
 
   it('400 bei ungültigem Slug', async () => {

@@ -1,7 +1,9 @@
 import { mkdtempSync, rmSync } from 'node:fs';
+import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
+import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { embedPhoto } from '../src/photo-embed.js';
 
 describe('embedPhoto', () => {
@@ -190,5 +192,128 @@ describe('embedPhoto', () => {
       const out = await embedPhoto(data, path.join(import.meta.dirname, 'fixtures'));
       expect(out.personal.photo).toMatch(/^data:image\/jpeg;base64,/);
     });
+  });
+});
+
+// Uploaded photos live flat under data/cvs/photos/, so `/photos/<name>`
+// addresses anyone's file. A caller that serves several people has to say whose
+// document this is — and a caller that CANNOT say must be refused, not waved
+// through with the single-user behaviour.
+describe('photo ownership for multi-user callers', () => {
+  // A real tree, because the earlier version of these cases asserted
+  // `undefined` against a fixture directory that has no `public/photos` at all
+  // — every case passed for the wrong reason, and the positive control could
+  // not have failed. Here the bytes are really on disk, so "refused" and
+  // "embedded" are distinguishable outcomes.
+  let root: string;
+  const withPhoto = (photo: string) => ({
+    meta: { locale: 'de' as const },
+    personal: { firstName: 'A', lastName: 'B', photo, contacts: {} },
+    experience: [],
+    education: [],
+    rendering: { template: 'x' },
+  });
+  const png = Buffer.from(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+    'base64',
+  );
+
+  beforeEach(async () => {
+    root = await mkdtemp(path.join(tmpdir(), 'cvmake-owner-'));
+    // `public/photos` is what the editor serves and what `/photos/<name>`
+    // resolves to; `data/cvs/photos` is the upload staging directory a relative
+    // `photos/<name>` resolves to. Both are reachable from a CV document, and
+    // both therefore need the same owner rule.
+    await mkdir(path.join(root, 'public', 'photos'), { recursive: true });
+    await mkdir(path.join(root, 'data', 'cvs', 'photos'), { recursive: true });
+    for (const f of ['cv.de.png', 'cv.png', 'someone-else.png']) {
+      await writeFile(path.join(root, 'public', 'photos', f), png);
+      await writeFile(path.join(root, 'data', 'cvs', 'photos', f), png);
+    }
+    // The traversal targets have to EXIST, or a refusal is indistinguishable
+    // from a missing file — which is exactly why the previous version of these
+    // tests proved nothing.
+    await mkdir(path.join(root, 'public', 'photos', 'sub'), { recursive: true });
+    await writeFile(path.join(root, 'public', 'photos', 'sub', 'cv.de.png'), png);
+  });
+  afterEach(async () => {
+    await rm(root, { recursive: true, force: true });
+  });
+
+  const cvDir = () => path.join(root, 'data', 'cvs');
+  const OWNER = { kind: 'slug' as const, slug: 'cv.de' };
+
+  it('embeds the owner’s own photo', async () => {
+    // The positive control. Without it every refusal below could be a missing
+    // file rather than a refusal.
+    const out = await embedPhoto(withPhoto('/photos/cv.de.png'), cvDir(), OWNER);
+    expect(out.personal.photo?.startsWith('data:image/') ?? false).toBe(true);
+  });
+
+  it('refuses a photo belonging to another slug', async () => {
+    const out = await embedPhoto(withPhoto('/photos/someone-else.png'), cvDir(), OWNER);
+    expect(out.personal.photo).toBeUndefined();
+  });
+
+  it('refuses the relative spelling of the same file', async () => {
+    // `photos/<someone-else>.jpg` is the exact string the audit finding names.
+    // It resolves through the OTHER branch, against the upload staging
+    // directory, and guarding only the absolute `/photos/` form moved the hole
+    // instead of closing it.
+    const out = await embedPhoto(withPhoto('photos/someone-else.png'), cvDir(), OWNER);
+    expect(out.personal.photo).toBeUndefined();
+  });
+
+  it('embeds the owner’s own photo through the relative spelling too', async () => {
+    const out = await embedPhoto(withPhoto('photos/cv.de.png'), cvDir(), OWNER);
+    expect(out.personal.photo?.startsWith('data:image/') ?? false).toBe(true);
+  });
+
+  it.each([
+    ['/photos/cv.de./../someone-else.png', 'leave and re-enter the directory'],
+    ['/photos/cv.de.x/../someone-else.png', 'the same with a deeper stem'],
+    ['/photos/sub/cv.de.png', 'a subdirectory that ends in the right name'],
+  ])('refuses %s (%s)', async (photo) => {
+    // The prefix test used to run on the RAW remainder while the containment
+    // guard ran after normalisation, so a traversal satisfied both: the string
+    // starts with `cv.de.`, and path.join resolves it back inside photos/.
+    // Measured through the real route before the fix: 200, with the other
+    // person's image in the PDF.
+    const out = await embedPhoto(withPhoto(photo), cvDir(), OWNER);
+    expect(out.personal.photo).toBeUndefined();
+  });
+
+  it('accepts any extension, as long as the stem is the owner', async () => {
+    // The counter-probe for the rule above: the check is on the stem, so a
+    // different image format must not become an accidental refusal.
+    await writeFile(path.join(root, 'public', 'photos', 'cv.de.webp'), png);
+    const out = await embedPhoto(withPhoto('/photos/cv.de.webp'), cvDir(), OWNER);
+    expect(out.personal.photo?.startsWith('data:image/') ?? false).toBe(true);
+  });
+
+  it('does not let a dotted slug reach a longer one', async () => {
+    // Slugs may contain dots, so `startsWith(slug + '.')` lets the owner of
+    // `cv` read `cv.de.png`. The extension is stripped exactly once and the
+    // remainder must equal the slug.
+    const out = await embedPhoto(withPhoto('/photos/cv.de.png'), cvDir(), {
+      kind: 'slug',
+      slug: 'cv',
+    });
+    expect(out.personal.photo).toBeUndefined();
+  });
+
+  it('refuses every /photos/ value when the owner cannot be established', async () => {
+    // The request that omits its slug is exactly the one the restriction has to
+    // catch; falling back to "unrestricted" here would leave the hole open.
+    const out = await embedPhoto(withPhoto('/photos/cv.de.png'), cvDir(), { kind: 'none' });
+    expect(out.personal.photo).toBeUndefined();
+  });
+
+  it('leaves the single-user caller alone', async () => {
+    // The CLI has no tenants. Passing no owner keeps the previous behaviour —
+    // and this now really embeds, rather than passing because the file is
+    // missing.
+    const out = await embedPhoto(withPhoto('/photos/someone-else.png'), cvDir());
+    expect(out.personal.photo?.startsWith('data:image/') ?? false).toBe(true);
   });
 });

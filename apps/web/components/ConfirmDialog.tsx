@@ -10,6 +10,13 @@ interface Props {
   cancelLabel?: string;
   /** 'danger' renders the confirm button in a destructive red style */
   tone?: 'danger' | 'default';
+  /**
+   * Optional third action, between Cancel and Confirm. Used where "confirm or
+   * cancel" is a false choice — a switch that cannot be saved needs a way to
+   * reach the problem, not just a nicer way to lose the work.
+   */
+  secondaryLabel?: string | undefined;
+  onSecondary?: (() => void) | undefined;
   onConfirm: () => void;
   onCancel: () => void;
 }
@@ -27,6 +34,8 @@ export function ConfirmDialog({
   confirmLabel = 'Confirm',
   cancelLabel = 'Cancel',
   tone = 'default',
+  secondaryLabel,
+  onSecondary,
   onConfirm,
   onCancel,
 }: Props) {
@@ -66,6 +75,15 @@ export function ConfirmDialog({
           >
             {cancelLabel}
           </button>
+          {secondaryLabel && onSecondary && (
+            <button
+              type="button"
+              className="rounded border border-border px-3 py-1 text-sm hover:bg-elevated"
+              onClick={onSecondary}
+            >
+              {secondaryLabel}
+            </button>
+          )}
           <button type="button" className={confirmBtnClass} onClick={onConfirm}>
             {confirmLabel}
           </button>

@@ -62,6 +62,12 @@
   height: 100pt;
   border-radius: 50%;
   object-fit: cover;
+  /* Portraits are taller than the square frame, so cover crops vertically.
+     Anchor at the top: a CV photo puts the head high, and centring would take
+     equal bites off the crown and the chin. No effect on square or landscape
+     images. (noir and magazine already do this; editorial deliberately does
+     not, because its frame is a wide strip, not a square.) */
+  object-position: center top;
 }
 
 /* ─── Section ───────────────────────────────────────────────────────────── */

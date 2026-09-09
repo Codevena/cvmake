@@ -5,6 +5,7 @@ import { BulletListEditor, DateRangeInput, Input } from '@codevena/cvmake-ui';
 import { useState } from 'react';
 import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
 import { ConfirmDialog } from '../ConfirmDialog';
+import { PeriodField } from './PeriodField';
 
 const t = {
   heading: 'Education',
@@ -97,34 +98,10 @@ export function EducationSection() {
                 />
               )}
             />
-            <Controller
-              control={control}
-              name={`education.${idx}.startDate`}
-              render={({ field: startField }) => (
-                <Controller
-                  control={control}
-                  name={`education.${idx}.endDate`}
-                  render={({ field: endField }) => {
-                    // Bridge schema `{ startDate, endDate? }` (string/undef)
-                    // to <DateRangeInput> `{ start, end: string | null }`.
-                    // Convention: undefined endDate (schema) === current
-                    // (end:null in DateRangeInput).
-                    const endRaw = endField.value as string | undefined;
-                    const end: string | null = endRaw === undefined ? null : endRaw;
-                    return (
-                      <DateRangeInput
-                        label={t.period}
-                        value={{ start: startField.value ?? '', end }}
-                        onChange={(v) => {
-                          startField.onChange(v.start);
-                          // null (current) → undefined in form state.
-                          endField.onChange(v.end === null ? undefined : v.end);
-                        }}
-                      />
-                    );
-                  }}
-                />
-              )}
+            <PeriodField
+              startName={`education.${idx}.startDate`}
+              endName={`education.${idx}.endDate`}
+              label={t.period}
             />
           </div>
           <Controller

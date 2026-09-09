@@ -68,7 +68,7 @@ languages:
 
 rendering:
   template: classic-serif         # run \`cvmake list-templates\` to see all 12
-  # palette: classic-serif-default
+  # palette: classic-grey        # cvmake list-templates shows the valid names
 `;
 
 const STARTER_DE = `# cvmake — dein Lebenslauf als eine YAML-Datei.
@@ -131,7 +131,7 @@ languages:
 
 rendering:
   template: classic-serif         # \`cvmake list-templates\` zeigt alle 12
-  # palette: classic-serif-default
+  # palette: classic-grey        # cvmake list-templates zeigt die gültigen Namen
 `;
 
 /**

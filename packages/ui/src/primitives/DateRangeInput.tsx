@@ -1,4 +1,4 @@
-import { type ChangeEvent, useId } from 'react';
+import { type ChangeEvent, useId, useRef, useState } from 'react';
 
 export interface DateRangeValue {
   start: string;
@@ -25,9 +25,14 @@ function parseYM(ym: string): { year: string; month: string } {
   return { year, month };
 }
 
+/**
+ * A bare year is a valid CV date (`CvDateSchema` accepts `YYYY`), so a year
+ * alone is emitted rather than discarded. A month without a year is not a date
+ * and stays empty — the display keeps it, see the partial state below.
+ */
 function joinYM(year: string, month: string): string {
-  if (!year || !month) return '';
-  return `${year}-${month}`;
+  if (!year) return '';
+  return month ? `${year}-${month}` : year;
 }
 
 const FIELD_BASE =
@@ -54,18 +59,53 @@ export function DateRangeInput(props: DateRangeInputProps): JSX.Element {
   const years: number[] = [];
   for (let y = endYear; y >= startYear; y--) years.push(y);
 
-  const start = parseYM(value.start);
+  // The selects show LOCAL state, not state derived from `value`.
+  //
+  // Without this, a half-made selection cannot exist: picking a month on an
+  // empty date produced `joinYM('', '03') === ''`, the parent stored '', and
+  // the select re-derived itself back to empty — the choice vanished as it was
+  // made, so a new entry could never be given a start date at all.
+  //
+  // The local state follows `value` again whenever the parent sends something
+  // OTHER than what was last emitted. The case it cannot see — the parent
+  // echoing back exactly what was emitted — is handled outside the component:
+  // the sections render each entry under `key={f.id}` from useFieldArray, and
+  // react-hook-form issues new ids on `reset()`, so a conflict reload remounts
+  // and the local state goes with it. Do not switch those keys to an index.
   const isCurrent = value.end === null;
-  const end = isCurrent ? { year: '', month: '' } : parseYM(value.end ?? '');
+  const lastEmitted = useRef<{ start: string; end: string | null }>(value);
+  const [partial, setPartial] = useState(() => ({
+    start: parseYM(value.start),
+    end: parseYM(value.end ?? ''),
+  }));
 
+  if (value.start !== lastEmitted.current.start || value.end !== lastEmitted.current.end) {
+    lastEmitted.current = value;
+    setPartial({ start: parseYM(value.start), end: parseYM(value.end ?? '') });
+  }
+
+  const start = partial.start;
+  const end = isCurrent ? { year: '', month: '' } : partial.end;
+
+  const emit = (next: DateRangeValue): void => {
+    lastEmitted.current = next;
+    onChange(next);
+  };
   const setStart = (year: string, month: string): void => {
-    onChange({ start: joinYM(year, month), end: value.end });
+    setPartial((p) => ({ ...p, start: { year, month } }));
+    emit({ start: joinYM(year, month), end: value.end });
   };
   const setEnd = (year: string, month: string): void => {
-    onChange({ start: value.start, end: joinYM(year, month) });
+    setPartial((p) => ({ ...p, end: { year, month } }));
+    emit({ start: value.start, end: joinYM(year, month) });
   };
   const toggleCurrent = (e: ChangeEvent<HTMLInputElement>): void => {
-    onChange({ start: value.start, end: e.target.checked ? null : '' });
+    // Unchecking emits `end: ''`, so the local state has to be cleared with it.
+    // Leaving it alone left the two selects showing the previous end date while
+    // the document held none — and the resync above cannot repair that, because
+    // `emit` updates `lastEmitted` before the parent re-renders.
+    if (!e.target.checked) setPartial((p) => ({ ...p, end: { year: '', month: '' } }));
+    emit({ start: value.start, end: e.target.checked ? null : '' });
   };
 
   const internalError =

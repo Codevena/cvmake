@@ -28,6 +28,9 @@ describe('<TopBar />', () => {
             onRetry={() => {}}
             onOpenPalette={() => {}}
             isDemo={false}
+            onRequestCvSwitch={() => {}}
+            exportError={null}
+            onExportError={() => {}}
           />
         </FormProvider>
       );
@@ -50,6 +53,9 @@ describe('<TopBar />', () => {
             onRetry={() => {}}
             onOpenPalette={onOpenPalette}
             isDemo={false}
+            onRequestCvSwitch={() => {}}
+            exportError={null}
+            onExportError={() => {}}
           />
         </FormProvider>
       );

@@ -35,3 +35,24 @@ describe('TabNav', () => {
     expect(onSelect).toHaveBeenCalledWith('skills' satisfies TabId);
   });
 });
+
+describe('<TabNav /> error marking', () => {
+  it('marks a tab whose section fails validation, for sight and for assistive tech', () => {
+    // Without this the editor can say "fix errors to save" while every tab
+    // looks identical — and in the skills case the user has not touched a
+    // single field, so there is nothing to retrace.
+    render(<TabNav active="personal" onSelect={() => {}} errorTabs={['experience']} />);
+    const bad = screen.getByRole('tab', { name: /Experience/ });
+    expect(bad).toHaveAttribute('aria-invalid', 'true');
+    expect(bad).toHaveTextContent('has errors');
+    const good = screen.getByRole('tab', { name: /^Personal/ });
+    expect(good).not.toHaveAttribute('aria-invalid');
+  });
+
+  it('marks nothing when the form is valid', () => {
+    render(<TabNav active="personal" onSelect={() => {}} />);
+    for (const tab of screen.getAllByRole('tab')) {
+      expect(tab).not.toHaveAttribute('aria-invalid');
+    }
+  });
+});

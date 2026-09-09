@@ -1,4 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;1,9..144,400;1,9..144,700&family=Inter:wght@400;500;600&display=swap");
 @import "../shared/reset.css";
 @import "../shared/print.css";
 
@@ -51,6 +50,12 @@
   width: 160pt;
   height: 160pt;
   object-fit: cover;
+  /* Portraits are taller than the square frame, so cover crops vertically.
+     Anchor at the top: a CV photo puts the head high, and centring would take
+     equal bites off the crown and the chin. No effect on square or landscape
+     images. (noir and magazine already do this; editorial deliberately does
+     not, because its frame is a wide strip, not a square.) */
+  object-position: center top;
   display: block;
   /* Pull left to overlap slightly into main column */
   margin-left: -12pt;

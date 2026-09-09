@@ -70,11 +70,42 @@ function isSafePhotoValue(v: string): boolean {
   return true;
 }
 
+const HTTP_SCHEMES = new Set(['http:', 'https:']);
+
+/**
+ * `website` is rendered as a link, so a `javascript:` or `data:` value is a
+ * live hazard in the browser preview and in any HTML export. Restrict it to
+ * http(s) — `mailto:` included, since the address has its own field.
+ *
+ * The parser decides, not a regex on the raw string: `.url()` has already
+ * accepted the value as a URL, so what matters is what a URL parser resolves
+ * it to. But the parser must be caught. zod runs this refinement even when
+ * `.url()` has ALREADY failed, and `new URL('')` throws a TypeError straight
+ * out of `safeParse` — which would crash the editor's resolver on every
+ * keystroke that empties the field, and turn a 422 into an unhandled 500 in
+ * the save and export routes.
+ *
+ * Returning true for an unparseable value is safe rather than lax: in zod
+ * 3.23.8 `.url()` IS `new URL()` in a try/catch, so the set reaching this
+ * catch is exactly the set `.url()` already rejected. It also keeps one error
+ * message per problem instead of two. (zod 4's `z.url()` is regex-based —
+ * revisit this reasoning if the dependency moves.)
+ */
+function isHttpUrl(v: string): boolean {
+  let u: URL;
+  try {
+    u = new URL(v);
+  } catch {
+    return true;
+  }
+  return HTTP_SCHEMES.has(u.protocol);
+}
+
 export const ContactsSchema = z
   .object({
     email: z.string().email().optional(),
     phone: z.string().optional(),
-    website: z.string().url().optional(),
+    website: z.string().url().refine(isHttpUrl, 'website must be an http(s) URL').optional(),
     github: HandleSchema.optional(),
     linkedin: HandleSchema.optional(),
     location: z.string().optional(),
@@ -172,10 +203,56 @@ export const RenderingSchema = z
       .string()
       .regex(/^#[0-9a-f]{6}$/i)
       .optional(),
-    sectionOrder: z.array(z.string()).optional(),
+    // The refine sits on the ARRAY, not on the object: on the object it would
+    // turn RenderingSchema into a ZodEffects and report the error at
+    // `rendering` instead of `rendering.sectionOrder`, which the editor cannot
+    // attach to a field.
+    sectionOrder: z
+      .array(z.string())
+      .refine((v) => new Set(v).size === v.length, 'sectionOrder must not contain duplicates')
+      .optional(),
     hiddenSections: z.array(z.string()).optional(),
   })
   .strict();
+
+/**
+ * An entirely empty skills object means "no skills section", and is normalised
+ * away rather than rejected.
+ *
+ * The editor registers `skills.stack` as soon as the Skills tab is opened, which
+ * leaves `skills: {}` behind — the form then fails validation although the user
+ * has not touched a single field, autosave stops, PDF export greys out, and
+ * nothing says where the problem is. Treating that shape as absent removes the
+ * dead end at its source.
+ *
+ * A HALF-filled section is still rejected on purpose: a freshly added category
+ * with no skills in it is caught by the `.min(1)` on the array, so the value
+ * never reaches disk. (The refusal comes from the server, not from the form —
+ * `SkillsSection` sets the value without `shouldValidate`, so the client keeps
+ * reporting the form as valid and the save is rejected with 422, which is what
+ * marks the field and the tab.)
+ *
+ * What this must NOT do is swallow a defect. `!Array.isArray(s.stack)` is true
+ * for "absent" but equally for "present and wrong", so an earlier version made
+ * `stack: 'TypeScript'` (a scalar where a list belongs — the most common
+ * hand-written YAML mistake), `stacks: [...]` (a plural typo), `stack: 42` and
+ * `skills: ['TS']` all parse successfully with the section silently deleted:
+ * a PDF with no skills and exit 0, the exact failure this release removed from
+ * the palette path. An unknown key or a wrong type is a defect in the file and
+ * has to reach the schema, which names the field.
+ */
+function normaliseSkills(v: unknown): unknown {
+  if (v === null || typeof v !== 'object' || Array.isArray(v)) return v;
+  const s = v as Record<string, unknown>;
+  if (Object.keys(s).some((k) => k !== 'stack' && k !== 'categorized')) return v;
+  const stackEmpty = s.stack === undefined || (Array.isArray(s.stack) && s.stack.length === 0);
+  const cat = s.categorized;
+  const catsEmpty =
+    cat === undefined ||
+    cat === null ||
+    (typeof cat === 'object' && !Array.isArray(cat) && Object.keys(cat).length === 0);
+  return stackEmpty && catsEmpty ? undefined : v;
+}
 
 export const CVDataSchema = z
   .object({
@@ -189,7 +266,7 @@ export const CVDataSchema = z
     summary: z.string().optional(),
     experience: z.array(ExperienceItemSchema),
     education: z.array(EducationItemSchema),
-    skills: SkillsSchema.optional(),
+    skills: z.preprocess(normaliseSkills, SkillsSchema.optional()),
     languages: z.array(LanguageItemSchema).optional(),
     customSections: z.array(CustomSectionSchema).optional(),
     rendering: RenderingSchema,

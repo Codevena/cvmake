@@ -45,6 +45,15 @@ export function getPreviewBootstrap(): PreviewBootstrap {
     } catch {
       // Template ships without dedicated styles.css — leave empty.
     }
+    // The vendored @font-face blocks are deliberately NOT inlined here.
+    //
+    // This object is a prop on a client component, so all of it is serialised
+    // into every editor page load. With the fonts inlined it went from ~57 KB
+    // to 2.12 MB — and eleven twelfths of that is typefaces for templates the
+    // viewer is not looking at. The preview pulls the faces it needs from
+    // `/template-fonts/<id>.css` instead, one template at a time and cached by
+    // the browser; the PDF path never touches this object at all and composes
+    // its CSS with `loadTemplateCss` on the server.
     templates[t.meta.id] = { css, meta: t.meta };
   }
   cached = { resetCss, printCss, templates };

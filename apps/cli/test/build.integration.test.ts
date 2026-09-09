@@ -86,4 +86,76 @@ describe('runBuild integration', () => {
 
     await rm(out, { recursive: true });
   });
+
+  // A palette that does not exist used to render in the template's default
+  // colours and exit 0 — the check existed but guarded only the --palette flag,
+  // never the value in the YAML, which is where it actually comes from.
+  describe('palette validation', () => {
+    async function buildWithPalette(palette: string | undefined, template?: string) {
+      const out = await mkdtemp(path.join(tmpdir(), 'forq-cli-pal-'));
+      const source = path.resolve('../../data/cvs/example.de.yaml');
+      const yaml = await readFile(source, 'utf8');
+      // The example already carries a palette line, so replace it rather than
+      // adding a second one — duplicate mapping keys make the YAML parser throw
+      // before the palette check is ever reached.
+      const edited = palette
+        ? yaml.replace(/^(\s*)palette:.*$/m, `$1palette: ${palette}`)
+        : yaml.replace(/^\s*palette:.*\n/m, '');
+      const yamlPath = path.join(path.dirname(source), 'tmp-palette.yaml');
+      await writeFile(yamlPath, edited, 'utf8');
+      try {
+        await runBuild({
+          yaml: yamlPath,
+          output: path.join(out, 'cv.pdf'),
+          ...(template ? { template } : {}),
+        });
+        return { threw: false as const };
+      } catch (err) {
+        return { threw: true as const, message: (err as Error).message };
+      } finally {
+        await rm(yamlPath, { force: true });
+        await rm(out, { recursive: true, force: true });
+      }
+    }
+
+    it('refuses a palette that does not exist, and names the valid ones', async () => {
+      const result = await buildWithPalette('tech-dev-default');
+      expect(result.threw).toBe(true);
+      if (result.threw) {
+        expect(result.message).toContain('unknown palette');
+        // The origin matters: without it the user hunts for a --palette flag
+        // they never typed.
+        expect(result.message).toContain('rendering.palette');
+        expect(result.message).toContain('tech-ocean');
+      }
+    });
+
+    it('accepts a palette that exists', async () => {
+      expect((await buildWithPalette('tech-ocean')).threw).toBe(false);
+    });
+
+    it('accepts a CV without an explicit palette', async () => {
+      expect((await buildWithPalette(undefined)).threw).toBe(false);
+    });
+
+    // The `--template` override moves the CV to a template with a different
+    // palette list. Nothing in the repo exercised that branch before: every
+    // call above leaves `template` undefined, so the note path was unguarded
+    // and deleting the condition that shapes it changed no test at all.
+    it('notes, rather than refuses, a palette the --template override invalidated', async () => {
+      // `example.de.yaml` is tech-dev/tech-ocean: the palette is right for the
+      // file and wrong only because of the flag. Blaming the file here would
+      // send the user hunting through a YAML that is correct.
+      expect((await buildWithPalette('tech-ocean', 'modern-minimal')).threw).toBe(false);
+    });
+
+    it('still refuses a palette that exists in no template, even with --template', async () => {
+      // The guard for the line above: without the `validForOwnTemplate`
+      // condition this case is downgraded to the same note, and a CV naming a
+      // palette that exists nowhere renders in the wrong colours with exit 0.
+      const result = await buildWithPalette('BOGUS-pal', 'modern-minimal');
+      expect(result.threw).toBe(true);
+      if (result.threw) expect(result.message).toContain('unknown palette');
+    });
+  });
 });

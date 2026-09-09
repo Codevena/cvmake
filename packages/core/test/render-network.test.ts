@@ -75,13 +75,15 @@ describe('renderCsp', () => {
     const csp = renderCsp(DENY_REMOTE);
     expect(csp).toContain("default-src 'none'");
     expect(csp).toContain('img-src data:');
-    expect(csp).toContain("font-src 'none'");
+    // `data:` is allowed because the templates embed their vendored fonts that
+    // way; a data: URI carries no request, so this is not an egress path.
+    expect(csp).toContain('font-src data:');
     expect(csp).not.toContain('http');
   });
 
   it('names an allowed host in style-src and font-src when the policy has one', () => {
     const csp = renderCsp({ allowedHosts: ['fonts.example'] });
     expect(csp).toContain("style-src 'unsafe-inline' https://fonts.example");
-    expect(csp).toContain('font-src https://fonts.example');
+    expect(csp).toContain('font-src data: https://fonts.example');
   });
 });

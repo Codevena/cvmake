@@ -42,6 +42,13 @@ function writeInitialDoc(
   const doc = iframe.contentDocument;
   if (!doc) return null;
   doc.open();
+  // The font stylesheet is fetched, not inlined: shipping all twelve templates'
+  // faces inside the bootstrap prop made every editor page load 2.12 MB, of
+  // which eleven twelfths could never be used in that session. The href is
+  // absolute so <base> does not apply, and @font-face has no ordering rule —
+  // a stylesheet that arrives after the inline <style> blocks still takes
+  // effect, which is the whole reason the faces are not @imports.
+  //
   // <base href="/cv/"> makes relative photo paths from the YAML
   // (e.g. `photos/example-adam.webp`) resolve to `/cv/photos/...`, where
   // the editor serves fixture photos, regardless of the editor's own URL
@@ -56,6 +63,7 @@ function writeInitialDoc(
 <head>
 <meta charset="utf-8">
 <base href="/cv/">
+<link rel="stylesheet" href="/template-fonts/${encodeURIComponent(templateId)}.css">
 <style id="reset-css">${bootstrap.resetCss}</style>
 <style id="template-css">${tpl.css}</style>
 <style id="print-css">${bootstrap.printCss}</style>

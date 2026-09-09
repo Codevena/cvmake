@@ -69,7 +69,50 @@ function withoutPhoto(data: CVData): CVData {
  * values before a request reaches here. This is the second, independent half:
  * it holds even for callers that skip validation.
  */
-export async function embedPhoto(data: CVData, baseDir: string): Promise<CVData> {
+/**
+ * Who the document belongs to, for callers that serve more than one person.
+ *
+ * Uploaded photos all live flat under `data/cvs/photos/`, so `/photos/<name>`
+ * addresses any of them. A single-user caller (the CLI) has no tenants and
+ * passes nothing. A multi-user caller passes the owner — and when it cannot
+ * establish one, it passes `{ kind: 'none' }` rather than nothing: falling back
+ * to "unrestricted" would leave the hole open for exactly the request that
+ * omits its slug.
+ */
+export type PhotoOwner = { kind: 'slug'; slug: string } | { kind: 'none' };
+
+/**
+ * Does the RESOLVED path name the owner's own photo file?
+ *
+ * Two things here are load-bearing, and the first version of this check got
+ * both wrong.
+ *
+ * It runs on the resolved path, not on the raw string. A prefix test against
+ * the raw remainder is satisfied by a traversal that leaves and re-enters the
+ * directory — `example.de./../markus.jpg` starts with `example.de.` and
+ * `path.join` then resolves it back to `photos/markus.jpg`, which the
+ * containment guard happily accepts. The check has to see the same path the
+ * read will use.
+ *
+ * And the stem is compared for EQUALITY, not by prefix. Slugs may contain dots
+ * (`cv.de`, `example.en`), so `startsWith(slug + '.')` hands the owner of `cv`
+ * every file under that dot-prefix, `cv.de.jpg` included.
+ */
+function isOwnPhotoFile(filePath: string, dir: string, owner: PhotoOwner): boolean {
+  if (owner.kind !== 'slug') return false;
+  const resolved = path.resolve(filePath);
+  // A file directly in the photo directory — not in a subdirectory of it, and
+  // not somewhere else that merely happens to end in the right name.
+  if (path.dirname(resolved) !== path.resolve(dir)) return false;
+  const base = path.basename(resolved);
+  return base.slice(0, base.length - path.extname(base).length) === owner.slug;
+}
+
+export async function embedPhoto(
+  data: CVData,
+  baseDir: string,
+  owner?: PhotoOwner,
+): Promise<CVData> {
   const photo = data.personal.photo;
 
   // Nothing to embed. Dropping rather than returning as-is keeps the
@@ -103,9 +146,25 @@ export async function embedPhoto(data: CVData, baseDir: string): Promise<CVData>
     const rel = photo.replace(/^\/+/, '');
     filePath = path.join(publicDir, rel);
     allowedRoot = path.join(publicDir, 'photos');
+    if (owner !== undefined && !isOwnPhotoFile(filePath, allowedRoot, owner)) {
+      return withoutPhoto(data);
+    }
   } else {
     filePath = path.resolve(baseDir, photo);
     allowedRoot = path.resolve(baseDir);
+    // The same check on the OTHER way in. `photos/<name>` resolves under
+    // `<baseDir>/photos`, which is the upload staging directory — the very
+    // string the audit finding names ("photo: photos/<someone-else>.jpg").
+    // Guarding only the absolute `/photos/` spelling moved the hole rather
+    // than closing it.
+    const stagingRoot = path.resolve(baseDir, 'photos');
+    if (
+      owner !== undefined &&
+      isContained(filePath, stagingRoot) &&
+      !isOwnPhotoFile(filePath, stagingRoot, owner)
+    ) {
+      return withoutPhoto(data);
+    }
   }
 
   if (!isContained(filePath, allowedRoot)) {

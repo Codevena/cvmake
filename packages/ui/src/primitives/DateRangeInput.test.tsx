@@ -1,5 +1,6 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { DateRangeInput, type DateRangeValue } from './DateRangeInput.js';
 
@@ -70,5 +71,95 @@ describe('<DateRangeInput>', () => {
     for (const s of screen.getAllByRole('combobox')) {
       expect(s).not.toHaveAttribute('aria-invalid');
     }
+  });
+});
+
+// A new experience entry starts with an empty date, and the old component made
+// that state unreachable: whichever half was chosen first was discarded, so the
+// entry could never become valid.
+describe('partial entry', () => {
+  function Harness({ initial }: { initial: DateRangeValue }) {
+    const [value, setValue] = useState<DateRangeValue>(initial);
+    return (
+      <>
+        <DateRangeInput label="Period" value={value} onChange={setValue} />
+        <output data-testid="emitted">{JSON.stringify(value)}</output>
+      </>
+    );
+  }
+
+  const emitted = () => JSON.parse(screen.getByTestId('emitted').textContent ?? '{}');
+
+  it('keeps a month chosen before a year, and emits nothing yet', () => {
+    render(<Harness initial={{ start: '', end: '' }} />);
+    fireEvent.change(screen.getByLabelText('Start month'), { target: { value: '03' } });
+    // The choice survives on screen — this is what used to vanish.
+    expect(screen.getByLabelText('Start month')).toHaveValue('03');
+    // A month without a year is not a date, so nothing is emitted yet.
+    expect(emitted().start).toBe('');
+  });
+
+  it('completes to YYYY-MM once the year follows', () => {
+    render(<Harness initial={{ start: '', end: '' }} />);
+    fireEvent.change(screen.getByLabelText('Start month'), { target: { value: '03' } });
+    fireEvent.change(screen.getByLabelText('Start year'), { target: { value: '2020' } });
+    expect(emitted().start).toBe('2020-03');
+  });
+
+  it('emits a bare year immediately when the year comes first', () => {
+    // `CvDateSchema` accepts `YYYY`, so this is a valid date on its own and the
+    // entry becomes savable before the month is chosen.
+    render(<Harness initial={{ start: '', end: '' }} />);
+    fireEvent.change(screen.getByLabelText('Start year'), { target: { value: '2020' } });
+    expect(emitted().start).toBe('2020');
+    fireEvent.change(screen.getByLabelText('Start month'), { target: { value: '03' } });
+    expect(emitted().start).toBe('2020-03');
+  });
+
+  it('does the same for the end date', () => {
+    render(<Harness initial={{ start: '2019-01', end: '' }} />);
+    fireEvent.change(screen.getByLabelText('End month'), { target: { value: '07' } });
+    expect(screen.getByLabelText('End month')).toHaveValue('07');
+    fireEvent.change(screen.getByLabelText('End year'), { target: { value: '2021' } });
+    expect(emitted().end).toBe('2021-07');
+  });
+
+  it('clears the end selects when Current is unchecked again', () => {
+    // Checking Current emits `end: null`; unchecking emits `end: ''`. The local
+    // state has to follow, or the selects go on showing the old end date while
+    // the document holds none — a date the user can see and the PDF will not
+    // have. The resync at the top of the component cannot catch it, because
+    // `emit` writes `lastEmitted` first.
+    render(<Harness initial={{ start: '2019-01', end: '' }} />);
+    fireEvent.change(screen.getByLabelText('End month'), { target: { value: '07' } });
+    fireEvent.change(screen.getByLabelText('End year'), { target: { value: '2021' } });
+    expect(emitted().end).toBe('2021-07');
+
+    fireEvent.click(screen.getByLabelText('Current'));
+    expect(emitted().end).toBeNull();
+
+    fireEvent.click(screen.getByLabelText('Current'));
+    expect(emitted().end).toBe('');
+    expect(screen.getByLabelText('End month')).toHaveValue('');
+    expect(screen.getByLabelText('End year')).toHaveValue('');
+  });
+
+  it('follows a value that changes from outside', () => {
+    // The counter-probe: local state must not shadow a genuine external update.
+    function Outside() {
+      const [value, setValue] = useState<DateRangeValue>({ start: '2019-01', end: '' });
+      return (
+        <>
+          <DateRangeInput label="Period" value={value} onChange={setValue} />
+          <button type="button" onClick={() => setValue({ start: '2022-08', end: '' })}>
+            set
+          </button>
+        </>
+      );
+    }
+    render(<Outside />);
+    fireEvent.click(screen.getByRole('button', { name: 'set' }));
+    expect(screen.getByLabelText('Start month')).toHaveValue('08');
+    expect(screen.getByLabelText('Start year')).toHaveValue('2022');
   });
 });
