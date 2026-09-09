@@ -39,6 +39,7 @@ gate build pnpm build
 gate lint pnpm lint
 gate typecheck pnpm typecheck
 gate test-unit pnpm -r test:unit
+gate test-repo pnpm test:repo
 
 if [ "$QUICK" != "quick" ]; then
   # Needs Chromium: `pnpm --filter @codevena/cvmake-core exec puppeteer browsers install chrome`

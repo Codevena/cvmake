@@ -3,6 +3,7 @@ import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { shutdownPdfBrowser } from '@codevena/cvmake-core/pdf';
+import { bootstrapTemplates, listTemplates } from '@codevena/cvmake-templates';
 import { afterAll, describe, expect, it } from 'vitest';
 import { runBuild } from '../src/commands/build.js';
 
@@ -15,10 +16,19 @@ const pdfParse = require('pdf-parse/lib/pdf-parse.js') as PdfParseFn;
 
 afterAll(() => shutdownPdfBrowser());
 
-// Templates aimed at ATS-friendly output. An ATS parser reads the PDF's text
-// layer, so the foundational requirement is that the exported PDF carries real,
-// extractable text (not rasterised glyphs).
-const ATS_TEMPLATES = ['classic-serif', 'corporate', 'modern-minimal'];
+// EVERY registered template, taken from the registry rather than a hand-kept
+// list. An ATS parser reads the PDF's text layer, so the foundational
+// requirement is that the exported PDF carries real, extractable text and not
+// rasterised glyphs — and that requirement does not stop at the three templates
+// somebody once picked.
+//
+// It matters more since the fonts were vendored: seven templates now embed
+// subsetted woff2, and a bad subset produces a PDF that looks perfect and
+// extracts nothing. Deriving the list from the registry means a thirteenth
+// template is covered the day it is added, rather than the day someone
+// remembers this file.
+bootstrapTemplates();
+const ATS_TEMPLATES = listTemplates().map((t) => t.meta.id);
 
 const YAML = path.resolve('../../data/cvs/example.en.yaml');
 const COMPANIES = ['deliveroo', 'klarna', 'spotify', 'hubspot'];
