@@ -5,49 +5,108 @@ on:
     tags: ['v*.*.*']
 
 # All 4 @codevena/cvmake-* packages publish in lockstep on tag push.
-# The tag's semver becomes the published version — bump locally with
-# `pnpm -r --filter "@codevena/cvmake-{cli,core,schema,templates}" exec pnpm version <bump>`
-# then `git tag vX.Y.Z && git push --tags`. See README "Releasing" for the
-# full handoff.
 #
-# Auth model (audit security-supplychain.md M5):
-# - Uses npm Trusted Publishers via OIDC — no long-lived NPM_TOKEN secret
-#   needed. GitHub mints a short-lived OIDC token per run; npm verifies
-#   the audience and grants publish access for THIS workflow only.
-# - --provenance flag emits a signed provenance statement so npm shows a
-#   "✓ Provenance" badge on each package page (signed by GitHub Actions,
-#   visible to downstream consumers).
+# THE ARTIFACT IS PACKED ONCE. `pack` produces the four tarballs, `verify`
+# smoke-tests those exact files, and `publish` pushes the very same bytes to
+# npm. Packing separately per job would mean the artifact that ships was never
+# the artifact that was tested — and an npm version cannot be taken back.
 #
-# !! BEFORE THE NEXT RELEASE !! configure the Trusted Publisher on
-# npmjs.com for each of the 4 packages:
+# The tag does NOT determine the published version — `npm publish` reads it from
+# each package.json. The two must agree, so `publish-packages.mjs` compares the
+# tag against all four manifests and aborts on any mismatch. Bump locally with
+#   pnpm -r --filter "@codevena/cvmake-{cli,core,schema,templates}" exec pnpm version <bump>
+# then `git tag vX.Y.Z && git push --tags`. See README "Releasing".
+#
+# Auth model — npm Trusted Publishing via OIDC, no long-lived NPM_TOKEN:
+# GitHub mints a short-lived OIDC token per run; npm verifies the audience and
+# grants publish access for THIS workflow only. `--provenance` emits a signed
+# statement so npm shows a "✓ Provenance" badge.
+#
+# Two constraints that are easy to miss:
+#   - npm CLI >= 11.5.1 on Node >= 22.14 (older clients cannot do OIDC at all),
+#     which is why the publish step upgrades npm explicitly.
+#   - `pnpm publish` CANNOT do OIDC — support landed in pnpm 10, and this repo
+#     pins 9.12.0. Publishing therefore goes through `npm publish <tarball>`,
+#     with the tarball produced by `pnpm pack` (only pnpm rewrites `workspace:*`).
+#
+# !! BEFORE THE NEXT RELEASE !! configure the Trusted Publisher on npmjs.com for
+# each of the 4 packages:
 #   For @codevena/cvmake-{schema,core,templates,cli}, open
 #     https://www.npmjs.com/package/<pkg>/access
 #   → "Trusted Publisher" → "GitHub Actions" → Add publisher with:
 #     - Organisation/User:  Codevena
 #     - Repository:         cvmake
 #     - Workflow filename:  release.yml
-#     - Environment:        (leave empty)
-#   Once added for all 4, the existing NPM_TOKEN repo secret can be deleted
-#   (Settings → Secrets and variables → Actions).
+#     - Environment:        (leave empty — this workflow declares none)
+#   AND allow direct `npm publish` for it: a newly created publisher defaults to
+#   staged publishing only, which this workflow does not use.
+#
+# CHECK ALL FOUR. The publisher validates artifacts, never authorisation — and
+# `npm publish --dry-run` does not touch registry auth either. With a trusted
+# publisher configured for only three packages, the run publishes three and
+# fails on the fourth, and those three cannot be withdrawn. This is the one
+# half-release the preflight cannot prevent.
 
 jobs:
-  publish:
+  pack:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      # id-token: write is the critical permission — without it the OIDC
-      # token can't be requested and the trusted-publisher flow falls back
-      # to looking for NODE_AUTH_TOKEN (which we no longer pass).
-      id-token: write
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
         with: { version: 9.12.0 }
       - uses: actions/setup-node@v4
         with:
-          node-version: 20.11.1
+          node-version: '22.x'
           cache: pnpm
-          registry-url: 'https://registry.npmjs.org'
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+
+      # pnpm, not npm: only pnpm rewrites `workspace:*` into concrete versions
+      # at pack time. An npm-packed tarball keeps the protocol and is rejected
+      # on the consumer side with EUNSUPPORTEDPROTOCOL.
+      #
+      # The package list comes from scripts/release-packages.mjs rather than
+      # being retyped here. When it was hardcoded in this loop as well, a fifth
+      # package could have been packed but never tested or published, with
+      # nothing turning red.
+      - name: pack the publishable packages
+        run: |
+          set -euo pipefail
+          mkdir -p dist-tarballs
+          DIRS=$(node -e "import('./scripts/release-packages.mjs').then(m => console.log(m.PACKAGES.map(p => p.dir).join(' ')))")
+          echo "packing: $DIRS"
+          for dir in $DIRS; do
+            pnpm --dir "$dir" pack --pack-destination "$PWD/dist-tarballs"
+          done
+          ls -l dist-tarballs
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-tarballs
+          path: dist-tarballs/*.tgz
+          retention-days: 30
+          if-no-files-found: error
+
+  # Gate the release on the artifact a consumer actually installs, not just on
+  # what passes inside the workspace. Node 20 is in the matrix because
+  # engines.node promises ">=20.11.0"; a smoke that only ever ran on the CI's
+  # Node 22 would never test that promise.
+  verify:
+    needs: pack
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['20.11.1', '22.x']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 9.12.0 }
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: pnpm
 
       - run: pnpm install --frozen-lockfile
 
@@ -63,14 +122,55 @@ jobs:
       - run: pnpm build
       - run: pnpm -r test:unit
 
-      - name: publish to npm (dep order, with provenance)
+      # The PDF success path lives here, not in the unit suite. It is also the
+      # only gate that would catch a broken dynamic-import interop in
+      # core/pdf.ts — the pack smoke exercises the failure path, not the render.
+      - run: pnpm -r test:integration
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-tarballs
+          path: dist-tarballs
+
+      # Install the packed artifacts into an empty directory and run the CLI.
+      # The workspace has Puppeteer as a devDependency, so a missing runtime
+      # dependency is invisible to every step above; this is the only one that
+      # sees it — and it runs against the tarballs that will be published.
+      - name: pack/install smoke test
+        run: node scripts/smoke-pack.mjs --tarball-dir dist-tarballs
+
+  publish:
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # id-token: write is the critical permission — without it the OIDC token
+      # can't be requested and the trusted-publisher flow falls back to looking
+      # for NODE_AUTH_TOKEN (which we no longer pass).
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          # >= 22.14 is an npm trusted-publishing requirement, not a project one.
+          # engines.node in the published packages stays at >=20.11.0: this is
+          # what the RELEASE runs on, not what users need.
+          node-version: '22.x'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: upgrade npm for trusted publishing
         run: |
-          set -e
-          # --provenance writes a signed in-toto statement to npm. It REQUIRES
-          # OIDC auth (id-token: write above) — the npm CLI rejects provenance
-          # if the auth came from a long-lived token, hence the matching
-          # absence of NODE_AUTH_TOKEN in env below.
-          pnpm --filter @codevena/cvmake-schema publish --access public --no-git-checks --provenance
-          pnpm --filter @codevena/cvmake-core publish --access public --no-git-checks --provenance
-          pnpm --filter @codevena/cvmake-templates publish --access public --no-git-checks --provenance
-          pnpm --filter @codevena/cvmake-cli publish --access public --no-git-checks --provenance
+          npm install -g npm@^11.5.1
+          npm --version
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-tarballs
+          path: dist-tarballs
+
+      # No install, no build, no re-pack: these are the verified bytes.
+      - name: publish to npm (verified tarballs, with provenance)
+        run: |
+          node scripts/publish-packages.mjs \
+            --expect-version "${GITHUB_REF_NAME#v}" \
+            --tarball-dir dist-tarballs

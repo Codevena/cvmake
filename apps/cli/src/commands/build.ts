@@ -1,3 +1,4 @@
+import { statSync } from 'node:fs';
 import { mkdir, readdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { wrapHtmlDocument } from '@codevena/cvmake-core/html-document';
@@ -21,7 +22,45 @@ export interface BuildArgs {
   output: string;
 }
 
+/**
+ * Do two paths address the same file on disk?
+ *
+ * Compared by device + inode rather than by string, because every string-based
+ * comparison misses a case this one catches: a case-only spelling on a
+ * case-insensitive filesystem (`-o CV.YAML` for `cv.yaml` — macOS keeps the
+ * caller's casing even through `fs.realpathSync`), a symlink pointing back at
+ * the input, and a hard link, which no path canonicalisation can detect at all.
+ *
+ * A missing file is not the same file, so a non-existent output is fine — that
+ * is the normal case. Every OTHER stat error is rethrown: swallowing EACCES,
+ * EPERM, ELOOP or ENOTDIR here would silently switch the guard off in exactly
+ * the situations where the filesystem is behaving oddly, and the failure mode
+ * of this guard is a destroyed CV.
+ */
+function isSameFile(a: string, b: string): boolean {
+  const stat = (p: string) => {
+    try {
+      return statSync(p);
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException).code === 'ENOENT') return undefined;
+      throw err;
+    }
+  };
+  const sa = stat(a);
+  const sb = stat(b);
+  if (!sa || !sb) return false;
+  return sa.dev === sb.dev && sa.ino === sb.ino;
+}
+
 export async function runBuild(args: BuildArgs): Promise<void> {
+  // Checked before anything expensive runs: `cvmake build cv.yaml -o cv.yaml`
+  // used to render a full PDF and then overwrite the source YAML with its
+  // bytes, destroying the input irrecoverably.
+  if (isSameFile(args.yaml, path.resolve(args.output))) {
+    throw new Error(
+      `refusing to overwrite the input file: ${args.yaml} and ${args.output} are the same file. Choose a different -o/--output path.`,
+    );
+  }
   bootstrapTemplates();
   const rawData = await loadCV(args.yaml);
   const baseDir = path.dirname(path.resolve(args.yaml));

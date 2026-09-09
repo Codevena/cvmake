@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+# Every gate that must be green before a commit, one line each, with its exit
+# code printed. Run it, read the table, don't summarise it from memory.
+#
+#   ./gates          run everything
+#   ./gates quick    skip the slow ones (integration + pack smoke)
+#
+# Deliberately NOT `set -e`: a failing gate must not hide the ones after it.
+# The summary at the bottom is the verdict, and the script's own exit code
+# mirrors it.
+
+cd "$(dirname "$0")" || exit 1
+
+QUICK=${1:-}
+LOGDIR=$(mktemp -d)
+declare -a NAMES=()
+declare -a CODES=()
+
+gate() {
+  local name="$1"
+  shift
+  printf '\n\033[1m▶ %s\033[0m\n' "$name"
+  # Output goes to a file, then to screen: `cmd | tee` would report tee's exit
+  # code, which is the classic way a red gate reads as green.
+  "$@" >"$LOGDIR/$name.log" 2>&1
+  local rc=$?
+  NAMES+=("$name")
+  CODES+=("$rc")
+  if [ $rc -eq 0 ]; then
+    printf '  \033[32mrc=0\033[0m\n'
+  else
+    printf '  \033[31mrc=%d\033[0m\n' "$rc"
+    tail -25 "$LOGDIR/$name.log" | sed 's/^/  | /'
+  fi
+  return 0
+}
+
+gate build pnpm build
+gate lint pnpm lint
+gate typecheck pnpm typecheck
+gate test-unit pnpm -r test:unit
+
+if [ "$QUICK" != "quick" ]; then
+  # Needs Chromium: `pnpm --filter @codevena/cvmake-core exec puppeteer browsers install chrome`
+  gate test-integration pnpm -r test:integration
+  # Packs the four packages and installs them into an empty directory. The only
+  # gate that sees a missing runtime dependency — every other one runs inside
+  # the workspace, where Puppeteer is present as a devDependency.
+  gate smoke-pack node scripts/smoke-pack.mjs
+fi
+
+printf '\n\033[1m─── gates ───────────────────────\033[0m\n'
+failed=0
+for i in "${!NAMES[@]}"; do
+  rc=${CODES[$i]}
+  [ "$rc" -ne 0 ] && failed=$((failed + 1))
+  printf '%-18s rc=%d%s\n' "${NAMES[$i]}" "$rc" "$([ "$rc" -ne 0 ] && printf '  ✗')"
+done
+printf '─────────────────────────────────\n'
+
+if [ $failed -eq 0 ]; then
+  printf '\033[32mall %d gates green\033[0m\n' "${#NAMES[@]}"
+else
+  printf '\033[31m%d of %d gates RED\033[0m — logs in %s\n' "$failed" "${#NAMES[@]}" "$LOGDIR"
+  exit 1
+fi
+
+rm -rf "$LOGDIR"

@@ -1,6 +1,6 @@
 {
   "name": "@codevena/cvmake-templates",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "12 production-ready CV templates for cvmake — React components with CSS, multi-palette.",
   "keywords": ["cv", "resume", "react", "templates", "cvmake"],
   "homepage": "https://cvmake.codevena.dev",
@@ -11,6 +11,7 @@
     "directory": "packages/templates"
   },
   "license": "MIT",
+  "engines": { "node": ">=20.11.0" },
   "author": "Markus Wiesecke",
   "type": "module",
   "main": "./dist/index.js",

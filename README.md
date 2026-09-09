@@ -148,11 +148,35 @@ git tag "v$(node -p "require('./apps/cli/package.json').version")"
 git push origin main --tags
 ```
 
-The tag push triggers `.github/workflows/release.yml` which runs the
-full test matrix and publishes all 4 packages via the `NPM_TOKEN`
-repo secret. Set the secret once via npm Granular Access Token
-(`codevena` org, read+write, long expiration) at
-https://github.com/Codevena/cvmake/settings/secrets/actions.
+The tag push triggers `.github/workflows/release.yml`, which first verifies on
+Node 20 and 22 (build, unit tests, integration tests, and a pack/install smoke
+test against the real tarballs), then publishes all 4 packages.
+
+**Authentication is npm Trusted Publishing via OIDC — there is no `NPM_TOKEN`.**
+Before the first release, each of the 4 packages needs a trusted publisher
+configured at `https://www.npmjs.com/package/<pkg>/access`:
+
+| Field | Value |
+|---|---|
+| Organisation/User | `Codevena` |
+| Repository | `cvmake` |
+| Workflow filename | `release.yml` |
+| Environment | *(leave empty — this workflow declares none)* |
+
+Also allow **direct `npm publish`** for the publisher: a newly created one
+defaults to staged publishing, which this workflow does not use.
+
+Two constraints worth knowing before changing the publish step: `pnpm publish`
+cannot do OIDC (support landed in pnpm 10; this repo pins 9.12.0), and
+`npm pack` does not rewrite the `workspace:*` protocol, which npm then rejects
+on the consumer side. The workflow therefore packs with pnpm and publishes the
+resulting tarballs with npm — and it packs exactly **once**: the `pack` job
+produces the four tarballs, `verify` smoke-tests those files, and `publish`
+pushes the same bytes. `scripts/publish-packages.mjs` checks the tag against all
+four manifests, validates every supplied tarball (name, version, no leaked
+`workspace:` protocol) before publishing anything, and skips packages already in
+the registry, so a partial failure is resumed by re-running the workflow for the
+same tag. (It can also pack for itself when run locally without `--tarball-dir`.)
 
 ## Contributing
 

@@ -1,6 +1,6 @@
 {
   "name": "@codevena/cvmake-cli",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "YAML in, PDF out. The official cvmake CLI — render CVs from a plain-text YAML file.",
   "keywords": ["cv", "resume", "yaml", "pdf", "cli", "puppeteer", "react"],
   "homepage": "https://cvmake.codevena.dev",
@@ -11,6 +11,7 @@
     "directory": "apps/cli"
   },
   "license": "MIT",
+  "engines": { "node": ">=20.11.0" },
   "author": "Markus Wiesecke",
   "type": "module",
   "main": "./dist/index.js",
@@ -30,7 +31,7 @@
     "@codevena/cvmake-schema": "workspace:*",
     "@codevena/cvmake-templates": "workspace:*",
     "commander": "12.1.0",
-    "js-yaml": "4.1.0",
+    "js-yaml": "4.3.2",
     "picocolors": "1.1.1"
   },
   "devDependencies": {

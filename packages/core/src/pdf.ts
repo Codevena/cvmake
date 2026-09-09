@@ -1,5 +1,65 @@
-import type { Browser, Page } from 'puppeteer';
-import puppeteer from 'puppeteer';
+import type { Browser, LaunchOptions } from 'puppeteer';
+import type { Page } from 'puppeteer';
+
+/**
+ * Puppeteer is loaded lazily, on the first actual PDF render.
+ *
+ * The type-only imports above vanish at runtime; this module therefore pulls in
+ * Chromium's ~150 MB dependency tree only when someone renders. That matters
+ * because the CLI's entry point imports every command eagerly, so a static
+ * `import puppeteer from 'puppeteer'` here made `cvmake --help`, `init`,
+ * `validate` and `list-templates` die at module load whenever Puppeteer was
+ * missing — commands that never open a browser.
+ *
+ * Declaring puppeteer as a real dependency of this package (see package.json)
+ * is the other half: `import('puppeteer')` resolves from HERE, so this package
+ * has to own it rather than hope a consumer hoisted a copy into place.
+ */
+type PuppeteerModule = { launch(options?: LaunchOptions): Promise<Browser> };
+
+let puppeteerPromise: Promise<PuppeteerModule> | null = null;
+
+async function loadPuppeteer(): Promise<PuppeteerModule> {
+  if (!puppeteerPromise) {
+    puppeteerPromise = (async () => {
+      let mod: unknown;
+      try {
+        mod = await import('puppeteer');
+      } catch (err) {
+        throw new Error(
+          `PDF rendering needs Puppeteer, which could not be loaded. Reinstall the package (\`npm install @codevena/cvmake-cli\`) so its dependencies are complete. Original error: ${err instanceof Error ? err.message : String(err)}`,
+        );
+      }
+      // Puppeteer ships CJS, so the ESM namespace carries it on `default`.
+      // Some bundlers add a second wrapper; unwrap until `launch` shows up
+      // instead of assuming a shape, and fail loudly if it never does — a
+      // silently wrong unwrap would surface much later as "launch is not a
+      // function" from inside a render.
+      const candidates = [
+        (mod as { default?: { default?: unknown } }).default?.default,
+        (mod as { default?: unknown }).default,
+        mod,
+      ];
+      const resolved = candidates.find(
+        (c): c is PuppeteerModule =>
+          typeof (c as PuppeteerModule | undefined)?.launch === 'function',
+      );
+      if (!resolved) {
+        throw new Error(
+          'Puppeteer was loaded but exposes no launch() function. This usually means ' +
+            'a broken or partial install; reinstall the package.',
+        );
+      }
+      return resolved;
+    })();
+    // Don't cache a rejection: a transient failure would otherwise brick every
+    // later render in this process.
+    puppeteerPromise.catch(() => {
+      puppeteerPromise = null;
+    });
+  }
+  return puppeteerPromise;
+}
 
 let browserPromise: Promise<Browser> | null = null;
 // Renders served by the current browser, and renders currently in flight on it.
@@ -41,6 +101,7 @@ async function getBrowser(): Promise<Browser> {
     // alternative (leaving a permanently-rejected promise here) would brick
     // every subsequent PDF export until the Node process restarts.
     const p = (async () => {
+      const puppeteer = await loadPuppeteer();
       const browser = await puppeteer.launch({
         headless: true,
         args: ['--no-sandbox', '--disable-setuid-sandbox', '--font-render-hinting=none'],
