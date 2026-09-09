@@ -26,7 +26,12 @@ ENV NEXT_PUBLIC_DEMO_MODE=true
 # H3 (security): origin checked against this in the API CSRF guard
 # (apps/web/lib/request-guards.ts). Set to the public demo origin so
 # cross-origin POSTs to /api/save|upload|export are refused.
-ENV NEXT_PUBLIC_APP_ORIGIN=https://editor.cvmake.codevena.dev
+#
+# A deploy that serves a different hostname MUST override this, or the guard
+# compares against the wrong origin and refuses every real browser POST. The
+# value below was `editor.cvmake.codevena.dev` until 2026-09-09 — a name whose
+# DNS record was deleted in July and which NXDOMAINs today.
+ENV NEXT_PUBLIC_APP_ORIGIN=https://cveditor.codevena.dev
 # Puppeteer Chromium cache goes to the nodejs home dir so the non-root user
 # can reach it in the run stage without a separate chown pass on /root.
 ENV PUPPETEER_CACHE_DIR=/home/nodejs/.cache/puppeteer
@@ -55,7 +60,7 @@ ENV NODE_ENV=production
 # Also set at runtime so the server-side read in page.tsx matches the
 # build-time-inlined client value.
 ENV NEXT_PUBLIC_DEMO_MODE=true
-ENV NEXT_PUBLIC_APP_ORIGIN=https://editor.cvmake.codevena.dev
+ENV NEXT_PUBLIC_APP_ORIGIN=https://cveditor.codevena.dev
 # Point Puppeteer at the pre-downloaded Chromium under the nodejs user home.
 ENV PUPPETEER_CACHE_DIR=/home/nodejs/.cache/puppeteer
 
