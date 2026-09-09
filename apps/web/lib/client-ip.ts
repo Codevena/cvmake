@@ -114,9 +114,16 @@ export function resolveClientIp(headers: {
   const cf = headers.get('cf-connecting-ip');
   if (cf !== null && cf.trim() !== '') {
     const addr = unwrap(cf);
-    return isIP(addr)
-      ? { kind: 'ip', key: bucketKey(addr) }
-      : { kind: 'unverified', reason: 'malformed' };
+    if (!isIP(addr)) return { kind: 'unverified', reason: 'malformed' };
+    // The same rule as below, for the same reason. Not because anyone would
+    // spoof this header with a private address — that would only shrink their
+    // own bucket — but because a proxy misconfigured into writing an internal
+    // address here tells us just as little about the visitor, and one shared
+    // bucket for the whole site is the outcome either way.
+    if (isInfrastructureAddress(addr)) {
+      return { kind: 'unverified', reason: 'infrastructure' };
+    }
+    return { kind: 'ip', key: bucketKey(addr) };
   }
 
   const xff = headers.get('x-forwarded-for');

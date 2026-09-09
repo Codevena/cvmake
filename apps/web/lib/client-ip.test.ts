@@ -102,6 +102,13 @@ describe('resolveClientIp', () => {
     expect(r.kind).toBe('ip');
   });
 
+  it('applies the same rule to the Cloudflare header', () => {
+    // The rule guarded only the forwarded chain at first. A proxy misconfigured
+    // into writing an internal address into THIS header tells us just as little.
+    const r = resolveClientIp(h({ 'cf-connecting-ip': '10.0.0.1' }));
+    expect(r.kind).toBe('unverified');
+  });
+
   it('reports a missing chain as unverified', () => {
     expect(resolveClientIp(h({}))).toEqual({ kind: 'unverified', reason: 'no-header' });
   });
