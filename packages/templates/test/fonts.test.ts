@@ -59,6 +59,12 @@ describe('vendored template fonts', () => {
    * a real one. Adding a name to this list is the visible cost of leaving a
    * template on fallbacks — which is the point: it is a decision, not an
    * oversight that grows quietly.
+   *
+   * The genuinely ubiquitous system faces are keyed by name, because "Arial is
+   * on every machine" is a fact about the typeface. Every JUDGEMENT call is
+   * keyed `<template>:<family>`, because excusing `Playfair Display` once must
+   * not hand a free pass to every other template that starts naming it — which
+   * is precisely the quiet growth this list exists to prevent.
    */
   const NOT_VENDORED: Record<string, string> = {
     // Genuinely present on essentially every target platform.
@@ -72,19 +78,26 @@ describe('vendored template fonts', () => {
     Garamond: 'system',
     Didot: 'system (macOS)',
     'Bodoni MT': 'system (Windows/Office)',
-    // Not redistributable: Futura is licensed commercially, Avenir Next ships
-    // with macOS. Neither can be vendored, so bauhaus is a fallback stack by
-    // necessity and its first two names are decoration on most machines.
-    Futura: 'commercial licence — cannot be redistributed',
-    'Avenir Next': 'bundled with macOS — cannot be redistributed',
+    // Not redistributable, and keyed per template because these are judgement
+    // calls rather than facts about the typeface.
+    'bauhaus:Futura': 'commercial licence — cannot be redistributed',
+    'bauhaus:Avenir Next': 'bundled with macOS — cannot be redistributed',
     // Redistributable (OFL) and NOT yet vendored. classic-serif is the template
     // `cvmake init` writes, so this is the first PDF a new user makes and it
-    // renders in Times/DejaVu today. Vendoring both costs roughly another
-    // 0.5 MB in the published package and in every editor page load, which is
-    // why it is a decision rather than a silent addition.
-    'EB Garamond': 'OFL, not vendored yet — see review-todo.md',
-    'Playfair Display': 'OFL, not vendored yet — see review-todo.md',
-    'Cormorant Garamond': 'OFL, vendored for noir only — see review-todo.md',
+    // renders in Times/DejaVu today. Vendoring costs roughly another 0.5 MB in
+    // the published package, which is why it is a decision rather than a silent
+    // addition.
+    'classic-serif:EB Garamond': 'OFL, not vendored yet — see review-todo.md',
+    'classic-serif:Playfair Display': 'OFL, not vendored yet — see review-todo.md',
+    'magazine:Playfair Display': 'OFL, not vendored yet — see review-todo.md',
+    'magazine:Cormorant Garamond': 'OFL, vendored for noir only — see review-todo.md',
+    'magazine:EB Garamond': 'OFL, not vendored yet — see review-todo.md',
+    // Both of these surfaced only once the map was keyed per template: noir
+    // ships Cormorant Garamond and names two further OFL faces beside it as
+    // fallbacks. Harmless in practice — the shipped face wins — but it is a
+    // fourth template on the list, and the loose keying hid it completely.
+    'noir:EB Garamond': 'OFL fallback beside a shipped face — see review-todo.md',
+    'noir:Playfair Display': 'OFL fallback beside a shipped face — see review-todo.md',
   };
 
   const templateDirs = readdirSync(SRC, { withFileTypes: true })
@@ -121,9 +134,10 @@ describe('vendored template fonts', () => {
     );
     for (const family of named) {
       const shipped = fonts.includes(`"${family}"`);
+      const excused = family in NOT_VENDORED || `${id}:${family}` in NOT_VENDORED;
       expect(
-        shipped || family in NOT_VENDORED,
-        `${id}/styles.css names "${family}", which is neither shipped in ${id}/fonts.css nor listed in NOT_VENDORED with a reason`,
+        shipped || excused,
+        `${id}/styles.css names "${family}", which is neither shipped in ${id}/fonts.css nor listed in NOT_VENDORED (as "${family}" for a true system face, or "${id}:${family}" for a judgement call) with a reason`,
       ).toBe(true);
     }
   });

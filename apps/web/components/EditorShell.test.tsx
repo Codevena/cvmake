@@ -232,11 +232,22 @@ describe('<EditorShell /> — opening a CV that needs repairing', () => {
   beforeEach(() => push.mockClear());
 
   it('repairs a stale palette without writing the file back', async () => {
-    // Merely opening a document must not rewrite it. The Sidebar repairs a
-    // palette that no longer exists on first render, which changes the watched
-    // form values — the same signal a real edit produces. If autosave treated
-    // it as one, viewing a CV would bump its mtime, and the CHANGELOG line
-    // ("the file itself keeps the stale value until you save") would be false.
+    // Merely opening a document must not rewrite it, or viewing a CV would bump
+    // its mtime and the CHANGELOG line ("the file itself keeps the stale value
+    // until you save") would be false.
+    //
+    // WHY it holds is worth writing down, because nothing in `useAutosave`
+    // decides it. The Sidebar repairs the palette in a CHILD effect, while
+    // `EditorShell`'s `useWatch` subscribes in a PARENT effect — React runs
+    // child effects first, so the repair reaches react-hook-form's values
+    // before the subscription that feeds autosave exists, and never shows up
+    // there. Measured directly on react-hook-form 7.53.2: a parent `useWatch`
+    // still reports the original value after a child effect calls `setValue`.
+    //
+    // This is therefore a regression test over an emergent property. Moving the
+    // repair into EditorShell, switching it to `useLayoutEffect`, or a
+    // react-hook-form release that subscribes during render would each turn the
+    // write-back on silently, and this case is what would notice.
     const calls: string[] = [];
     vi.stubGlobal(
       'fetch',
@@ -257,18 +268,28 @@ describe('<EditorShell /> — opening a CV that needs repairing', () => {
       />,
     );
 
-    // First: the repair really happened. Without this the assertion below
-    // would pass on a page where nothing changed at all.
+    // The repair really happened. Note what this does NOT prove: the popover
+    // reads through Sidebar's own subscription, the one observer guaranteed to
+    // see the repair. It rules out "nothing changed at all", nothing more.
     fireEvent.click(screen.getByLabelText('Palette'));
     await waitFor(() =>
       expect(
         screen.getByRole('dialog', { name: 'Palette' }).querySelector('[aria-checked="true"]'),
       ).toHaveAttribute('aria-label', 'Classic Grey'),
     );
+    fireEvent.keyDown(window, { key: 'Escape' });
 
-    // Then: past the 2 s debounce, still nothing sent.
+    // Past the 2 s debounce, nothing sent...
     await new Promise((r) => setTimeout(r, 2600));
     expect(calls).toEqual([]);
+
+    // ...and the part that actually discriminates: the editor does not regard
+    // this as pending work either, so leaving goes straight through.
+    fireEvent.change(screen.getByLabelText(/CV/i, { selector: 'select' }), {
+      target: { value: 'cv.en' },
+    });
+    expect(screen.queryByText('Unsaved changes')).not.toBeInTheDocument();
+    expect(push).toHaveBeenCalled();
     vi.unstubAllGlobals();
   }, 15000);
 
@@ -329,8 +350,14 @@ describe('<EditorShell /> — switching in demo mode', () => {
     const select = screen.getByLabelText(/CV/i, { selector: 'select' });
     fireEvent.change(select, { target: { value: 'example.en' } });
     await waitFor(() => expect(screen.getByText('Unsaved changes')).toBeInTheDocument());
-    expect(screen.queryByRole('button', { name: 'Save and switch' })).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Discard and switch' })).toBeInTheDocument();
+    // Asserting the ABSENCE of "Save and switch" would go quietly vacuous the
+    // day someone rewords the label. Pin what the confirm button actually says.
+    const buttons = screen
+      .getAllByRole('button')
+      .map((b) => b.textContent?.trim())
+      .filter(Boolean);
+    expect(buttons).toContain('Discard and switch');
+    expect(buttons).not.toContain('Save and switch');
   });
 
   it('actually switches when the user discards', async () => {

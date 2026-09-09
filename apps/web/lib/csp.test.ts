@@ -42,5 +42,10 @@ describe('the app CSP', () => {
     expect(d['default-src']).toBe("'self'");
     expect(d['frame-ancestors']).toBe("'none'");
     expect(d['font-src']?.split(' ')).not.toContain('*');
+    // Vendoring the fonts made two remote hosts unnecessary. An allowance
+    // nothing uses is just a wider policy, and it reads as though the app
+    // still fetches from Google when it no longer does.
+    expect(d['font-src']).not.toContain('gstatic');
+    expect(d['style-src']).not.toContain('googleapis');
   });
 });

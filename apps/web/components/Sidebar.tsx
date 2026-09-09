@@ -28,9 +28,17 @@ export function Sidebar(_props: Props) {
   //  - switch: any palette that does not belong to the new template is replaced,
   //    including an unset one, and the change is the user's (shouldDirty).
   //  - first render: only a value that is present AND invalid is healed, and it
-  //    is NOT marked dirty. Marking it would flag the form as changed without
-  //    the user touching anything, which the unsaved-changes guard would then
-  //    report as pending work — a phantom state.
+  //    is NOT marked dirty, because the user did not do it.
+  //
+  // Do not read more into `shouldDirty: false` than that. It does NOT keep the
+  // repair out of autosave: the unsaved-changes guard compares the serialised
+  // document against what the server last accepted and never looks at dirty
+  // state at all. What actually keeps a freshly opened CV from being written
+  // back is effect ordering — this runs in a child effect, and EditorShell's
+  // `useWatch` subscribes in a parent effect, which React runs afterwards, so
+  // the repair never reaches the value autosave watches. That is an emergent
+  // property, not a decision; `EditorShell.test.tsx` pins the behaviour and
+  // says what would break it.
   const prevRef = useRef<string | undefined>(undefined);
   useEffect(() => {
     const isSwitch = prevRef.current !== undefined && prevRef.current !== templateId;
