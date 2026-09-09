@@ -153,8 +153,8 @@ Node 20 and 22 (build, unit tests, integration tests, and a pack/install smoke
 test against the real tarballs), then publishes all 4 packages.
 
 **Authentication is npm Trusted Publishing via OIDC — there is no `NPM_TOKEN`.**
-Before the first release, each of the 4 packages needs a trusted publisher
-configured at `https://www.npmjs.com/package/<pkg>/access`:
+All 4 packages have a trusted publisher configured (verified 2026-09-09). The
+settings live at `https://www.npmjs.com/package/<pkg>/access`:
 
 | Field | Value |
 |---|---|
@@ -163,8 +163,9 @@ configured at `https://www.npmjs.com/package/<pkg>/access`:
 | Workflow filename | `release.yml` |
 | Environment | *(leave empty — this workflow declares none)* |
 
-Also allow **direct `npm publish`** for the publisher: a newly created one
-defaults to staged publishing, which this workflow does not use.
+The publisher must also permit **direct `npm publish`** — a newly created one
+defaults to staged publishing, which this workflow does not use. All four
+currently permit both `npm publish` and `npm stage publish`.
 
 Two constraints worth knowing before changing the publish step: `pnpm publish`
 cannot do OIDC (support landed in pnpm 10; this repo pins 9.12.0), and

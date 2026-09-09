@@ -29,23 +29,18 @@ on:
 #     pins 9.12.0. Publishing therefore goes through `npm publish <tarball>`,
 #     with the tarball produced by `pnpm pack` (only pnpm rewrites `workspace:*`).
 #
-# !! BEFORE THE NEXT RELEASE !! configure the Trusted Publisher on npmjs.com for
-# each of the 4 packages:
-#   For @codevena/cvmake-{schema,core,templates,cli}, open
-#     https://www.npmjs.com/package/<pkg>/access
-#   → "Trusted Publisher" → "GitHub Actions" → Add publisher with:
-#     - Organisation/User:  Codevena
-#     - Repository:         cvmake
-#     - Workflow filename:  release.yml
-#     - Environment:        (leave empty — this workflow declares none)
-#   AND allow direct `npm publish` for it: a newly created publisher defaults to
-#   staged publishing only, which this workflow does not use.
+# Trusted publisher configuration (verified on npmjs.com, 2026-09-09): all four
+# packages carry a GitHub Actions publisher for Codevena/cvmake, workflow
+# release.yml, no environment, with BOTH `npm publish` and `npm stage publish`
+# permitted. The direct-publish permission matters: a newly created publisher
+# defaults to staged publishing only, which this workflow does not use.
 #
-# CHECK ALL FOUR. The publisher validates artifacts, never authorisation — and
-# `npm publish --dry-run` does not touch registry auth either. With a trusted
-# publisher configured for only three packages, the run publishes three and
-# fails on the fourth, and those three cannot be withdrawn. This is the one
-# half-release the preflight cannot prevent.
+# RE-CHECK ALL FOUR before a release if anything about the packages changed.
+# This job validates artifacts, never authorisation — and `npm publish
+# --dry-run` does not touch registry auth either. With a publisher configured
+# for only three packages, the run publishes three and fails on the fourth, and
+# those three cannot be withdrawn. It is the one half-release no preflight here
+# can prevent. Settings live at https://www.npmjs.com/package/<pkg>/access.
 
 jobs:
   pack:

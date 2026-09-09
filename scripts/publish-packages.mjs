@@ -31,7 +31,8 @@
  * What this CANNOT check: authorisation. A trusted publisher configured for
  * three of the four packages lets three publish and fails on the fourth, and
  * `npm publish --dry-run` does not reveal it because it never touches registry
- * auth. Verify all four publisher configurations before pushing the tag.
+ * auth. Verified on npmjs.com for all four packages on 2026-09-09; re-check if
+ * the package set changes.
  *
  * Usage:
  *   node scripts/publish-packages.mjs --expect-version 0.2.0 [--dry-run]
