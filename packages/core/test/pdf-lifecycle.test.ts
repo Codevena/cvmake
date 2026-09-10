@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock Puppeteer so we exercise the browser-lifecycle logic without launching
 // real Chromium. `vi.hoisted` lets the (hoisted) vi.mock factory share the spy.
@@ -59,6 +59,21 @@ beforeEach(() => {
   launch.mockImplementation(async () => makeBrowser());
   // Empty string → Number('') === 0 → maxRenders() falls back to its default.
   process.env.CVMAKE_PDF_MAX_RENDERS = '';
+});
+
+afterEach(async () => {
+  // `launch` is one spy shared by every test, while `vi.resetModules()` hands
+  // each test a fresh copy of pdf.ts. A recycle still finishing when a test
+  // returns therefore calls `launch` again AFTER the next test has reset the
+  // count — and that test then sees two launches where it expects one. Which
+  // test it lands in depends on machine load, which is what made this suite
+  // flaky rather than wrong.
+  //
+  // Shutting the module's browser down and draining the queue keeps each
+  // test's async work inside its own boundary.
+  const { shutdownPdfBrowser } = await import('../src/pdf.js');
+  await shutdownPdfBrowser();
+  await new Promise((resolve) => setImmediate(resolve));
 });
 
 describe('pdf browser lifecycle', () => {
@@ -128,9 +143,11 @@ describe('pdf browser lifecycle', () => {
 
     const { generatePDF } = await import('../src/pdf.js');
     const inFlight = generatePDF(HTML); // parks at pdf()
-    // Let the (all-immediate) async steps drain until the render is at pdf().
-    await new Promise((resolve) => setTimeout(resolve, 50));
-    expect(pdfReached).toBe(true);
+    // Wait for the CONDITION, not for a duration. A fixed 50 ms was a guess
+    // about how fast this machine drains a promise chain, and on a loaded one
+    // it is not enough: the assertion below then reads `false` and the test
+    // fails for a reason that has nothing to do with the code under test.
+    await vi.waitFor(() => expect(pdfReached).toBe(true), { timeout: 5000, interval: 5 });
 
     // Crash the browser while the render is still in flight, then let it finish.
     browsers[0]?.emit('disconnected');
