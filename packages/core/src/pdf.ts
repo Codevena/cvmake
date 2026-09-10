@@ -146,13 +146,49 @@ export async function prewarmPdfBrowser(): Promise<void> {
   }
 }
 
+/**
+ * How long to let Chromium exit on its own before it is killed.
+ *
+ * `browser.close()` waits for the process to leave, and on a loaded machine
+ * that can take arbitrarily long — measured: the web suite's teardown overran
+ * both a 10 s and a 30 s hook timeout while all 182 of its tests passed. A
+ * shutdown that does not return hangs whatever waits on it, which is a test
+ * teardown here and a process trying to exit in production.
+ */
+const SHUTDOWN_GRACE_MS = 5_000;
+
 export async function shutdownPdfBrowser(): Promise<void> {
   if (!browserPromise) return;
   const b = await browserPromise;
   browserPromise = null;
   renderCount = 0;
   inFlight = 0;
-  await b.close();
+
+  // Captured before closing: once the browser is gone, so is the handle.
+  // Optional call because a connected (rather than launched) browser has no
+  // process of its own.
+  const proc = b.process?.();
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  await Promise.race([
+    b.close().catch(() => {
+      // A browser that already died is shut down as far as we care.
+    }),
+    new Promise<void>((resolve) => {
+      timer = setTimeout(resolve, SHUTDOWN_GRACE_MS);
+      // Never let this timer be the reason Node stays alive.
+      timer.unref?.();
+    }),
+  ]);
+  if (timer) clearTimeout(timer);
+
+  // Still there after the grace period: stop asking.
+  if (proc && proc.exitCode === null && proc.signalCode === null) {
+    try {
+      proc.kill('SIGKILL');
+    } catch {
+      // Already reaped between the check and the signal.
+    }
+  }
 }
 
 export interface GeneratePDFOptions {

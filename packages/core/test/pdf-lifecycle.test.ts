@@ -163,6 +163,74 @@ describe('pdf browser lifecycle', () => {
     expect(launch.mock.calls.length).toBeGreaterThanOrEqual(3);
   });
 
+  it('returns even when Chromium refuses to exit', async () => {
+    // `browser.close()` waits for the process to leave. On a loaded machine
+    // that outlasted a 30 s hook timeout while all 182 tests of the web suite
+    // passed — the teardown was the failure, not the tests. A shutdown that
+    // never returns hangs whatever waits on it: a test teardown here, a
+    // process trying to exit in production.
+    //
+    // Modelled as a close() that never settles, which is what "wedged" looks
+    // like from the outside.
+    const killed: string[] = [];
+    launch.mockImplementationOnce(async () => {
+      const b = makeBrowser() as FakeBrowser & { process?: () => unknown };
+      b.close = vi.fn(() => new Promise<void>(() => {}));
+      b.process = () => ({
+        exitCode: null,
+        signalCode: null,
+        kill: (sig: string) => killed.push(sig),
+      });
+      return b;
+    });
+
+    const { generatePDF, shutdownPdfBrowser } = await import('../src/pdf.js');
+    await generatePDF(HTML);
+
+    const started = Date.now();
+    await shutdownPdfBrowser();
+    const elapsed = Date.now() - started;
+
+    // Bounded, not indefinite. The grace period is 5 s; anything near a hook
+    // timeout means the bound is gone.
+    expect(elapsed).toBeLessThan(15_000);
+    // And the process is actually stopped rather than merely abandoned.
+    expect(killed).toEqual(['SIGKILL']);
+  }, 30_000);
+
+  it('does not kill a browser that closed cleanly', async () => {
+    // The counter-probe. Without it, a shutdown that always sends SIGKILL —
+    // losing the graceful path entirely — would pass the case above.
+    const killed: string[] = [];
+    launch.mockImplementationOnce(async () => {
+      let exited = false;
+      const b = makeBrowser() as FakeBrowser & { process?: () => unknown };
+      const origClose = b.close;
+      b.close = vi.fn(async () => {
+        await origClose();
+        exited = true;
+      });
+      // A getter, not a snapshot: the real ChildProcess is a live object whose
+      // `exitCode` flips when it dies, and the code under test reads it AFTER
+      // awaiting the close. A fake that froze the value at capture time would
+      // report "still running" for ever and make this counter-probe fail
+      // against correct code — which is exactly what it did on the first run.
+      b.process = () => ({
+        get exitCode() {
+          return exited ? 0 : null;
+        },
+        signalCode: null,
+        kill: (sig: string) => killed.push(sig),
+      });
+      return b;
+    });
+
+    const { generatePDF, shutdownPdfBrowser } = await import('../src/pdf.js');
+    await generatePDF(HTML);
+    await shutdownPdfBrowser();
+    expect(killed).toEqual([]);
+  });
+
   it('prewarmPdfBrowser launches ahead of the first render', async () => {
     const { prewarmPdfBrowser, generatePDF } = await import('../src/pdf.js');
     await prewarmPdfBrowser();

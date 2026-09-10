@@ -64,15 +64,18 @@ describe('the commands the repository tells people to run', () => {
     const min = Math.min(...counts);
     const total = counts.reduce((a, b) => a + b, 0);
 
-    // `docs/superpowers/` and `docs/dev/` are deliberately excluded. Both are
-    // records: of what was planned on a given day, and of what a review found.
-    // A review record QUOTES the wrong claim in order to say it was wrong —
-    // this check flagged its own audit write-up on the first run — and editing
-    // a quotation to match today falsifies the record. That is worse than a
-    // stale sentence in a document nobody ships.
+    // What is checked here is what the repository claims about itself TODAY.
+    // Records of the past are excluded — `docs/superpowers/` (what was planned
+    // on a given day), `docs/dev/` (what a review found) and the changelog
+    // (what changed and why). Each of those QUOTES the wrong claim in order to
+    // call it wrong, and this check flagged first its own audit write-up and
+    // then the changelog entry announcing the fix. Editing a quotation so it
+    // matches today falsifies the record, which is worse than a stale sentence
+    // in a document nobody ships.
+    const RECORDS = ['docs/superpowers/', 'docs/dev/', 'CHANGELOG.md'];
     const docs = execFileSync('git', ['ls-files', '*.md'], { cwd: root, encoding: 'utf8' })
       .split('\n')
-      .filter((f) => f !== '' && !f.startsWith('docs/superpowers/') && !f.startsWith('docs/dev/'));
+      .filter((f) => f !== '' && !RECORDS.some((r) => f.startsWith(r)));
     expect(docs.length).toBeGreaterThan(3);
 
     const offenders: string[] = [];
