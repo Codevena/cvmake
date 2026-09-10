@@ -64,12 +64,15 @@ describe('the commands the repository tells people to run', () => {
     const min = Math.min(...counts);
     const total = counts.reduce((a, b) => a + b, 0);
 
-    // `docs/superpowers/` is deliberately excluded: those are records of what
-    // was planned on a given day. Editing them to match today would falsify
-    // the record, which is worse than a stale sentence nobody ships.
+    // `docs/superpowers/` and `docs/dev/` are deliberately excluded. Both are
+    // records: of what was planned on a given day, and of what a review found.
+    // A review record QUOTES the wrong claim in order to say it was wrong —
+    // this check flagged its own audit write-up on the first run — and editing
+    // a quotation to match today falsifies the record. That is worse than a
+    // stale sentence in a document nobody ships.
     const docs = execFileSync('git', ['ls-files', '*.md'], { cwd: root, encoding: 'utf8' })
       .split('\n')
-      .filter((f) => f !== '' && !f.startsWith('docs/superpowers/'));
+      .filter((f) => f !== '' && !f.startsWith('docs/superpowers/') && !f.startsWith('docs/dev/'));
     expect(docs.length).toBeGreaterThan(3);
 
     const offenders: string[] = [];
