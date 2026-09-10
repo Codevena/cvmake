@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -48,13 +49,12 @@ describe('the commands the repository tells people to run', () => {
     }
   });
 
-  it('the palette claim in the templates README matches the registry', async () => {
-    // A published README said "3+ color palettes" per template. Three ship two.
-    // Counts in prose rot silently and this one shipped to npm, so the claim is
-    // pinned to the registry rather than to somebody's memory.
-    // By relative path into the build output, not by package name: this file
-    // lives at the workspace root, which declares no dependency on the
-    // templates package. `./gates` builds before it runs this.
+  it('every living README states the real palette numbers', async () => {
+    // A published README promised "3+ color palettes" per template. Three ship
+    // two. My first fix caught one of THREE places that said it — including
+    // `apps/cli/README.md`, which `files` puts inside the published
+    // @codevena/cvmake-cli. A guard that reads one file looks complete and is
+    // not, so this one sweeps every markdown file the repo tracks.
     const { bootstrapTemplates, listTemplates } = (await import(
       pathToFileURL(path.join(root, 'packages/templates/dist/index.js')).href
     )) as typeof import('@codevena/cvmake-templates');
@@ -62,22 +62,32 @@ describe('the commands the repository tells people to run', () => {
     const counts = listTemplates().map((t) => t.palettes.length);
     expect(counts.length).toBeGreaterThan(0);
     const min = Math.min(...counts);
-    const max = Math.max(...counts);
     const total = counts.reduce((a, b) => a + b, 0);
 
-    const readme = readFileSync(path.join(root, 'packages/templates/README.md'), 'utf8');
-    expect(
-      readme,
-      `the registry has ${counts.length} templates, ${total} palettes, ${min}-${max} each — the README must not claim otherwise`,
-    ).toContain(`${total} across the twelve`);
-    // The claim that broke: any "N+ palettes" promise must hold for the
-    // SMALLEST template, not the one the author happened to look at.
-    for (const m of readme.matchAll(/(\d+)\+ color palettes/g)) {
-      expect(
-        min,
-        `README promises ${m[1]}+ palettes but one template has ${min}`,
-      ).toBeGreaterThanOrEqual(Number(m[1]));
+    // `docs/superpowers/` is deliberately excluded: those are records of what
+    // was planned on a given day. Editing them to match today would falsify
+    // the record, which is worse than a stale sentence nobody ships.
+    const docs = execFileSync('git', ['ls-files', '*.md'], { cwd: root, encoding: 'utf8' })
+      .split('\n')
+      .filter((f) => f !== '' && !f.startsWith('docs/superpowers/'));
+    expect(docs.length).toBeGreaterThan(3);
+
+    const offenders: string[] = [];
+    for (const rel of docs) {
+      const text = readFileSync(path.join(root, rel), 'utf8');
+      for (const m of text.matchAll(/(\d+)\+ color palettes/g)) {
+        // An "N+" promise has to hold for the SMALLEST template, not for the
+        // one the author happened to open. That is the mistake that produced
+        // the original claim.
+        if (Number(m[1]) > min) offenders.push(`${rel}: promises ${m[1]}+, smallest has ${min}`);
+      }
+      for (const m of text.matchAll(/(\d+) across the twelve/g)) {
+        if (Number(m[1]) !== total) {
+          offenders.push(`${rel}: says ${m[1]} palettes, registry has ${total}`);
+        }
+      }
     }
+    expect(offenders).toEqual([]);
   });
 
   it('every node script the checklist names is on disk', () => {

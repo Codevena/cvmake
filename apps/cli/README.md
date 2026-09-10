@@ -58,7 +58,7 @@ Default output: `out/cv.pdf`.
 `editorial`, `academic`, `tech-dev`, `monochrome-dark`, `swiss`,
 `bauhaus`, `noir`, `magazine`.
 
-Each template has 3+ color palettes. Specify both in YAML:
+Each template has two to four color palettes — 34 across the twelve. Specify both in YAML:
 
 ```yaml
 rendering:

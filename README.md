@@ -122,7 +122,7 @@ Output PDF lands in `out/cv.pdf` by default.
 | `swiss` | Strict grid, Helvetica, red accent — pure information design |
 | `tech-dev` | Developer-focused with code-style accents |
 
-Each template ships with 3+ color palettes. List them all:
+Each template ships with two to four color palettes — 34 across the twelve. List them all:
 
 ```bash
 pnpm cvmake list-templates

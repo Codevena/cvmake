@@ -57,6 +57,10 @@
       "types": "./dist/photo-embed.d.ts",
       "default": "./dist/photo-embed.js"
     },
+    "./atomic-write": {
+      "types": "./dist/atomic-write.d.ts",
+      "default": "./dist/atomic-write.js"
+    },
     "./pdf": {
       "types": "./dist/pdf.d.ts",
       "default": "./dist/pdf.js"

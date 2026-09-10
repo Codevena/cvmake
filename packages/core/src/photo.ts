@@ -1,6 +1,7 @@
-import { readFile, stat, writeFile } from 'node:fs/promises';
+import { readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
 import sharp from 'sharp';
+import { atomicWriteFile } from './atomic-write.js';
 
 export interface ProcessPhotoOptions {
   inputPath: string;
@@ -95,8 +96,16 @@ export async function processPhoto(opts: ProcessPhotoOptions): Promise<Processed
   const webpBuffer = await pipeline.clone().webp({ quality: 88 }).toBuffer();
   const jpgBuffer = await pipeline.clone().jpeg({ quality: 88, mozjpeg: true }).toBuffer();
 
-  await writeFile(webpPath, webpBuffer);
-  await writeFile(jpgPath, jpgBuffer);
+  // Atomic, because these two paths are served by Next.js from `public/` while
+  // they are being written: a plain writeFile interrupted halfway hands the
+  // browser a truncated image under a URL that looks fine.
+  //
+  // It does NOT make the pair transactional — dying between the two still
+  // leaves a new .webp beside an old .jpg. Both are complete images of the
+  // same person, so that is a stale file rather than a corrupt one, and
+  // closing it would need a two-phase write nothing here justifies.
+  await atomicWriteFile(webpPath, webpBuffer);
+  await atomicWriteFile(jpgPath, jpgBuffer);
 
   const meta = await sharp(webpBuffer).metadata();
   return {
