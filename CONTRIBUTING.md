@@ -32,7 +32,7 @@ The pattern `data/cvs/cv.*.yaml` is gitignored; only `example.*.yaml` is tracked
 ```bash
 pnpm typecheck
 pnpm build
-pnpm -r test:unit       # 178 unit tests
+pnpm -r test:unit       # unit tests across every package
 pnpm test:visual        # template visual regression
 pnpm --filter @codevena/cvmake-web test:e2e   # web e2e (Playwright)
 ```

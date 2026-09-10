@@ -13,7 +13,7 @@ package.
 `editorial`, `academic`, `tech-dev`, `monochrome-dark`, `swiss`,
 `bauhaus`, `noir`, `magazine`.
 
-Each ships with 3+ color palettes. See the
+Each ships with two to four color palettes — 34 across the twelve. See the
 [live showcase](https://cvmake.codevena.dev) for previews.
 
 ## License

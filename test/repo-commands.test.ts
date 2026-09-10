@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
 /**
@@ -44,6 +45,38 @@ describe('the commands the repository tells people to run', () => {
         known,
         `the PR checklist says \`pnpm ${cmd}\`, which is not a script or a turbo task`,
       ).toBe(true);
+    }
+  });
+
+  it('the palette claim in the templates README matches the registry', async () => {
+    // A published README said "3+ color palettes" per template. Three ship two.
+    // Counts in prose rot silently and this one shipped to npm, so the claim is
+    // pinned to the registry rather than to somebody's memory.
+    // By relative path into the build output, not by package name: this file
+    // lives at the workspace root, which declares no dependency on the
+    // templates package. `./gates` builds before it runs this.
+    const { bootstrapTemplates, listTemplates } = (await import(
+      pathToFileURL(path.join(root, 'packages/templates/dist/index.js')).href
+    )) as typeof import('@codevena/cvmake-templates');
+    bootstrapTemplates();
+    const counts = listTemplates().map((t) => t.palettes.length);
+    expect(counts.length).toBeGreaterThan(0);
+    const min = Math.min(...counts);
+    const max = Math.max(...counts);
+    const total = counts.reduce((a, b) => a + b, 0);
+
+    const readme = readFileSync(path.join(root, 'packages/templates/README.md'), 'utf8');
+    expect(
+      readme,
+      `the registry has ${counts.length} templates, ${total} palettes, ${min}-${max} each — the README must not claim otherwise`,
+    ).toContain(`${total} across the twelve`);
+    // The claim that broke: any "N+ palettes" promise must hold for the
+    // SMALLEST template, not the one the author happened to look at.
+    for (const m of readme.matchAll(/(\d+)\+ color palettes/g)) {
+      expect(
+        min,
+        `README promises ${m[1]}+ palettes but one template has ${min}`,
+      ).toBeGreaterThanOrEqual(Number(m[1]));
     }
   });
 
