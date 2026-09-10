@@ -35,6 +35,47 @@ describe('import', () => {
     expect(data.summary).toContain('compression');
   });
 
+  it('does not emit a date the schema will reject one step later', async () => {
+    // A JSON Resume saying 2021-02-31 used to be copied through verbatim. The
+    // importer then reported success and `cvmake build` failed on the file it
+    // had just written — the worst place to find out, because the user has
+    // already been told it worked. The day is dropped and the month kept,
+    // which is the part that is certainly true.
+    const src = path.join(mkdtempSync(path.join(tmpdir(), 'cvmake-import-src-')), 'resume.json');
+    writeFileSync(
+      src,
+      JSON.stringify({
+        basics: { name: 'A B' },
+        work: [{ name: 'Acme', position: 'Dev', startDate: '2021-02-31', endDate: '2023-04-31' }],
+      }),
+    );
+    const out = tmpOut();
+    expect(await runImport({ input: src, output: out, lang: 'en' })).toBe(0);
+    // loadCV runs the schema — this throws if the importer wrote an unloadable
+    // file, which is exactly the regression.
+    const data = await loadCV(out);
+    expect(data.experience[0]?.startDate).toBe('2021-02');
+    expect(data.experience[0]?.endDate).toBe('2023-04');
+  });
+
+  it('keeps a real day when there is one', async () => {
+    // The counter-probe. Without it, an importer that threw every day away
+    // would pass the case above.
+    const src = path.join(mkdtempSync(path.join(tmpdir(), 'cvmake-import-src-')), 'resume.json');
+    writeFileSync(
+      src,
+      JSON.stringify({
+        basics: { name: 'A B' },
+        work: [{ name: 'Acme', position: 'Dev', startDate: '2024-02-29', endDate: '2024-03-15' }],
+      }),
+    );
+    const out = tmpOut();
+    expect(await runImport({ input: src, output: out, lang: 'en' })).toBe(0);
+    const data = await loadCV(out);
+    expect(data.experience[0]?.startDate).toBe('2024-02-29');
+    expect(data.experience[0]?.endDate).toBe('2024-03-15');
+  });
+
   // The photo mapping has two directions and both need a number. The suite
   // already covers the refusal (the sample fixture carries a remote image and
   // the output must not contain it); without the two cases below, a safePhoto

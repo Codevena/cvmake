@@ -9,12 +9,76 @@ import { LocaleSchema } from './locale.js';
  * (birthDate is intentionally left free-text: it is rendered verbatim and may
  * use localized formats like "13.01.1987".)
  */
+/**
+ * Splits a `YYYY`, `YYYY-MM` or `YYYY-MM-DD` string into its parts, or returns
+ * `undefined` when it is not one of those shapes.
+ */
+function parseCvDate(v: string): { y: number; m?: number; d?: number } | undefined {
+  const m = /^(\d{4})(?:-(0[1-9]|1[0-2])(?:-(0[1-9]|[12]\d|3[01]))?)?$/.exec(v);
+  if (!m?.[1]) return undefined;
+  return {
+    y: Number(m[1]),
+    ...(m[2] ? { m: Number(m[2]) } : {}),
+    ...(m[3] ? { d: Number(m[3]) } : {}),
+  };
+}
+
 export const CvDateSchema = z
   .string()
   .regex(
     /^\d{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12]\d|3[01]))?)?$/,
     'expected YYYY, YYYY-MM, or YYYY-MM-DD',
+  )
+  // The regex checks ranges, not the calendar: `2021-02-31`, `2021-04-31` and
+  // `2023-02-29` all satisfy `0[1-9]|[12]\d|3[01]` and are not days. A date
+  // nobody can point at on a calendar is a typo, and it renders as one.
+  .refine(
+    (v) => {
+      const p = parseCvDate(v);
+      if (!p || p.m === undefined || p.d === undefined) return true;
+      const dt = new Date(Date.UTC(p.y, p.m - 1, p.d));
+      return dt.getUTCFullYear() === p.y && dt.getUTCMonth() === p.m - 1 && dt.getUTCDate() === p.d;
+    },
+    { message: 'not a real calendar date' },
   );
+
+/**
+ * The first instant a `YYYY`/`YYYY-MM`/`YYYY-MM-DD` value can mean, and the
+ * last — as comparable `YYYY-MM-DD` strings.
+ *
+ * Both ends are needed because the two fields carry different granularity in
+ * practice. `start: 2020-05, end: 2020` is a person who says "until sometime
+ * in 2020", and a naive string or same-precision comparison calls that an
+ * error. Comparing the START of the start against the END of the end asks the
+ * only question worth asking: is there any reading under which the entry makes
+ * sense?
+ */
+function periodStart(v: string): string | undefined {
+  const p = parseCvDate(v);
+  if (!p) return undefined;
+  return `${String(p.y).padStart(4, '0')}-${String(p.m ?? 1).padStart(2, '0')}-${String(p.d ?? 1).padStart(2, '0')}`;
+}
+function periodEnd(v: string): string | undefined {
+  const p = parseCvDate(v);
+  if (!p) return undefined;
+  const m = p.m ?? 12;
+  const d = p.d ?? new Date(Date.UTC(p.y, m, 0)).getUTCDate();
+  return `${String(p.y).padStart(4, '0')}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+}
+
+/** `endDate` must not finish before `startDate` can begin. */
+function endNotBeforeStart(v: { startDate: string; endDate?: string | undefined }): boolean {
+  if (v.endDate === undefined || v.endDate === '') return true;
+  const s = periodStart(v.startDate);
+  const e = periodEnd(v.endDate);
+  if (s === undefined || e === undefined) return true; // shape errors are reported by the field
+  return e >= s;
+}
+
+const END_BEFORE_START: { message: string; path: (string | number)[] } = {
+  message: 'endDate is before startDate',
+  path: ['endDate'],
+};
 
 // A bare social handle (e.g. "codevena"), NOT a full URL — templates render it
 // as `github.com/<handle>` / `linkedin.com/in/<handle>`, so a smuggled URL like
@@ -138,7 +202,8 @@ export const ExperienceItemSchema = z
     bullets: z.array(z.string()),
     tags: z.array(z.string()).optional(),
   })
-  .strict();
+  .strict()
+  .refine(endNotBeforeStart, END_BEFORE_START);
 
 export const EducationItemSchema = z
   .object({
@@ -149,7 +214,8 @@ export const EducationItemSchema = z
     endDate: CvDateSchema.optional(),
     bullets: z.array(z.string()).optional(),
   })
-  .strict();
+  .strict()
+  .refine(endNotBeforeStart, END_BEFORE_START);
 
 export const SkillsSchema = z
   .object({

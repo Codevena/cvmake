@@ -74,6 +74,12 @@ function normalizeDate(d: unknown): string | undefined {
   if (mon === undefined || mon < 1 || mon > 12) return year;
   const mm = String(mon).padStart(2, '0');
   if (day === undefined || day < 1 || day > 31) return `${year}-${mm}`;
+  // The day has to exist in THAT month, not merely be under 32. A source that
+  // says 2021-02-31 used to come through unchanged and then failed at
+  // `cvmake build`, one step after the importer had already declared success.
+  // Falling back to the month keeps the information that is certainly true.
+  const dt = new Date(Date.UTC(Number(year), mon - 1, day));
+  if (dt.getUTCMonth() !== mon - 1 || dt.getUTCDate() !== day) return `${year}-${mm}`;
   return `${year}-${mm}-${String(day).padStart(2, '0')}`;
 }
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CVDataSchema, ContactsSchema, RenderingSchema } from '../src/cv.js';
+import { CVDataSchema, ContactsSchema, CvDateSchema, RenderingSchema } from '../src/cv.js';
 import { fullFixture, minimalFixture } from '../src/fixtures.js';
 
 describe('CVDataSchema', () => {
@@ -185,6 +185,92 @@ describe('rendering.sectionOrder uniqueness', () => {
 
   it('accepts an empty list', () => {
     expect(parse([]).success).toBe(true);
+  });
+});
+
+describe('dates are real, and periods run forwards', () => {
+  const base = {
+    meta: { locale: 'de' as const },
+    personal: { firstName: 'A', lastName: 'B', contacts: {} },
+    education: [],
+    rendering: { template: 'classic-serif' },
+  };
+  const withPeriod = (startDate: string, endDate?: string) => ({
+    ...base,
+    experience: [
+      {
+        title: 'T',
+        company: 'C',
+        startDate,
+        ...(endDate === undefined ? {} : { endDate }),
+        bullets: [],
+      },
+    ],
+  });
+
+  // The regex checks ranges, not the calendar. Each of these satisfied it and
+  // parsed cleanly before — a date nobody can point at, rendered as one.
+  it.each(['2021-02-31', '2021-04-31', '2023-02-29', '2021-06-31'])(
+    'refuses %s, which is not a day',
+    (d) => {
+      expect(CvDateSchema.safeParse(d).success).toBe(false);
+    },
+  );
+
+  it.each(['2024-02-29', '2020-02-29', '2021-01-31', '2020-05', '2020', '2021-12-31'])(
+    'still accepts %s',
+    (d) => {
+      // The counter-probes, and they matter: 2024 and 2020 ARE leap years, and
+      // a rule that only looked at "February 29" would reject them. Bare years
+      // and year-months must pass untouched — the calendar check applies only
+      // to a full date.
+      expect(CvDateSchema.safeParse(d).success).toBe(true);
+    },
+  );
+
+  it('refuses an entry that ends before it starts', () => {
+    const r = CVDataSchema.safeParse(withPeriod('2021-03', '2020-11'));
+    expect(r.success).toBe(false);
+    if (!r.success) {
+      // The path matters: without it the user is told something is wrong
+      // somewhere in a file of a hundred lines.
+      expect(r.error.issues.some((i) => i.path.join('.').includes('endDate'))).toBe(true);
+    }
+  });
+
+  it('refuses a year-only pair that runs backwards', () => {
+    expect(CVDataSchema.safeParse(withPeriod('2020', '2019')).success).toBe(false);
+  });
+
+  it('accepts a coarse end that could still be after a precise start', () => {
+    // `start 2020-05, end 2020` means "until sometime in 2020", which can be
+    // after May. A string comparison or a same-precision comparison calls this
+    // an error and would reject a perfectly ordinary CV. This is the case the
+    // rule is shaped around, so it is asserted, not assumed.
+    expect(CVDataSchema.safeParse(withPeriod('2020-05', '2020')).success).toBe(true);
+  });
+
+  it.each([
+    ['2020-05', '2020-05'],
+    ['2020-05-10', '2020-05-10'],
+    ['2019-01', '2024-12'],
+  ])('accepts %s → %s', (s2, e) => {
+    expect(CVDataSchema.safeParse(withPeriod(s2, e)).success).toBe(true);
+  });
+
+  it('accepts an entry that is still running', () => {
+    expect(CVDataSchema.safeParse(withPeriod('2020-05')).success).toBe(true);
+  });
+
+  it('applies the same rule to education', () => {
+    // Two schemas, one rule — a fix that reaches only experience would leave
+    // half the document unchecked, and nothing else would notice.
+    const r = CVDataSchema.safeParse({
+      ...base,
+      experience: [],
+      education: [{ degree: 'D', institution: 'I', startDate: '2021-03', endDate: '2020-11' }],
+    });
+    expect(r.success).toBe(false);
   });
 });
 
