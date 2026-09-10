@@ -1,8 +1,14 @@
 import { existsSync } from 'node:fs';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { wrapHtmlDocument } from '@codevena/cvmake-core/html-document';
+import { renderCV } from '@codevena/cvmake-core/renderer';
+import type { TemplateDefinition } from '@codevena/cvmake-schema';
+import { fullFixture } from '@codevena/cvmake-schema/fixtures';
 import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
+import type { Browser } from 'puppeteer';
+import { loadPrintCss, loadResetCss, loadTemplateCss, stripSharedImports } from '../../src/css.js';
 
 export const UPDATE = process.env.UPDATE_VISUAL === '1';
 // In CI we never silently auto-create missing baselines: a missing baseline
@@ -77,4 +83,50 @@ export async function diffAgainstBaseline({
   }
 
   return { ratio, baselineWritten: false };
+}
+
+/**
+ * Renders page one exactly the way the export route does.
+ *
+ * The suite used to compose `rendered.css + loadTemplateCss(id)` while
+ * production composes `resetCss + stripSharedImports(tplCss) + printCss +
+ * paletteVars`. It was therefore screenshotting a document the product never
+ * produces — missing `reset.css` entirely, which carries box-sizing and the
+ * `@page` margins, and leaving the relative `@import "../shared/…"` lines in
+ * place where they resolve to nothing.
+ *
+ * What this still does NOT reproduce, so nobody reads more into a green run
+ * than it holds: production also injects page-break spacer divs, paginates
+ * across pages, and waits on `load` rather than `networkidle0`. This closes
+ * the CSS gap, not the pagination one.
+ *
+ * `emulateMediaType('print')` is deliberately absent. Measured across four
+ * templates: switching the media type moves 0.000000 of the pixels, because
+ * no template has a `@media print` block — the only print-specific rule in the
+ * whole stylesheet surface is `print-color-adjust`, which a screenshot cannot
+ * show. Setting it would be a line of code with a test that proves nothing.
+ */
+export async function renderTemplatePageOne(args: {
+  browser: Browser;
+  template: TemplateDefinition;
+  paletteId: string;
+}): Promise<Buffer> {
+  const { browser, template, paletteId } = args;
+  const rendered = await renderCV({ data: fullFixture, template, paletteId });
+  const css = [
+    loadResetCss(),
+    stripSharedImports(loadTemplateCss(template.meta.id)),
+    loadPrintCss(),
+    rendered.css,
+  ].join('\n');
+  const html = wrapHtmlDocument({ title: 'CV', html: rendered.html, css });
+
+  const page = await browser.newPage();
+  try {
+    await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 2 });
+    await page.setContent(html, { waitUntil: 'networkidle0' });
+    return Buffer.from(await page.screenshot({ fullPage: false, type: 'png' }));
+  } finally {
+    await page.close();
+  }
 }
