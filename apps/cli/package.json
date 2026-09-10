@@ -1,6 +1,6 @@
 {
   "name": "@codevena/cvmake-cli",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "YAML in, PDF out. The official cvmake CLI — render CVs from a plain-text YAML file.",
   "keywords": ["cv", "resume", "yaml", "pdf", "cli", "puppeteer", "react"],
   "homepage": "https://cvmake.codevena.dev",

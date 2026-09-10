@@ -1,6 +1,6 @@
 {
   "name": "@codevena/cvmake-schema",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Zod schema for cvmake YAML CV documents.",
   "keywords": ["cv", "resume", "yaml", "schema", "zod"],
   "homepage": "https://cvmake.codevena.dev",

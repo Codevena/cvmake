@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] — 2026-09-10
+
+### Changed (breaking)
+- **Dates must be real, and periods must run forwards.** `2021-02-31`,
+  `2021-04-31` and `2023-02-29` used to parse: the pattern checked ranges, not
+  the calendar, so a day nobody can point at reached the PDF. And `endDate`
+  could precede `startDate` — the editor said so, nothing enforced it.
+  A hand-written YAML with either will stop loading until it is corrected.
+
+  The ordering check compares the START of the start against the END of the
+  end, so `startDate: 2020-05` with `endDate: 2020` — "until sometime in 2020"
+  — stays valid. Only entries with no sensible reading are refused.
+
+  `cvmake import` was fixed with it: it clamped the month to 1-12 but the day
+  only to 1-31, so a JSON Resume saying `2021-02-31` was copied through, the
+  importer reported success, and `cvmake build` then failed on the file it had
+  just written. It now keeps the month and drops the impossible day.
+
+### Fixed
+- **The photo outputs are written atomically.** They live under `public/`,
+  which is served, so a plain write interrupted halfway handed the browser a
+  truncated image under a URL that looked fine. The helper itself also leaked:
+  its cleanup ran only when the rename failed, never when the write did, so a
+  full disk left a stray temp file in a served directory for ever.
+- Two counts the documentation stated and could not keep: the README promised
+  "3+ color palettes" per template when three ship two — including inside the
+  published `@codevena/cvmake-cli` — and `CONTRIBUTING.md` annotated the test
+  command with a number three times out of date.
+
+### Internal
+- The visual regression suite now composes its CSS the way the export route
+  does. It was missing `reset.css` entirely, so every baseline was a screenshot
+  of a document the product never produces.
+
 ## [0.3.0] — 2026-09-10
 
 ### Fixed

@@ -1,6 +1,6 @@
 {
   "name": "@codevena/cvmake-templates",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "12 production-ready CV templates for cvmake — React components with CSS, multi-palette.",
   "keywords": ["cv", "resume", "react", "templates", "cvmake"],
   "homepage": "https://cvmake.codevena.dev",
