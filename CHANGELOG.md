@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] — 2026-09-10
+
 ### Fixed
 - **`cvmake init` suggested a palette that does not exist.** The starter file
   offered `classic-serif-default`; the template's palettes are `classic-grey`,
@@ -158,6 +160,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   than the renderer's, so the two have to be changed together.
 
 ### Security
+- **Puppeteer 24 → 25.** `pnpm audit --prod` goes from 7 advisories to none —
+  all seven arrived through Puppeteer's dependency tree (`ws`, `ip-address`,
+  `extract-zip`) and none had a fix below the major. No API change was needed;
+  the SSRF control that sits on `page.setRequestInterception` was verified as
+  live under the new major, not merely present.
 - **A CV can no longer embed another CV's photo.** Uploads all live flat under
   `data/cvs/photos/`, and the containment check accepted any path below it, so
   `photo: "photos/<someone-else>.jpg"` pulled a stranger's picture into your

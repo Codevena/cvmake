@@ -1,17 +1,21 @@
 {
   "name": "@codevena/cvmake-core",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Core engine for cvmake: YAML loader, React renderer, Puppeteer-driven PDF generator.",
   "keywords": ["cv", "resume", "yaml", "pdf", "puppeteer", "react"],
   "homepage": "https://cvmake.codevena.dev",
-  "bugs": { "url": "https://github.com/Codevena/cvmake/issues" },
+  "bugs": {
+    "url": "https://github.com/Codevena/cvmake/issues"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Codevena/cvmake.git",
     "directory": "packages/core"
   },
   "license": "MIT",
-  "engines": { "node": ">=20.11.0" },
+  "engines": {
+    "node": ">=20.11.0"
+  },
   "author": "Markus Wiesecke",
   "type": "module",
   "main": "./dist/index.js",
@@ -63,7 +67,9 @@
     }
   },
   "files": ["dist", "README.md", "LICENSE"],
-  "publishConfig": { "access": "public" },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc --noEmit",
@@ -84,7 +90,9 @@
     "sharp": "^0.33.0 || ^0.34.0 || ^0.35.0"
   },
   "peerDependenciesMeta": {
-    "sharp": { "optional": true }
+    "sharp": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/js-yaml": "4.0.9",
